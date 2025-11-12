@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <cstdint>
 #include "vec.hpp"
 
 
@@ -10,10 +11,9 @@ public:
 };
 
 inline std::ostream& operator<<(std::ostream& out, const color& c) { //should convert out [0, 1] vector components to [0, 255] and print'
-	int r = static_cast<int>(255.999 * c[0]);
-	int g = static_cast<int>(255.999 * c[1]);
-	int b = static_cast<int>(255.999 * c[2]);
-	vec<3, int> color_vec = {r, g, b}; //let the parent handle the output i just needed to convert the values | why rewrite the out format
-	out << color_vec; //by convention we let callers decide to append new lines or endl, etc
-	return out;
+	int r = static_cast<uint8_t>(255.999 * c[0]); //vectors can have components of 1.1 (they logically shouldnt) so byte conversion over int conversion to keep the ppm format at least safe (using byte overflow)
+	int g = static_cast<uint8_t>(255.999 * c[1]); //double cast isnt great but uint8_t will print like chars
+	int b = static_cast<uint8_t>(255.999 * c[2]); //i guess compared to % to keep it under 255 a double cast is preffered and avoids using & 0xFF
+	out << r << ' ' << g << ' ' << b << '\n';
+	return out; //changed to override the out format to work with ppm formatting
 }

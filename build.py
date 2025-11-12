@@ -4,7 +4,7 @@ from pathlib import Path
 
 SRC_DIRECTORY = Path("src")
 INCLUDE_DIRECTORY = Path("include")
-OBJ_DIRECTORY = Path("obj")
+OBJ_DIRECTORY = Path("object")
 BUILD_DIRECTORY = Path("build")
 
 EXECUTABLE = BUILD_DIRECTORY / "app"

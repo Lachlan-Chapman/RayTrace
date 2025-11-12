@@ -21,7 +21,14 @@ template <size_t t_size, typename t_type>
 class vec {
 	public:
 		vec() : m_elem{} {}
-		
+	
+		template<typename t_other_type> //allows me to copy float into int (relying on static_cast handling conversions when needed)
+		vec(const vec<t_size, t_other_type> &p_other) { //enforces they are the same length at least
+			for(size_t i = 0; i < t_size; i++) {
+				m_elem[i] = static_cast<t_type>(p_other[i]);
+			}
+		}
+
 		vec(t_type p_scale) {
 			for(size_t i = 0; i < t_size; i++) {
 				m_elem[i] = p_scale;
@@ -47,13 +54,13 @@ class vec {
 			return len;
 		};
 
-		float mag() {
+		float magnitude() {
 			double length = square_length();
 			return fast_inverse(length) * length;
 		}
 
 		template <typename t_cast>
-		operator vec<t_size, t_cast>() const {
+		operator vec<t_size, t_cast>() const { //should enforce equal sizes
 			vec<t_size, t_cast> result;
 			for(size_t i = 0; i < t_size; i++) {result[i] = static_cast<t_cast>(m_elem[i]);}
 			return result;
@@ -62,7 +69,7 @@ class vec {
 		t_type operator[](int i) const {return m_elem[i];}
 		t_type& operator[](int i) {return m_elem[i];}
 
-		vec operator-() const {
+		vec operator-() const { //to negate the vec components
 			vec cpy = vec(0.0f);
 			for(size_t i = 0; i < t_size; i++) {
 				cpy[i] = -m_elem[i];
@@ -70,6 +77,7 @@ class vec {
 			return cpy;
 		}
 
+		/* assignment operators */
 		vec& operator+=(const vec& other) {
 			for(size_t i = 0; i < t_size; i++) {
 				m_elem[i] += other[i];

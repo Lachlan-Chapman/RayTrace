@@ -1,13 +1,18 @@
 #pragma once
 #include <fstream>
+#include "color.hpp"
 class PPM {
 public:
 	PPM();
-	PPM(int, int, const char*);
+	PPM(vec2i, const char*);
 	~PPM();
-	void WriteTestImage();
+	color pixel(vec2i) const;
+	void draw(vec2i, color);
+	void writeTestImage();
+	void writeImage();
 
 private:
-	int m_width, m_height;
+	vec2i m_dimension;
+	color *m_image = nullptr; //contigous image data like gpu buffer use case
 	std::fstream m_fstream;
 };
