@@ -4,7 +4,7 @@
 		{
 			"label": "Build Task",
 			"type": "shell",
-			"command": "python3 build.py",
+			"command": "rm -rf obj build && python3 build.py",
 			"problemMatcher": []
 		},
 	]

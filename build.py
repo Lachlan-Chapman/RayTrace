@@ -9,7 +9,7 @@ BUILD_DIRECTORY = Path("build")
 
 EXECUTABLE = BUILD_DIRECTORY / "app"
 
-CPP_FLAGS = ["-std=c++20", "-O2", "-Iinclude"]
+CPP_FLAGS = ["-std=c++20", "-O0", "-g", "-Iinclude"]
 LINK_FLAGS = []
 
 OBJ_DIRECTORY.mkdir(exist_ok = True) #if they dont exist well make em but i should have made em already
