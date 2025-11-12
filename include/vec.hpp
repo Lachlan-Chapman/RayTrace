@@ -28,7 +28,7 @@ class vec {
 			}
 		};
 
-		vec(std::initializer_list<t_type> p_list) {
+		vec(std::initializer_list<t_type> p_list) { //no im not going to do a variadic constructor for t_size vectors | stuck with init lists
 			size_t i = 0;
 			for(t_type val : p_list) {
 				if(i < t_size) {m_elem[i++] = val;}

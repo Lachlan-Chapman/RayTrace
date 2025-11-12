@@ -4,6 +4,7 @@
 
 #include "PPM.hpp"
 #include "vec.hpp"
+#include "color.hpp"
 
 void testPPM() {
 	PPM ppm; //default
@@ -18,9 +19,14 @@ void testVec() {
 	std::cout << "int vector " << veci << '\n' << "double vec " << vecd << std::endl;
 }
 
+void testColor() {
+	color rainbow = {0.5, 0.5, 0.5};
+	std::cout << "Test Color " << static_cast<vec<3, double>>(rainbow) << " becomes " << rainbow << std::endl;
+}
+
 int main(int argc, char** argv) {
 
-	testVec();
+	testColor();
 	return 0;
 }
 
