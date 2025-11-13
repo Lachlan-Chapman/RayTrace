@@ -1,12 +1,9 @@
 #pragma once
 
-#include <limits>
-
 #include "vec.hpp"
 #include "ray.hpp"
+#include "interval.hpp"
 
-const double inf = std::numeric_limits<double>::infinity();
-const double pi = 3.1415926535897932385;
 
 class hitRecord {
 public:
@@ -23,7 +20,7 @@ public:
 class hittable {
 public:
 	virtual ~hittable() = default; //by making the destructor virtual it will late bind the destructor of children classes so i can delete a child type via a base ptr and it will use the true type's destructor.
-	virtual bool intersect(const ray &p_ray, vec2 p_time, hitRecord &p_record) const = 0;
+	virtual bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const = 0;
 	virtual hittable* clone() const = 0; //for deep copying while maintaining polymorphic heap objects
 };
 

@@ -5,7 +5,7 @@
 class sphere : public hittable {
 public:
 	sphere(const vec3&, double);
-	bool intersect(const ray &p_ray, vec2 p_time, hitRecord &p_record) const override;
+	bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const override;
 	hittable* clone() const override;
 
 private:

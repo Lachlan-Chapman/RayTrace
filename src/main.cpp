@@ -8,8 +8,9 @@
 #include "sphere.hpp"
 
 
-#define IMAGE_WIDTH 1920
-#define IMAGE_HEIGHT 1080
+#define IMAGE_WIDTH 300
+#define IMAGE_HEIGHT 200
+
 
 void testPPM() {
 	PPM ppm; //default
@@ -37,6 +38,10 @@ void testCamera() {
 	cam.m_world.append(new sphere(
 		{0.0, 0.0, -1.0},
 		0.5
+	));
+	cam.m_world.append(new sphere(
+		{1.0, 0.0, -1.0},
+		1
 	));
 	cam.render();
 }

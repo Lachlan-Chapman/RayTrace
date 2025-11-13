@@ -1,7 +1,7 @@
 #include "camera.hpp"
 
 camera::camera() : camera({100, 100}, 1.0) {}
-camera::camera(vec2i p_image_dimension, double p_focal_length) : m_image_dimension(p_image_dimension), m_focal_length(p_focal_length) {
+camera::camera(vec2i p_image_dimension, double p_focal_length) : m_image_dimension(p_image_dimension), m_focal_length(p_focal_length), m_interval(interval::universe) {
 	m_aspect_ratio = static_cast<double>(p_image_dimension[0]) / p_image_dimension[1];
 	m_viewport_dimension = {2.0 * m_aspect_ratio, 2.0}; //hard coded so the height is [-1, 1] when the camera is centered at (0, 0, 0)
 	/* defines left/right & up/down dir of camera */
@@ -20,11 +20,12 @@ vec3 camera::viewportV() const {return {0.0, -m_viewport_dimension[1], 0.0};}
 
 void camera::render() {
 	PPM image(m_image_dimension, "camera_render.ppm"); //should create image with data on heap
+	
 	for(int row = 0; row < m_image_dimension[1]; row++) {
 		for(int col = 0; col < m_image_dimension[0]; col++) {
 			vec3 pixel_center = m_pixel_origin + (m_pixel_delta_u * static_cast<double>(col)) + (m_pixel_delta_v * static_cast<double>(row));
 			vec3 ray_direction = pixel_center - m_position; //getting the ray from the pixel to the camera here (may be a bit unintuitive at first)
-			ray _ray(m_position, ray_direction);
+			ray _ray(m_position, ray_direction, m_interval); //pass along the default ray interval settings
 			color pixel_color = _ray.pixelColor(m_world);
 			image.draw({col, row}, pixel_color);
 		}

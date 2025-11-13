@@ -5,7 +5,7 @@ hittable* sphere::clone() const {return new sphere(*this);}
 
 
 //sub -2h for b in the original quadratic equation and solve for h and it simplifies significantly
-bool sphere::intersect(const ray &p_ray, vec2 p_time, hitRecord &p_record) const {
+bool sphere::intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const {
 	vec3 to_center = m_center - p_ray.origin();
 	double a = p_ray.direction().square_length(); //same result as previous a but with 2 function calls not 3
 	double h = p_ray.direction().dot(to_center);
@@ -17,9 +17,10 @@ bool sphere::intersect(const ray &p_ray, vec2 p_time, hitRecord &p_record) const
 	double sqrt_d = std::sqrt(discriminant);
 	double root = (h - sqrt_d) / a; //there are 1 or 2 points of intersection. we need to know at what time along the line is the acceptable intersection to use | check the - solution first
 	
-	if(root <= p_time[0] || root > p_time[1]) { //invlaid root so lets try the + solution
+	//using interval now allows us to see if our object is within the defined valid range
+	if(!p_interval.surrounds(root)) { //invlaid root so lets try the + solution
 		root = (h + sqrt_d) / a;
-		if(root <= p_time[0] || root > p_time[1]) {
+		if(!p_interval.surrounds(root)) {
 			return false; //at this point both solutions are invalid
 		}
 	}
