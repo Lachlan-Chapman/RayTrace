@@ -1,7 +1,9 @@
 #pragma once
 #include "vec.hpp"
 #include "color.hpp"
-#include "ray.hpp"
+
+
+class world; //forwad decleration as world needs hittable needs ray needs world
 
 class ray {
 public:
@@ -10,7 +12,7 @@ public:
 
 	const vec3& origin() const;
 	const vec3& direction() const;
-	color pixelColor() const;
+	color pixelColor(const world&) const;
 
 	vec3 at(double) const;
 private:

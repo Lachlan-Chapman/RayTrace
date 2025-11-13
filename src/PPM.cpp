@@ -58,7 +58,8 @@ void PPM::writeImage() {
 		for(int col = 0; col < m_dimension[0]; col++) {
 			m_fstream << pixel({row, col});
 			progress += steps_prog;
-			std::clog << "Progress " << progress << '%' << std::endl;
+			//std::clog << "Progress " << progress << '%' << std::endl;
 		}
 	}
+	std::clog << "Done Rendering " << m_dimension[0] << 'x' << m_dimension[1] << " Pixel(s)" << std::endl;
 }

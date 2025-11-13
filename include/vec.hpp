@@ -64,6 +64,23 @@ class vec {
 			return *this / (length != 0 ? length : 1); //avoid to divide by 0  (keep an eye out as this would cause a bug but not warn there was a divide by 0)
 		}
 
+		t_type dot(const vec &p_other) const { //sums the pairwise product of all vector elements
+			double result = 0;
+			for(size_t i = 0; i < t_size; i++) {
+				result += m_elem[i] * p_other[i];
+			}
+			return result;
+		}
+
+
+		vec<3, t_type> cross(const vec<3, t_type>& p_other) const requires (t_size == 3) { //neat little cpp20 that wont generate this function for non 3d vec
+			return {
+				m_elem[1] * p_other[2] - m_elem[2] * p_other[1],
+				m_elem[2] * p_other[0] - m_elem[0] * p_other[2],
+				m_elem[0] * p_other[1] - m_elem[1] * p_other[0]
+			};
+		}
+
 		template <typename t_cast>
 		operator vec<t_size, t_cast>() const { //should enforce equal sizes
 			vec<t_size, t_cast> result;

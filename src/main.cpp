@@ -5,10 +5,11 @@
 #include "vec.hpp"
 #include "color.hpp"
 #include "camera.hpp"
+#include "sphere.hpp"
 
 
-#define IMAGE_WIDTH 200
-#define IMAGE_HEIGHT 150
+#define IMAGE_WIDTH 1920
+#define IMAGE_HEIGHT 1080
 
 void testPPM() {
 	PPM ppm; //default
@@ -33,6 +34,10 @@ void testCamera() {
 		{IMAGE_WIDTH, IMAGE_HEIGHT},
 		1.0
 	);
+	cam.m_world.append(new sphere(
+		{0.0, 0.0, -1.0},
+		0.5
+	));
 	cam.render();
 }
 

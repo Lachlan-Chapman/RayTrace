@@ -2,6 +2,7 @@
 #include "vec.hpp"
 #include "ray.hpp"
 #include "PPM.hpp"
+#include "world.hpp"
 
 class camera {
 public:
@@ -12,6 +13,8 @@ public:
 	vec3 viewportV() const;
 
 	void render();
+
+	world m_world;
 	
 private:
 	vec2i m_image_dimension;

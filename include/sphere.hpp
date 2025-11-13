@@ -1,0 +1,14 @@
+#pragma once
+#include "hittable.hpp"
+#include "vec.hpp"
+
+class sphere : public hittable {
+public:
+	sphere(const vec3&, double);
+	bool intersect(const ray &p_ray, vec2 p_time, hitRecord &p_record) const override;
+	hittable* clone() const override;
+
+private:
+	vec3 m_center;
+	double m_radius;
+};
