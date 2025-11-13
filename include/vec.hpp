@@ -46,7 +46,7 @@ class vec {
 			}
 		};
 
-		float square_length() {
+		float square_length() const {
 			float len = 0;
 			for(size_t i = 0; i < t_size; i++) {
 				len += m_elem[i] * m_elem[i];
@@ -54,9 +54,14 @@ class vec {
 			return len;
 		};
 
-		float magnitude() {
+		float magnitude() const {
 			double length = square_length();
 			return fast_inverse(length) * length;
+		}
+
+		vec unit() const {
+			double length = magnitude();
+			return *this / (length != 0 ? length : 1); //avoid to divide by 0  (keep an eye out as this would cause a bug but not warn there was a divide by 0)
 		}
 
 		template <typename t_cast>
@@ -154,6 +159,10 @@ inline vec<t_size, t_type> operator*(const vec<t_size, t_type>& _this, const t_t
 	vec<t_size, t_type> result;
 	for(size_t i = 0; i < t_size; i++) {result[i] = _this[i] * scale;}
 	return result;
+}
+template <size_t t_size, typename t_type>
+inline vec<t_size, t_type> operator*(const t_type scale, const vec<t_size, t_type>& _this) { //allow for 0.5 * vec not restricting to vec * 0.5
+	return _this * scale;
 }
 template <size_t t_size, typename t_type>
 inline vec<t_size, t_type> operator/(const vec<t_size, t_type>& _this, const vec<t_size, t_type>& other) {
