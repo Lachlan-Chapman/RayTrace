@@ -21,11 +21,12 @@ color ray::pixelColor(const world& p_world) const {
 
 	color object_color; //track the current closest objects color (this means it does the material calculation on all objects intersected sooo not great YET)
 
+	//std::cout << m_origin << " | " << m_direction << std::endl;
 	for(int i = 0; i < p_world.size(); i++) {
 		if(p_world[i]->intersect(*this, interval(m_interval.m_min, closest_distance), hit_record)) {
 			has_intersected = true; //alright so now weve hit something
 			closest_distance = hit_record.m_time; //how far along the ray did we intersect | now this sets a new limit so if an object returns intersects, it must have been closer than this object
-			object_color = hit_record.m_normal;
+			object_color = 0.5 * (hit_record.m_normal + color(1.0));
 		}
 	}
 	

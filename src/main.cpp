@@ -8,8 +8,8 @@
 #include "sphere.hpp"
 
 
-#define IMAGE_WIDTH 300
-#define IMAGE_HEIGHT 200
+#define IMAGE_WIDTH 128
+#define IMAGE_HEIGHT 128
 
 
 void testPPM() {
@@ -33,15 +33,12 @@ void testColor() {
 void testCamera() {
 	camera cam(
 		{IMAGE_WIDTH, IMAGE_HEIGHT},
-		1.0
+		1.0,
+		2
 	);
 	cam.m_world.append(new sphere(
 		{0.0, 0.0, -1.0},
 		0.5
-	));
-	cam.m_world.append(new sphere(
-		{1.0, 0.0, -1.0},
-		1
 	));
 	cam.render();
 }
