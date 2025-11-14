@@ -5,11 +5,13 @@
 #include "vec.hpp"
 #include "color.hpp"
 #include "camera.hpp"
+
 #include "sphere.hpp"
 
+#include "lambertian.hpp"
 
-#define IMAGE_WIDTH 128
-#define IMAGE_HEIGHT 128
+#define IMAGE_WIDTH 1000
+#define IMAGE_HEIGHT 1000
 
 
 void testPPM() {
@@ -34,11 +36,24 @@ void testCamera() {
 	camera cam(
 		{IMAGE_WIDTH, IMAGE_HEIGHT},
 		1.0,
+		3,
 		2
 	);
 	cam.m_world.append(new sphere(
-		{0.0, 0.0, -1.0},
-		0.5
+		{0.0, 0.5, -1.0},
+		0.5,
+		new lambertian( //white test
+			vec3{1.0, 0.5, 0.3},
+			0.7
+		)
+	));
+	cam.m_world.append(new sphere(
+		{0.0, -0.5, -1.0},
+		0.5,
+		new lambertian( //white test
+			vec3{0.3, 0.5, 1.0},
+			0.7
+		)
 	));
 	cam.render();
 }

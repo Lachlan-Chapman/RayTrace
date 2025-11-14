@@ -38,3 +38,19 @@ bool world::append(hittable* p_object) { //have to instantiate outside to mainta
 }
 
 int world::size() const {return m_object_count;}
+
+bool world::intersect(const ray& p_ray, const interval& p_interval, hitRecord& p_record) const {
+	hitRecord temp_record;
+	bool has_intersected = false; //track if we hit anything at all (by defualt consider a intersection with the universe)
+	double closest_distance = p_interval.m_max; 
+
+	for(int i = 0; i < m_object_count; i++) {
+		if(m_object[i]->intersect(p_ray, interval(p_interval.m_min, closest_distance), temp_record)) { //update the record
+			has_intersected = true; //alright so now weve hit something
+			closest_distance = temp_record.m_time; //how far along the ray did we intersect | now this sets a new limit so if an object returns intersects, it must have been closer than this object
+			p_record = temp_record;
+		}
+	}
+
+	return has_intersected;
+}

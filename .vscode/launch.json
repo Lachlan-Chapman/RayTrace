@@ -12,7 +12,7 @@
 			"stopAtEntry": false,
 			"MIMode": "gdb",
 			"miDebuggerPath": "/usr/bin/gdb",
-			"externalConsole": true
+			"externalConsole": false
 		}
 	]
 }

@@ -12,10 +12,10 @@ public:
 
 	const vec3& origin() const;
 	const vec3& direction() const;
-	color pixelColor(const world&) const;
+	color traceColor(const world&, int) const;
 
 	vec3 at(double) const;
+	interval m_interval;
 private:
 	vec3 m_origin, m_direction;
-	interval m_interval;
 };

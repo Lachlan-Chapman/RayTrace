@@ -1,7 +1,7 @@
 #include "sphere.hpp"
 
-sphere::sphere(const vec3 &p_center, double p_radius) : m_center(p_center), m_radius(p_radius) {} //im allowing for 0 and negative radii
-hittable* sphere::clone() const {return new sphere(*this);}
+sphere::sphere(const vec3 &p_center, double p_radius, material *p_material) : hittable(p_material), m_center(p_center), m_radius(p_radius) {} //im allowing for 0 and negative radii
+hittable* sphere::clone() const {return new sphere(m_center, m_radius, m_material);}
 
 
 //sub -2h for b in the original quadratic equation and solve for h and it simplifies significantly
@@ -29,6 +29,7 @@ bool sphere::intersect(const ray &p_ray, interval p_interval, hitRecord &p_recor
 	p_record.m_point = p_ray.at(root); //the position in world space of the intersection
 	vec3 normal = (p_record.m_point - m_center) / m_radius; //vector in the dir from the center to the point of intersection normalised given the vector will have mag = to the sphere rad
 	p_record.setDirection(p_ray, normal);
+	p_record.m_material = m_material;
 	return true;
 }
 

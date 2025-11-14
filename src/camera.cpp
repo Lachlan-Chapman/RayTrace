@@ -1,8 +1,8 @@
 #include "camera.hpp"
 #include "constants.hpp"
 
-camera::camera() : camera({100, 100}, 1.0, 1) {}
-camera::camera(vec2i p_image_dimension, double p_focal_length, int p_sample_count = 1) : m_image_dimension(p_image_dimension), m_focal_length(p_focal_length), m_interval(interval::universe), m_sample_count(p_sample_count) {
+camera::camera() : camera({100, 100}, 1.0, 1, 1) {}
+camera::camera(vec2i p_image_dimension, double p_focal_length, int p_sample_count, int p_max_bounce) : m_image_dimension(p_image_dimension), m_focal_length(p_focal_length), m_interval(interval::universe), m_sample_count(p_sample_count), m_max_bounce(p_max_bounce) {
 	m_aspect_ratio = static_cast<double>(p_image_dimension[0]) / p_image_dimension[1];
 	m_viewport_dimension = {2.0 * m_aspect_ratio, 2.0}; //hard coded so the height is [-1, 1] when the camera is centered at (0, 0, 0)
 	/* defines left/right & up/down dir of camera */
@@ -40,8 +40,9 @@ void camera::render() {
 				vec3 ray_direction = pixel_center;
 				if(ray_id) {ray_direction += offset;} //add random offset on any "auxilery samples"
 				ray_direction -= m_position; //getting the ray from the pixel to the camera here (may be a bit unintuitive at first)
+
 				ray _ray(m_position, ray_direction, m_interval); //pass along the default ray interval settings
-				pixel_color += _ray.pixelColor(m_world);
+				pixel_color += _ray.traceColor(m_world, m_max_bounce); //get me the combined color of the full path of the ray
 			}
 			pixel_color *= m_sample_scale;
 			image.draw({col, row}, pixel_color);

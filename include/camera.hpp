@@ -11,7 +11,7 @@
 class camera {
 public:
 	camera();
-	camera(vec2i, double, int);
+	camera(vec2i, double, int, int);
 
 	vec3 viewportU() const;
 	vec3 viewportV() const;
@@ -20,7 +20,7 @@ public:
 
 	world m_world;
 	interval m_interval; //default range for a ray from this camera
-	int m_sample_count;
+	int m_sample_count, m_max_bounce;
 	
 private:
 	vec3 getRay(vec2i);

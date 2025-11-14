@@ -39,6 +39,7 @@ public:
 
 	bool append(hittable*);
 	int size() const;
+	bool intersect(const ray& p_ray, const interval& p_interval, hitRecord& p_record) const;
 	//delete
 	//pop
 private:
