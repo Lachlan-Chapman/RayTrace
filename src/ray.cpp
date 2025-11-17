@@ -28,6 +28,7 @@ color ray::traceColor(const world& p_world, int p_max_bounce) const {
 		} else {
 			double t = 0.5 * (current_ray.direction().unit()[1] + 1.0);
 			color sky = (1.0 - t) * color(1.0) + t * color{0.5, 0.7, 1.0};
+			//sky = color{1.0, 0.0, 0.0};
 			return attenuation * sky;
 		}
 	}

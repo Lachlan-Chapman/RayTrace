@@ -31,6 +31,9 @@
 		["{", "}"]
 	],
 
+	"editor.mouseWheelScrollSensitivity": 3,
+	"editor.smoothScrolling": true,
+
 	"workbench.colorCustomizations": {
 		// bracket character colors
 		"editorBracketHighlight.foreground1": "#f51384", // red

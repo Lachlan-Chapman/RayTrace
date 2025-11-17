@@ -8,11 +8,10 @@
 
 #include "sphere.hpp"
 
-#include "lambertian.hpp"
-#include "metal.hpp"
+#include "material.hpp"
 
-#define IMAGE_WIDTH 250
-#define IMAGE_HEIGHT 250
+#define IMAGE_WIDTH 200
+#define IMAGE_HEIGHT 100
 
 
 void testPPM() {
@@ -37,22 +36,41 @@ void testCamera() {
 	camera cam(
 		{IMAGE_WIDTH, IMAGE_HEIGHT},
 		1.0,
-		3,
-		2
+		1,
+		5
 	);
-	cam.m_world.append(new sphere(
-		{0.0, 0.5, -1.0},
-		0.5,
-		new lambertian( //white test
-			vec3{1.0, 0.5, 0.3},
-			0.7
+
+	cam.m_world.append(new sphere( //"earth"
+		{0.0, -100.5, -1.0},
+		100,
+		new lambertian(
+			color{0.8, 0.8, 0.0},
+			1.0
 		)
 	));
-	cam.m_world.append(new sphere(
-		{0.0, -0.5, -1.0},
+	cam.m_world.append(new sphere( //left
+		{-1.0, 0.0, -1.0},
 		0.5,
-		new metal( //white test
-			vec3{0.3, 0.5, 1.0},
+		new dielectric(
+			color(1.0),
+			1.0,
+			1.5
+		)
+	));
+	cam.m_world.append(new sphere( //center
+		{0.0, 0.0, -1.0},
+		0.5,
+		new lambertian(
+			color{0.1, 0.2, 0.5},
+			1.0
+		)
+	));
+	cam.m_world.append(new sphere( //right
+		{1.0, 0.0, -1.0},
+		0.5,
+		new metal(
+			color{0.8, 0.6, 0.2},
+			1.0,
 			1.0
 		)
 	));

@@ -65,7 +65,7 @@ void camera::render() {
 			}
 			pixel_color *= m_sample_scale;
 			//pixel_color = toGamma(pixel_color); //convert to gamma space using default gamma 2.2
-			pixel_color = toSRGB(pixel_color); //convert to srgb gamma space
+			//pixel_color = toSRGB(pixel_color); //convert to srgb gamma space
 			image.draw({col, row}, pixel_color);
 			//std::cout << pixel_color << std::endl;
 		}
