@@ -16,6 +16,9 @@ public:
 	vec3 viewportU() const;
 	vec3 viewportV() const;
 
+	vec3 toGamma(vec3, double) const;
+	vec3 toSRGB(vec3) const;
+
 	void render();
 
 	world m_world;

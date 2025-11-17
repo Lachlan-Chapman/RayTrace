@@ -9,9 +9,10 @@
 #include "sphere.hpp"
 
 #include "lambertian.hpp"
+#include "metal.hpp"
 
-#define IMAGE_WIDTH 1000
-#define IMAGE_HEIGHT 1000
+#define IMAGE_WIDTH 250
+#define IMAGE_HEIGHT 250
 
 
 void testPPM() {
@@ -50,9 +51,9 @@ void testCamera() {
 	cam.m_world.append(new sphere(
 		{0.0, -0.5, -1.0},
 		0.5,
-		new lambertian( //white test
+		new metal( //white test
 			vec3{0.3, 0.5, 1.0},
-			0.7
+			1.0
 		)
 	));
 	cam.render();

@@ -21,8 +21,27 @@ camera::camera(vec2i p_image_dimension, double p_focal_length, int p_sample_coun
 vec3 camera::viewportU() const {return {m_viewport_dimension[0], 0.0, 0.0};}
 vec3 camera::viewportV() const {return {0.0, -m_viewport_dimension[1], 0.0};}
 
+vec3 camera::toGamma(vec3 p_color, double p_gamma = 2.2) const {
+	vec3 gamma_converted;
+	for(int i = 0; i < 3; i++) {
+		gamma_converted[i] = std::pow(p_color[i], 1 / p_gamma);
+	}
+	return gamma_converted;
+}
+vec3 camera::toSRGB(vec3 p_color) const {
+	vec3 srgb_converted;
+	for(int i = 0; i < 3; i++) {
+		if(p_color[i] <= 0.0031308) {
+			srgb_converted[i] = 12.92 * p_color[i];
+		} else {
+			srgb_converted[i] = 1.055 * std::pow(p_color[i], 1.0/2.4) - 0.055;
+		}
+	}
+	return srgb_converted;
+}
+
 void camera::render() {
-	PPM image(m_image_dimension, "camera_render.ppm"); //should create image with data on heap
+	PPM image(m_image_dimension, "image.ppm"); //should create image with data on heap
 	
 	for(int row = 0; row < m_image_dimension[1]; row++) {
 		for(int col = 0; col < m_image_dimension[0]; col++) {
@@ -45,6 +64,8 @@ void camera::render() {
 				pixel_color += _ray.traceColor(m_world, m_max_bounce); //get me the combined color of the full path of the ray
 			}
 			pixel_color *= m_sample_scale;
+			//pixel_color = toGamma(pixel_color); //convert to gamma space using default gamma 2.2
+			pixel_color = toSRGB(pixel_color); //convert to srgb gamma space
 			image.draw({col, row}, pixel_color);
 			//std::cout << pixel_color << std::endl;
 		}

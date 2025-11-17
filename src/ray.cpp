@@ -19,7 +19,7 @@ color ray::traceColor(const world& p_world, int p_max_bounce) const {
 		if(p_world.intersect(current_ray, interval(0.001, constants::INF), _record)) { //did we hit a shape & which one was it
 			ray scattered;
 			color material_attenuation;
-			if(_record.m_material->scatter(current_ray, _record, material_attenuation, scattered)) { //true means this material scattered
+			if(_record.m_material->reflect(current_ray, _record, material_attenuation, scattered)) { //true means this material scattered
 				attenuation *= material_attenuation; //combine the colors
 				current_ray = scattered;
 			} else {
