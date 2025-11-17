@@ -2,7 +2,7 @@
 #include "constants.hpp"
 
 camera::camera() : camera({100, 100}, 1.0, 1, 1) {}
-camera::camera(vec2i p_image_dimension, double p_focal_length, int p_sample_count, int p_max_bounce) : m_image_dimension(p_image_dimension), m_focal_length(p_focal_length), m_interval(interval::universe), m_sample_count(p_sample_count), m_max_bounce(p_max_bounce) {
+camera::camera(vec2i p_image_dimension, double p_focal_length, int p_sample_count, int p_max_bounce) : m_image_dimension(p_image_dimension), m_focal_length(p_focal_length), m_interval(interval::forward), m_sample_count(p_sample_count), m_max_bounce(p_max_bounce) {
 	m_aspect_ratio = static_cast<double>(p_image_dimension[0]) / p_image_dimension[1];
 	m_viewport_dimension = {2.0 * m_aspect_ratio, 2.0}; //hard coded so the height is [-1, 1] when the camera is centered at (0, 0, 0)
 	/* defines left/right & up/down dir of camera */

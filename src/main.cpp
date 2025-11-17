@@ -37,7 +37,7 @@ void testCamera() {
 		{IMAGE_WIDTH, IMAGE_HEIGHT},
 		1.0,
 		1,
-		5
+		10
 	);
 
 	cam.m_world.append(new sphere( //"earth"
@@ -57,6 +57,15 @@ void testCamera() {
 			1.5
 		)
 	));
+	// cam.m_world.append(new sphere( //left inner
+	// 	{-1.0, 0.0, -1.0},
+	// 	0.25,
+	// 	new dielectric(
+	// 		color(1.0),
+	// 		1.0,
+	// 		1.0 / 1.5
+	// 	)
+	// ));
 	cam.m_world.append(new sphere( //center
 		{0.0, 0.0, -1.0},
 		0.5,

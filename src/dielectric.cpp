@@ -16,15 +16,24 @@ bool dielectric::reflect(const ray& p_ray, const hitRecord& p_record, vec3& p_at
 	vec3 unit_dir = p_ray.direction().unit();
 	vec3 neg_unit_dir = -unit_dir;
 	double cos_theta = std::fmin(neg_unit_dir.dot(p_record.m_normal), 1.0);
-	//double sin_theta = std::sqrt(1.0 - cos_theta*cos_theta);
+	double sin_theta = std::sqrt(1.0 - cos_theta*cos_theta);
 	
-
+	
 	vec3 refracted_perp = correct_refraction * (unit_dir + cos_theta*p_record.m_normal);
 	vec3 refracted_para = -std::sqrt(std::fabs(1.0 - refracted_perp.square_length())) * p_record.m_normal;
-	vec3 refracted_dir = (refracted_perp + refracted_para).unit();
-	vec3 start_point = p_record.m_point + (1.0 * refracted_dir);
+	
+	vec3 out_dir;
+	if(correct_refraction * sin_theta > 1.0) { //reflect instead
+		out_dir = p_ray.direction() - (2 * p_ray.direction().dot(p_record.m_normal)) * p_record.m_normal;
+	} else { //refract as normal
+		out_dir = (refracted_perp + refracted_para).unit();
+	}
+	out_dir = p_ray.direction() - (2 * p_ray.direction().dot(p_record.m_normal)) * p_record.m_normal;
 
-	p_reflected = ray(start_point, refracted_dir, interval::universe);
+	vec3 offset = p_record.m_outside ? -0.1 * p_record.m_normal : 0.1 * p_record.m_normal;
+	vec3 start_point = p_record.m_point + offset;
+
+	p_reflected = ray(start_point, out_dir, interval::universe);
 
 
 	std::clog 
@@ -32,8 +41,8 @@ bool dielectric::reflect(const ray& p_ray, const hitRecord& p_record, vec3& p_at
 	<< "START POINT: " << start_point << "\n"
     << "NORMAL:    " << p_record.m_normal << "\n"
     << "IN DIR:    " << unit_dir << "\n"
-    << "OUT DIR:   " << refracted_dir << "\n"
-    << "DOT(IN,OUT)=" << unit_dir.dot(refracted_dir.unit()) << "\n\n";
+    << "OUT DIR:   " << out_dir << "\n"
+    << "DOT(IN,OUT)=" << unit_dir.dot(out_dir.unit()) << "\n\n";
 
 
 

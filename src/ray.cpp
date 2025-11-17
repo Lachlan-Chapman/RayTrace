@@ -32,5 +32,8 @@ color ray::traceColor(const world& p_world, int p_max_bounce) const {
 			return attenuation * sky;
 		}
 	}
+	
+	return color{1.0, 0.0, 1.0};
 	return attenuation; //dead bounce limit
+
 }

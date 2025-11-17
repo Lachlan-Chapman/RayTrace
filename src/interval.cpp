@@ -8,3 +8,4 @@ bool interval::contains(double p_time) const {return m_min <= p_time && p_time <
 bool interval::surrounds(double p_time) const {return m_min < p_time && p_time < m_max;} //open () type range check
 const interval interval::empty = interval(constants::INF, -constants::INF); //all contains/sorrounds will fail
 const interval interval::universe = interval(-constants::INF, constants::INF); //all contains/sorrounds will pass
+const interval interval::forward = interval(0.0, constants::INF); //wont look in the oppisite dir for roots

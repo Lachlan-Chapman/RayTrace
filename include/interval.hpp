@@ -8,5 +8,5 @@ public:
 	double size() const;
 	bool contains(double) const;
 	bool surrounds(double) const;
-	static const interval empty, universe;
+	static const interval empty, universe, forward;
 };
