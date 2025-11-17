@@ -1,6 +1,6 @@
 #include "material.hpp"
 #include "hittable.hpp"
-#include "constants.hpp"
+#include "constant.hpp"
 
 metal::metal() : metal(color(1.0), 1.0, 0.0) {}
 metal::metal(const color& p_albedo, double p_reflectance, double p_roughness) : material(p_albedo, p_reflectance), m_roughness(p_roughness) {}

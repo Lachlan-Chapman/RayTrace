@@ -1,7 +1,7 @@
 #pragma once
 #include "vec.hpp"
 #include "ray.hpp"
-#include "constants.hpp"
+#include "constant.hpp"
 class hitRecord; //forward decleration
 
 class material {
@@ -18,7 +18,7 @@ protected: //belong to the class not the instance as they operate purely on the 
 		double rand_2 = rng::decimal();
 		double z = std::sqrt(1 - rand_2);
 
-		double phi = 2 * constants::PI * rand_1;
+		double phi = 2 * constant::PI * rand_1;
 		double x = std::cos(phi) * std::sqrt(rand_2);
 		double y = std::sin(phi) * std::sqrt(rand_2);
 

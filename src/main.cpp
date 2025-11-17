@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 #include "PPM.hpp"
 #include "vec.hpp"
@@ -10,8 +11,9 @@
 
 #include "material.hpp"
 
-#define IMAGE_WIDTH 100
-#define IMAGE_HEIGHT 50
+#define IMAGE_WIDTH 640
+#define IMAGE_HEIGHT 360
+#define FOV 20.0
 
 
 void testPPM() {
@@ -33,12 +35,14 @@ void testColor() {
 }
 
 void testCamera() {
-	camera cam(
-		{IMAGE_WIDTH, IMAGE_HEIGHT},
-		1.0,
-		5,
-		50
-	);
+	camera cam(32);
+	cam.setCameraMeta(vec2{IMAGE_WIDTH, IMAGE_HEIGHT}, FOV, 0.8, 3.4);
+	cam.setPosition(vec3{
+		-2.0, 2.0, 1.0
+	}, vec3{
+		0.0, 0.0, -1.0
+	});
+	cam.setRayTraceMeta(5, 4);
 
 	cam.m_world.append(new sphere( //"earth"
 		{0.0, -100.5, -1.0},
@@ -83,7 +87,11 @@ void testCamera() {
 			1.0
 		)
 	));
+	std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
 	cam.render();
+	std::chrono::high_resolution_clock::time_point end_time = std::chrono::high_resolution_clock::now();
+	std::chrono::milliseconds duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+	std::cout << "Render completed in " << duration.count() << " ms (" << static_cast<double>(duration.count()) / 1000.0 << " seconds)" << std::endl;
 }
 
 int main(int argc, char** argv) {

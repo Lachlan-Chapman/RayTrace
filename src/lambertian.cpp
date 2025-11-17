@@ -1,6 +1,6 @@
 #include "material.hpp"
 #include "hittable.hpp"
-#include "constants.hpp"
+#include "constant.hpp"
 //although its meant to be max value of 1 per channel for albedo, this is a "maths" bed to play on. so im not forcing anything to keep anyone "safe". break it. do physically impossible things.
 lambertian::lambertian() : lambertian(color(1.0), 1.0) {}
 lambertian::lambertian(const color& p_albedo, double p_reflectance) : material(p_albedo, p_reflectance) {}

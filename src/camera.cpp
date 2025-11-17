@@ -1,31 +1,53 @@
 #include "camera.hpp"
-#include "constants.hpp"
+#include "constant.hpp"
 
-camera::camera() : camera({100, 100}, 1.0, 1, 1) {}
-camera::camera(vec2i p_image_dimension, double p_focal_length, int p_sample_count, int p_max_bounce) : m_image_dimension(p_image_dimension), m_focal_length(p_focal_length), m_interval(interval::forward), m_sample_count(p_sample_count), m_max_bounce(p_max_bounce), m_vertical_fov(constants::PI / 2) {
-	m_aspect_ratio = static_cast<double>(p_image_dimension[0]) / p_image_dimension[1];
-	m_viewport_dimension = {2.0 * m_aspect_ratio, 2.0}; //hard coded so the height is [-1, 1] when the camera is centered at (0, 0, 0)
-
-	double h = std::tan(m_vertical_fov / 2);
-	m_viewport_dimension[1] = 2 * h * m_focal_length;
-	m_viewport_dimension[0] = m_viewport_dimension[1] * (static_cast<double>(m_image_dimension[0]) / m_image_dimension[1]);
-	
-
-	/* defines left/right & up/down dir of camera */
-	m_pixel_delta_u = viewportU() / static_cast<double>(m_image_dimension[0]); //ratio between our virtual viewport sizes and the image sizes | how much viewport distance per pixel width
-	m_pixel_delta_v = viewportV() / static_cast<double>(m_image_dimension[1]); //now we know our viewport distance scaled to pixels. so we move half that distance across and down to have our points in the middle of what will become pixels
-
-	m_viewport_origin = m_position - vec3{0.0, 0.0, m_focal_length} - 0.5 * viewportU() - 0.5 * viewportV();
- //so by going negative we are going left and up and back. so the camera wil be looking backward toward -Z
-	m_pixel_origin = m_viewport_origin + (m_pixel_delta_u + m_pixel_delta_v) * 0.5;
-
-	m_world = world(32); //default is a world of 32 objects
-	m_sample_scale = 1.0 / m_sample_count;
+camera::camera() : camera(32) {}
+camera::camera(int p_object_count) : m_world(world(p_object_count)) {
+	setCameraMeta(vec2i{10, 10}, 90.0, constant::PI / 18.0, 3.4);
+	setPosition(vec3(0.0), vec3{0.0, 0.0, -1.0});
+	setRayTraceMeta(1, 1);
 }
 
+void camera::setCameraMeta(const vec2i &p_screen_res, double p_fov, double p_defocus_angle, double p_focus_distance = 10.0) {
+	m_image_dimension = p_screen_res;
+	m_aspect_ratio = static_cast<double>(m_image_dimension[0]) / m_image_dimension[1];
+	m_fov = p_fov;
+	m_defocus_angle = p_defocus_angle;
+	m_focus_distance = p_focus_distance;
+}
 
-vec3 camera::viewportU() const {return {m_viewport_dimension[0], 0.0, 0.0};}
-vec3 camera::viewportV() const {return {0.0, -m_viewport_dimension[1], 0.0};}
+void camera::setPosition(const vec3 &p_position, const vec3 &p_target) {
+	m_position = p_position;
+	m_target = p_target;
+	
+	m_focal_length = (m_position - m_target).magnitude();
+	double h = std::tan(m_fov / 2);
+	m_viewport_dimension[1] = 2 * h * m_focus_distance;
+	m_viewport_dimension[0] = m_viewport_dimension[1] * (static_cast<double>(m_image_dimension[0]) / m_image_dimension[1]);
+
+	m_w = (m_position - m_target).unit();
+	m_u = vec3{0.0, 1.0, 0.0}.cross(m_w);
+	m_v = m_w.cross(m_u);
+
+	m_viewport_u = m_viewport_dimension[0] * m_u;
+	m_viewport_v = m_viewport_dimension[1] * -m_v;
+
+	m_pixel_delta_u = m_viewport_u / static_cast<double>(m_image_dimension[0]);
+	m_pixel_delta_v = m_viewport_v / static_cast<double>(m_image_dimension[1]);
+
+	m_viewport_origin = p_position - (m_focus_distance * m_w) - (0.5 * m_viewport_u) - (0.5 * m_viewport_v);
+	m_pixel_origin = m_viewport_origin + 0.5 * (m_pixel_delta_u + m_pixel_delta_v);
+
+	double defocus_radius = m_focus_distance * std::tan(0.5 * m_defocus_angle);
+	m_defocus_u = m_u * defocus_radius;
+	m_defocus_v = m_v * defocus_radius;
+}
+
+void camera::setRayTraceMeta(int p_sample_count, int p_bounce_limit) {
+	m_sample_count = p_sample_count;
+	m_sample_scale = 1.0 / p_sample_count;
+	m_bounce_limit = p_bounce_limit;
+}
 
 vec3 camera::toGamma(vec3 p_color, double p_gamma = 2.2) const {
 	vec3 gamma_converted;
@@ -46,6 +68,11 @@ vec3 camera::toSRGB(vec3 p_color) const {
 	return srgb_converted;
 }
 
+vec3 camera::randomDefocus() const {
+	vec3 point = rng::insideUnitCircle();
+	return m_position + (point[0] * m_defocus_u) + (point[1] * m_defocus_v);
+}
+
 void camera::render() {
 	PPM image(m_image_dimension, "image.ppm"); //should create image with data on heap
 	
@@ -64,10 +91,12 @@ void camera::render() {
 				//making sure the 0th ray is true
 				vec3 ray_direction = pixel_center;
 				if(ray_id) {ray_direction += offset;} //add random offset on any "auxilery samples"
-				ray_direction -= m_position; //getting the ray from the pixel to the camera here (may be a bit unintuitive at first)
-
-				ray _ray(m_position, ray_direction, m_interval); //pass along the default ray interval settings
-				pixel_color += _ray.traceColor(m_world, m_max_bounce); //get me the combined color of the full path of the ray
+				
+				vec3 origin = m_defocus_angle <= 0.0 ? m_position : randomDefocus();
+				
+				ray_direction -= origin; //getting the ray from the pixel to the camera here (may be a bit unintuitive at first)
+				ray _ray(origin, ray_direction, m_interval); //pass along the default ray interval settings
+				pixel_color += _ray.traceColor(m_world, m_bounce_limit); //get me the combined color of the full path of the ray
 			}
 			pixel_color *= m_sample_scale;
 			//pixel_color = toGamma(pixel_color); //convert to gamma space using default gamma 2.2
@@ -77,19 +106,5 @@ void camera::render() {
 		}
 	}
 	image.writeImage();
-
-	
-}
-
-vec3 camera::getRay(vec2i p_pixel) {
-	vec3 pixel_center = m_pixel_origin + (m_pixel_delta_u * static_cast<double>(p_pixel[0])) + (m_pixel_delta_v * static_cast<double>(p_pixel[1]));
-	vec3 ray_direction = pixel_center - m_position; //getting the ray from the pixel to the camera here (may be a bit unintuitive at first)
-
-	vec3 random_offset = {
-		rng::decimal(0, 0.5),
-		rng::decimal(0, 0.5),
-		0 //keep the depth the same.
-	}; //used to adjust the direction to sample different points
-
-	return ray_direction + random_offset;
+	std::clog << "Rendered Using " << m_sample_count << " Samples @ " << m_bounce_limit << " Bounces" << std::endl;	
 }

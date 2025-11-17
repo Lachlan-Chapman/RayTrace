@@ -1,4 +1,4 @@
-#include "constants.hpp"
+#include "constant.hpp"
 #include "ray.hpp"
 #include "color.hpp"
 #include "hittable.hpp"
@@ -16,7 +16,7 @@ color ray::traceColor(const world& p_world, int p_max_bounce) const {
 	color attenuation(1.0); //start off full white (full energy)
 	for(int bounce_id = 0; bounce_id <= p_max_bounce; bounce_id++) {
 		hitRecord _record; //record for this bounce instance
-		if(p_world.intersect(current_ray, interval(0.001, constants::INF), _record)) { //did we hit a shape & which one was it
+		if(p_world.intersect(current_ray, interval(0.001, constant::INF), _record)) { //did we hit a shape & which one was it
 			ray scattered;
 			color material_attenuation;
 			//std::clog << "Intersected @ bounce " << bounce_id << std::endl;

@@ -1,6 +1,6 @@
 #include "material.hpp"
 #include "hittable.hpp"
-#include "constants.hpp"
+#include "constant.hpp"
 //although its meant to be max value of 1 per channel for albedo, this is a "maths" bed to play on. so im not forcing anything to keep anyone "safe". break it. do physically impossible things.
 dielectric::dielectric() : dielectric(color(1.0), 1.0, 1.0) {}
 dielectric::dielectric(const color& p_albedo, double p_reflectance, double p_refraction) : material(p_albedo, p_reflectance), m_refraction(p_refraction) {}
@@ -40,9 +40,7 @@ bool dielectric::reflect(const ray& p_ray, const hitRecord& p_record, vec3& p_at
 	}
 	//out_dir = refract(unit_dir, p_record.m_normal, fixed_refraction);
 
-	const double adjust_scalar = p_record.m_outside ? -0.1 : 0.1;
-	vec3 origin = p_record.m_point + (adjust_scalar * p_record.m_normal);
-	p_reflected = ray(p_record.m_point, out_dir, interval::forward);
+	p_reflected = ray(p_record.m_point, out_dir, p_ray.m_interval);
 
 	// std::clog 
 	// << "\n===== DIELECTRIC SCATTER =====\n"
