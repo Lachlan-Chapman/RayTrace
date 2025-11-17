@@ -2,9 +2,15 @@
 #include "constants.hpp"
 
 camera::camera() : camera({100, 100}, 1.0, 1, 1) {}
-camera::camera(vec2i p_image_dimension, double p_focal_length, int p_sample_count, int p_max_bounce) : m_image_dimension(p_image_dimension), m_focal_length(p_focal_length), m_interval(interval::forward), m_sample_count(p_sample_count), m_max_bounce(p_max_bounce) {
+camera::camera(vec2i p_image_dimension, double p_focal_length, int p_sample_count, int p_max_bounce) : m_image_dimension(p_image_dimension), m_focal_length(p_focal_length), m_interval(interval::forward), m_sample_count(p_sample_count), m_max_bounce(p_max_bounce), m_vertical_fov(constants::PI / 2) {
 	m_aspect_ratio = static_cast<double>(p_image_dimension[0]) / p_image_dimension[1];
 	m_viewport_dimension = {2.0 * m_aspect_ratio, 2.0}; //hard coded so the height is [-1, 1] when the camera is centered at (0, 0, 0)
+
+	double h = std::tan(m_vertical_fov / 2);
+	m_viewport_dimension[1] = 2 * h * m_focal_length;
+	m_viewport_dimension[0] = m_viewport_dimension[1] * (static_cast<double>(m_image_dimension[0]) / m_image_dimension[1]);
+	
+
 	/* defines left/right & up/down dir of camera */
 	m_pixel_delta_u = viewportU() / static_cast<double>(m_image_dimension[0]); //ratio between our virtual viewport sizes and the image sizes | how much viewport distance per pixel width
 	m_pixel_delta_v = viewportV() / static_cast<double>(m_image_dimension[1]); //now we know our viewport distance scaled to pixels. so we move half that distance across and down to have our points in the middle of what will become pixels

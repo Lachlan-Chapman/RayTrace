@@ -30,24 +30,4 @@ namespace rng {
 		}.unit();
 	}
 
-	inline vec3 vector(double p_magnitude) {
-		return rng::vector() * p_magnitude;
-	}
-
-	inline vec3 vectorLambertian() {
-		double rand_1 = rng::decimal();
-		double rand_2 = rng::decimal();
-		double z = std::sqrt(1 - rand_2);
-
-		double phi = 2 * constants::PI * rand_1;
-		double x = std::cos(phi) * std::sqrt(rand_2);
-		double y = std::sin(phi) * std::sqrt(rand_2);
-
-		return vec3{x, y, z};
-	}
-
-	inline vec3 vectorLambertian_fast(const vec3& p_normal) {
-		vec3 in_sphere = rng::vector();
-		return in_sphere.dot(p_normal) < 0 ? -in_sphere : in_sphere;
-	}
 }

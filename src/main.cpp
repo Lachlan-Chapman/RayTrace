@@ -10,8 +10,8 @@
 
 #include "material.hpp"
 
-#define IMAGE_WIDTH 200
-#define IMAGE_HEIGHT 100
+#define IMAGE_WIDTH 100
+#define IMAGE_HEIGHT 50
 
 
 void testPPM() {
@@ -36,8 +36,8 @@ void testCamera() {
 	camera cam(
 		{IMAGE_WIDTH, IMAGE_HEIGHT},
 		1.0,
-		1,
-		10
+		5,
+		50
 	);
 
 	cam.m_world.append(new sphere( //"earth"
@@ -57,15 +57,15 @@ void testCamera() {
 			1.5
 		)
 	));
-	// cam.m_world.append(new sphere( //left inner
-	// 	{-1.0, 0.0, -1.0},
-	// 	0.25,
-	// 	new dielectric(
-	// 		color(1.0),
-	// 		1.0,
-	// 		1.0 / 1.5
-	// 	)
-	// ));
+	cam.m_world.append(new sphere( //left inner
+		{-1.0, 0.0, -1.0},
+		0.25,
+		new dielectric(
+			color(1.0),
+			1.0,
+			1.0 / 1.5
+		)
+	));
 	cam.m_world.append(new sphere( //center
 		{0.0, 0.0, -1.0},
 		0.5,

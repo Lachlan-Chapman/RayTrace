@@ -33,5 +33,6 @@ private:
 	vec3 m_position = {0.0, 0.0, 0.0}; //default at world origin
 	vec3 m_viewport_origin, m_pixel_delta_u, m_pixel_delta_v, m_pixel_origin;
 	double m_focal_length, m_aspect_ratio, m_sample_scale;
+	double m_vertical_fov;
 
 };
