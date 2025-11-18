@@ -16,8 +16,8 @@
 
 #include "profiler.hpp"
 
-#define IMAGE_WIDTH 100
-#define IMAGE_HEIGHT 100
+#define IMAGE_WIDTH 500
+#define IMAGE_HEIGHT 500
 #define FOV 90
 
 
@@ -67,12 +67,12 @@ int main(int argc, char** argv) {
 
 	{
 		scopeTimer st_timer("ST Render", std::clog);
-		_renderer.renderImage(50, 10, vec2i{16, 16});
+		_renderer.renderImage(1, 1, vec2i{16, 16});
 	}
 
 	{
 		scopeTimer mt_timer("MT Render", std::clog);
-		_renderer.renderImageMT(50, 10, vec2i{16, 16});
+		_renderer.renderImageMT(1, 1, vec2i{16, 16}, 0);
 	}
 
 	return 0;
