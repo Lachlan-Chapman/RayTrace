@@ -14,6 +14,8 @@
 
 #include "tile.hpp"
 
+#include "profiler.hpp"
+
 #define IMAGE_WIDTH 100
 #define IMAGE_HEIGHT 100
 #define FOV 90
@@ -63,7 +65,15 @@ int main(int argc, char** argv) {
 	_config.d_fov = constant::PI * 0.5;
 	renderer _renderer(&_image, &_world, _config);
 
-	_renderer.renderImageMT(50, 10, vec2i{16, 16});
+	{
+		scopeTimer st_timer("ST Render", std::clog);
+		_renderer.renderImage(50, 10, vec2i{16, 16});
+	}
+
+	{
+		scopeTimer mt_timer("MT Render", std::clog);
+		_renderer.renderImageMT(50, 10, vec2i{16, 16});
+	}
 
 	return 0;
 }
