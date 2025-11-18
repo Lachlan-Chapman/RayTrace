@@ -1,7 +1,7 @@
 #include "vec.hpp"
-#include "material.hpp"
 #include "constant.hpp"
 #include "random.hpp"
+#include "material.hpp"
 
 material::material() : material(color(1.0), 1.0) {}
 material::material(const color &p_albedo, double p_reflectance) : m_albedo(p_albedo), m_reflectance(p_reflectance) {}
