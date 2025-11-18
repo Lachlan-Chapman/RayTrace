@@ -1,11 +1,10 @@
 #pragma once
 #include "hittable.hpp"
-#include "sphere.hpp"
 class world {
 public:
 	world();
-	world(int);
-	world(const world&);
+	world(int p_size);
+	world(const world &p_other);
 	~world();
 
 	//used to catch memory corrupting culprits 
@@ -17,18 +16,18 @@ public:
 	hittable*& operator[](int p_index) {return m_object[p_index];}
 	world& operator=(const world& p_other) {
 		if(this == &p_other) {return *this;} //dont copy over itself and break
-		for(int i = 0; i < m_object_count; i++) {
+		for(int i = 0; i < m_objectCount; i++) {
 			delete m_object[i];
 		}
 		delete[] m_object;
 		m_object = nullptr;
 
-		m_object_count = p_other.m_object_count;
+		m_objectCount = p_other.m_objectCount;
 		m_size = p_other.m_size;
 
 		m_object = new hittable*[m_size];
 		for(int i = 0; i < m_size; i++) {
-			if(i < m_object_count && p_other[i] != nullptr) {
+			if(i < m_objectCount && p_other[i] != nullptr) {
 				m_object[i] = p_other[i]->clone();
 			} else {
 				m_object[i] = nullptr;
@@ -37,12 +36,9 @@ public:
 		return *this;
 	}
 
-	bool append(hittable*);
-	int size() const;
-	bool intersect(const ray& p_ray, const interval& p_interval, hitRecord& p_record) const;
-	//delete
-	//pop
+	bool append(hittable *p_object);
+	bool intersect(const ray &p_ray, const interval &p_interval, hitRecord &p_record) const;
 private:
 	hittable **m_object;
-	int m_size, m_object_count;
+	int m_size, m_objectCount;
 };

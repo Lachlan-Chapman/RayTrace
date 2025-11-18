@@ -9,7 +9,7 @@ bool lambertian::reflect(const ray& p_ray, const hitRecord& p_record, vec3& p_at
 	vec3 scattered_dir = diffuse();
 	//vec3 scattered_dir = diffuseFast;
 	p_reflected = ray(p_record.m_point, scattered_dir, p_ray.m_interval);
-	//p_reflected = ray(p_record.m_point + (0.1 * p_ray.direction()), p_ray.direction() + (0.1 * p_record.m_normal), interval::universe); //used as a hard coded glass
+	//p_reflected = ray(p_record.m_point + (0.1 * p_ray.m_direction), p_ray.m_direction + (0.1 * p_record.m_normal), interval::universe); //used as a hard coded glass
 	p_attenuation = m_albedo * m_reflectance; //light given back out
 	return true;
 };

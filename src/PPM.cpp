@@ -4,7 +4,7 @@
 #include "color.hpp"
 
 PPM::PPM() : PPM({2, 2}, "image.ppm") {} //delegate constructor
-PPM::PPM(vec2i p_dimension, const char *p_ostream) : m_dimension(p_dimension) {
+PPM::PPM(const vec2i &p_dimension, const char *p_ostream) : m_dimension(p_dimension) {
 	m_fstream.open(p_ostream, std::ios::out | std::ios::trunc);
 	if(!m_fstream.is_open()) {
 		std::cerr << "Failed to open " << p_ostream << std::endl;
@@ -22,11 +22,11 @@ PPM::~PPM() {
 	}
 }
 
-color PPM::pixel(vec2i p_pixel) const {
+color PPM::pixel(const vec2i &p_pixel) const {
 	return m_image[p_pixel[0] * m_dimension[0] + p_pixel[1]]; //returns the current color of the pixel
 }
 
-void PPM::draw(vec2i p_pixel, color p_color) {
+void PPM::draw(const vec2i &p_pixel, const color &p_color) {
 	m_image[p_pixel[1] * m_dimension[0] + p_pixel[0]] = p_color; //writes the incoming color to that pixel data
 }
 

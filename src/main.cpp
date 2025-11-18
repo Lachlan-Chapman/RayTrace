@@ -7,12 +7,12 @@
 #include "color.hpp"
 #include "camera.hpp"
 
-#include "sphere.hpp"
+#include "hittable.hpp"
 
 #include "material.hpp"
 
-#define IMAGE_WIDTH 640
-#define IMAGE_HEIGHT 360
+#define IMAGE_WIDTH 200
+#define IMAGE_HEIGHT 100
 #define FOV 20.0
 
 
@@ -42,7 +42,7 @@ void testCamera() {
 	}, vec3{
 		0.0, 0.0, -1.0
 	});
-	cam.setRayTraceMeta(5, 4);
+	cam.setRayTraceMeta(1, 1);
 
 	cam.m_world.append(new sphere( //"earth"
 		{0.0, -100.5, -1.0},
@@ -92,6 +92,10 @@ void testCamera() {
 	std::chrono::high_resolution_clock::time_point end_time = std::chrono::high_resolution_clock::now();
 	std::chrono::milliseconds duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
 	std::cout << "Render completed in " << duration.count() << " ms (" << static_cast<double>(duration.count()) / 1000.0 << " seconds)" << std::endl;
+}
+
+int getWorkerCount() {
+	return 1;
 }
 
 int main(int argc, char** argv) {

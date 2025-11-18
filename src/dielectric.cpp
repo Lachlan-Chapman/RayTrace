@@ -1,6 +1,6 @@
 #include "material.hpp"
 #include "hittable.hpp"
-#include "constant.hpp"
+#include "random.hpp"
 //although its meant to be max value of 1 per channel for albedo, this is a "maths" bed to play on. so im not forcing anything to keep anyone "safe". break it. do physically impossible things.
 dielectric::dielectric() : dielectric(color(1.0), 1.0, 1.0) {}
 dielectric::dielectric(const color& p_albedo, double p_reflectance, double p_refraction) : material(p_albedo, p_reflectance), m_refraction(p_refraction) {}
@@ -21,7 +21,7 @@ bool dielectric::reflect(const ray& p_ray, const hitRecord& p_record, vec3& p_at
 	p_attenuation = m_albedo * m_reflectance; //set color
 
 	//set up variables
-	vec3 unit_dir = p_ray.direction().unit();
+	vec3 unit_dir = p_ray.m_direction.unit();
 	double cos = std::fmin((-unit_dir).dot(p_record.m_normal), 1.0);
 	double sin = std::sqrt(1.0 - cos * cos);
 	double fixed_refraction = p_record.m_outside ? (1.0 / m_refraction) : m_refraction;
@@ -47,7 +47,7 @@ bool dielectric::reflect(const ray& p_ray, const hitRecord& p_record, vec3& p_at
 	// << "OUTSIDE? " << (p_record.m_outside ? "YES" : "NO") << "\n"
 	// << "HIT POINT: " << p_record.m_point << "\n"
 	// << "NORMAL: " << p_record.m_normal << "\n"
-	// << "INCOMING DIR: " << p_ray.direction() << "\n"
+	// << "INCOMING DIR: " << p_ray.m_direction << "\n"
 	// << "REFRACTED DIR: " << out_dir << "\n";
 
 

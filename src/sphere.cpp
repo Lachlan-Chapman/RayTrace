@@ -1,4 +1,4 @@
-#include "sphere.hpp"
+#include "hittable.hpp"
 
 sphere::sphere(const vec3 &p_center, double p_radius, material *p_material) : hittable(p_material), m_center(p_center), m_radius(p_radius) {} //im allowing for 0 and negative radii
 hittable* sphere::clone() const {return new sphere(m_center, m_radius, m_material);}
@@ -6,11 +6,11 @@ hittable* sphere::clone() const {return new sphere(m_center, m_radius, m_materia
 
 //sub -2h for b in the original quadratic equation and solve for h and it simplifies significantly
 bool sphere::intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const {
-	//vec3 to_center = m_center - p_ray.origin();
-	vec3 to_center = p_ray.origin() - m_center;
-	double a = p_ray.direction().square_length(); //same result as previous a but with 2 function calls not 3
-	//double h = p_ray.direction().dot(to_center);
-	double h = to_center.dot(p_ray.direction());
+	//vec3 to_center = m_center - p_ray.m_origin;
+	vec3 to_center = p_ray.m_origin - m_center;
+	double a = p_ray.m_direction.square_length(); //same result as previous a but with 2 function calls not 3
+	//double h = p_ray.m_direction.dot(to_center);
+	double h = to_center.dot(p_ray.m_direction);
 	double c = to_center.square_length() - (m_radius * m_radius);
 	
 	double discriminant = h*h - a*c;
@@ -38,11 +38,11 @@ bool sphere::intersect(const ray &p_ray, interval p_interval, hitRecord &p_recor
 
 /* expanded (OG) quadratic equation */
 /* bool spehere::sphere intersect(const ray &p_ray, vec2 p_time, hitRecord &p_record) const override {
-	vec3 to_center = m_center - p_ray.origin(); //here we have vec to the center of the circle from the point
+	vec3 to_center = m_center - p_ray.m_origin; //here we have vec to the center of the circle from the point
 	
 	//typical discriminant values
-	double a = p_ray.direction().dot(p_ray.direction()); //this mathmatically makes sense from the sphere intersection derivation
-	double b = -2.0 * p_ray.direction().dot(to_center);
+	double a = p_ray.m_direction.dot(p_ray.m_direction); //this mathmatically makes sense from the sphere intersection derivation
+	double b = -2.0 * p_ray.m_direction.dot(to_center);
 	double c = to_center.square_length() - (m_radius * m_radius);
 	double discriminant = b*b - 4*a*c;
 	return discriminant < 0 ? -1.0 : (-b - std::sqrt(discriminant)) / (2.0*a); //either -1 for no real roots or the quadratic formula - solution

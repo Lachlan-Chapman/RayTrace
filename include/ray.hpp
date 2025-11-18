@@ -8,14 +8,12 @@ class world; //forwad decleration as world needs hittable needs ray needs world
 class ray {
 public:
 	ray();
-	ray(const vec3&, const vec3&, const interval&);
+	ray(const vec3 &p_origin, const vec3 &p_direction, const interval &p_interval);
 
-	const vec3& origin() const;
-	const vec3& direction() const;
-	color traceColor(const world&, int) const;
+	vec3 at(double p_time) const;
+	color traceColor(const world &p_world, int) const;
 
-	vec3 at(double) const;
 	interval m_interval;
-private:
 	vec3 m_origin, m_direction;
+private:
 };

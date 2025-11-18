@@ -11,37 +11,41 @@
 class camera {
 public:
 	camera();
-	camera(int);
+	camera(int p_objectCount);
 
-	void setCameraMeta(const vec2i&, double, double, double);
-	void setPosition(const vec3&, const vec3&);
-	void setRayTraceMeta(int, int);
+	void setCameraMeta(const vec2i &p_screenResolution, double p_fov, double p_defocusAngle, double p_focusDistance);
+	void setPosition(const vec3 &p_position, const vec3 &p_target);
+	void setRayTraceMeta(int p_sampleCount, int p_bounceLimit);
 	
 	
-	void render();
+	void render() const;
 	
 	world m_world;
-	interval m_interval; //default range for a ray from this camera
-	int m_sample_count, m_bounce_limit;
 	
 private:
-	vec3 toGamma(vec3, double) const;
-	vec3 toSRGB(vec3) const;
+	vec3 toGamma(const vec3 &p_color, double p_gamma = 2.2) const;
+	vec3 toSRGB(const vec3 &p_color) const;
 	vec3 randomDefocus() const;
+	
+	int m_sampleCount, m_bounceLimit;
+	interval m_interval; //default range for a ray from this camera
 
-	vec2i m_image_dimension; //image res
-	vec2 m_viewport_dimension; //physical view representation in world
-	vec3 m_viewport_u, m_viewport_v;
+	vec2i m_imageDimension; //image res
+	vec2 m_viewportDimension; //physical view representation in world
+	
+	vec3 m_viewportOrigin, m_pixelOrigin; 
+	
+	vec3 m_viewportU, m_viewportV;
+	vec3 m_pixelDeltaU, m_pixelDeltaV; //origins converting for viewport to screen res
 
-	vec3 m_viewport_origin, m_pixel_delta_u, m_pixel_delta_v, m_pixel_origin; //origins converting for viewport to screen res
 	
 	vec3 m_position, m_target;
 	vec3 m_u, m_v, m_w; //camera basis vectors
-	vec3 m_up_vector;
-	double m_focal_length, m_aspect_ratio, m_sample_scale;
+	vec3 m_upVector;
+	double m_focalLength, m_aspectRatio, m_sampleScale;
 	double m_fov;
 
-	double m_defocus_angle, m_focus_distance;
-	vec3 m_defocus_u, m_defocus_v;
+	double m_defocusAngle, m_focusDistance;
+	vec3 m_defocusU, m_defocusV;
 
 };

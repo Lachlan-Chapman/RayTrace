@@ -4,10 +4,10 @@
 class PPM {
 public:
 	PPM();
-	PPM(vec2i, const char*);
+	PPM(const vec2i &p_dimension, const char *p_ostream);
 	~PPM();
-	color pixel(vec2i) const;
-	void draw(vec2i, color);
+	color pixel(const vec2i &p_pixel) const;
+	void draw(const vec2i &p_pixel, const color &p_color);
 	void writeTestImage();
 	void writeImage();
 
