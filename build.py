@@ -43,8 +43,8 @@ def compile(pairs):
 		try:
 			subprocess.run([CXX, "-c", *CPP_FLAGS, str(src), "-o", str(obj)], check = True)
 		except subprocess.CalledProcessError:
-			print(f"! Failed to compile [{file.name}] !")
-			#obj.unlink(missing_ok = True) #delete the stale obj file if compilation fail
+			print(f"\n++!- Failed to compile [{src.name}] -!++")
+			obj.unlink(missing_ok = True) #delete the stale obj file if compilation fail
 			raise SystemExit(1)
 		obj_files.append(str(obj))
 	return obj_files
@@ -63,11 +63,9 @@ def link(obj_files):
 	subprocess.run([CXX, *obj_files, "-o", str(EXECUTABLE), *LINK_FLAGS], check=True)
 	print(f"\n** Linking -> [{EXECUTABLE}] complete **")
 
-
-
 def main():
 	verifyDirectory()
-	killOrphans()
+	killOrphans() #clean o files with no counter cpp file
 	pairs = getStale()
 	all_obj = allObjectFiles()
 	if not pairs:

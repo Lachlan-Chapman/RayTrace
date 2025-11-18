@@ -25,8 +25,6 @@ public:
 	color renderPixel(const vec2i &p_pixelCoordinate, int p_sampleCount, int p_bounceLimit) const;
 	
 private:
-	vec3 toGamma(const vec3 &p_color, double p_gamma = 2.2) const;
-	vec3 toSRGB(const vec3 &p_color) const;
 	vec3 randomDefocus() const;
 	
 	vec3 m_position;

@@ -62,7 +62,7 @@ void renderer::renderImageMT(int p_sampleCount, int p_bounceLimit, const vec2i &
 	std::clog << "System Thread Count " << system_thread_count << std::endl;
 	int thread_count = std::max<int>(system_thread_count - p_threadsSaved, 1); //minimum 1 thread but ideally reserve p_threadsSaved (default = 2) for the os
 	thread_count = std::min<int>(thread_count, system_thread_count); //dont exceed the available threads
-	std::clog << "Using Thread Count " << thread_count << std::endl;
+	std::clog << "Using " << thread_count << " Threads" << std::endl;
 	
 	std::thread *threads = new std::thread[thread_count];
 	for(int thread_id = 0; thread_id < thread_count; thread_id++) {

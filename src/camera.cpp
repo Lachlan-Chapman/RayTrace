@@ -31,24 +31,7 @@ void camera::init(const vec2i &p_imageResolution, const vec3 &p_target, const ve
 	m_defocusV = v * defocus_radius;
 }
 
-vec3 camera::toGamma(const vec3 &p_color, double p_gamma) const {
-	vec3 gamma_converted;
-	for(int i = 0; i < 3; i++) {
-		gamma_converted[i] = std::pow(p_color[i], 1 / p_gamma);
-	}
-	return gamma_converted;
-}
-vec3 camera::toSRGB(const vec3 &p_color) const {
-	vec3 srgb_converted;
-	for(int i = 0; i < 3; i++) {
-		if(p_color[i] <= 0.0031308) {
-			srgb_converted[i] = 12.92 * p_color[i];
-		} else {
-			srgb_converted[i] = 1.055 * std::pow(p_color[i], 1.0/2.4) - 0.055;
-		}
-	}
-	return srgb_converted;
-}
+
 
 vec3 camera::randomDefocus() const {
 	vec3 point = rng::insideUnitCircle();

@@ -12,6 +12,8 @@ public:
 	void writeImage();
 	vec2i m_resolution;
 private:
+	vec3 toGamma(const vec3 &p_color, double p_gamma = 2.2) const;
+	vec3 toSRGB(const vec3 &p_color) const;
 	color *m_image = nullptr; //contigous image data like gpu buffer use case
 	std::fstream m_fstream;
 };

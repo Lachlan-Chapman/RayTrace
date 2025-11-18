@@ -49,16 +49,30 @@ void PPM::writeTestImage() {
 	}
 }
 
+vec3 PPM::toGamma(const vec3 &p_color, double p_gamma) const {
+	vec3 gamma_converted;
+	for(int i = 0; i < 3; i++) {
+		gamma_converted[i] = std::pow(p_color[i], 1 / p_gamma);
+	}
+	return gamma_converted;
+}
+vec3 PPM::toSRGB(const vec3 &p_color) const {
+	vec3 srgb_converted;
+	for(int i = 0; i < 3; i++) {
+		if(p_color[i] <= 0.0031308) {
+			srgb_converted[i] = 12.92 * p_color[i];
+		} else {
+			srgb_converted[i] = 1.055 * std::pow(p_color[i], 1.0/2.4) - 0.055;
+		}
+	}
+	return srgb_converted;
+}
+
 void PPM::writeImage() {
 	m_fstream << "P3\n" << m_resolution[0] << ' ' << m_resolution[1] << "\n255\n";
-	int image_dim = m_resolution[0] * m_resolution[1];
-	double steps_prog = 100.0 / image_dim; //percentage per pixel
-	double progress = 0.0; //total progress
 	for(int row = 0; row < m_resolution[1]; row++) {
 		for(int col = 0; col < m_resolution[0]; col++) {
 			m_fstream << pixel({row, col});
-			progress += steps_prog;
-			//std::clog << "Progress " << progress << '%' << std::endl;
 		}
 	}
 	std::clog << "Done Rendering " << m_resolution[0] << 'x' << m_resolution[1] << " Pixel(s)" << std::endl;

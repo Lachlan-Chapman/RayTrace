@@ -33,6 +33,6 @@ color ray::traceColor(const world& p_world, int p_maxBounce) const {
 		}
 	}
 	
-	return color{1.0, 0.0, 1.0}; //debug magenta for dead rays
+	//return color{1.0, 0.0, 1.0}; //debug magenta for dead rays
 	return attenuation; //dead bounce limit
 }

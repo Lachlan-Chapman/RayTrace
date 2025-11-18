@@ -3,6 +3,7 @@
 #include <chrono>
 
 #include "constant.hpp"
+#include "random.hpp"
 
 #include "hittable.hpp"
 #include "material.hpp"
@@ -16,39 +17,97 @@
 
 #include "profiler.hpp"
 
-#define IMAGE_WIDTH 500
-#define IMAGE_HEIGHT 500
-#define FOV 90
+#define IMAGE_WIDTH 640
+#define IMAGE_HEIGHT 360
+#define FOV 20
 
+void generateWorld(world &p_world) {
+	for(int i = 0; i < 122; i++) {
+		material *_mat;
+		double mat_selection = rng::decimal();
+		
+		color _col = (rng::vector() + color(0.2)).unit(); //brighten it slightly
+		vec3 _pos = vec3{rng::decimal(-25.0, 14.0), 0.0, rng::decimal(-13, 7)} * rng::vector();
+		
+		double _rad = 0.2;
+		_pos[1] = _rad;
+
+		if(mat_selection < 0.5) {
+			_mat = new metal(
+				_col,
+				1.0,
+				0.0
+			);
+		} else if(mat_selection < 0.75) {
+			_mat = new dielectric(
+				_col,
+				1.0,
+				1.5
+			);
+		} else {
+			_mat = new metal(
+				_col,
+				1.0,
+				rng::decimal(0.7, 1.0)
+			);
+		}
+		
+		p_world.append(new sphere(
+			_pos,
+			_rad,
+			_mat
+		));
+	}
+}
 
 int main(int argc, char** argv) {
-	world _world(32);
-	_world.append(new sphere(
-			vec3{0.0, 1.0, -1.0},
-			0.5,
+	world _world(128);
+	generateWorld(_world);
+	_world.append(new sphere( //ground
+			vec3{0.0, -1000.0, 0.0},
+			1000,
 			new lambertian(
-				color(0.8),
+				color(0.5),
+				1.0
+			)
+		)
+	);
+	_world.append(new sphere( //simple diffuse
+			vec3{-4.0, 1.0, 0.0},
+			1.0,
+			new lambertian(
+				color{0.4, 0.5, 0.9},
 				1.0
 			)
 		)
 	);
 	_world.append(new sphere(
-			vec3{0.0, 0.0, -1.0},
-			0.5,
-			new metal(
-				color(0.5),
+			vec3{0.0, 1.0, 0.0},
+			1.0,
+			new dielectric(
+				color(1.0),
 				1.0,
-				0.0
+				1.5
 			)
 		)
 	);
 	_world.append(new sphere(
-			vec3{0.0, -1.0, -1.0},
+			vec3{0.0, 1.0, 0.0},
 			0.5,
 			new dielectric(
-				color(0.5),
+				color(1.0),
 				1.0,
 				1.5
+			)
+		)
+	);
+	_world.append(new sphere(
+			vec3{4.0, 1.0, 0.0},
+			1.0,
+			new metal(
+				color{0.9, 0.6, 0.5},
+				1.0,
+				0.0
 			)
 		)
 	);
@@ -56,25 +115,26 @@ int main(int argc, char** argv) {
 	PPM _image("image.ppm", vec2i{IMAGE_WIDTH, IMAGE_HEIGHT});
 
 	cameraConfig _config;
-	//_config.d_position = vec3{-2.0, 2.0, 1.0};
-	_config.d_position = vec3{0.0, 0.0, 1.0};
-	_config.d_target = vec3{0.0, 0.0, -1.0};
+	//_config.d_position = vec3{0.0, 1.0, 3.0};
+	_config.d_position = vec3{15.0, 2.0, 4.0};
+	_config.d_target = vec3{0.0, 1.0, 0.0};
 	_config.d_upVector = vec3{0.0, 1.0, 0.0};
-	_config.d_focusDistance = 3.4;
+	_config.d_focusDistance = 10.0;
 	_config.d_defocusAngle = constant::PI / 18;
-	_config.d_fov = constant::PI * 0.5;
+	_config.d_fov = FOV * 0.0174532925199;
 	renderer _renderer(&_image, &_world, _config);
 
-	{
-		scopeTimer st_timer("ST Render", std::clog);
-		_renderer.renderImage(1, 1, vec2i{16, 16});
-	}
-
+	int sample = 130;
+	int bounce = 11;
+			
+	int ray_count = IMAGE_WIDTH * IMAGE_HEIGHT * sample * bounce;
+	double milliseconds;
 	{
 		scopeTimer mt_timer("MT Render", std::clog);
-		_renderer.renderImageMT(1, 1, vec2i{16, 16}, 0);
+		_renderer.renderImageMT(sample, bounce, vec2i{4, 1}, 0); //scan lines appear to have an edge perhaps with cache locality
+		milliseconds = mt_timer.milliseconds();
 	}
-
+	std::clog << "Rendered " << ray_count/1000000.0 << "_m Rays @ " << milliseconds / ray_count << "ms/ray\n" << std::endl;
 	return 0;
 }
 
