@@ -17,8 +17,8 @@
 
 #include "profiler.hpp"
 
-#define IMAGE_WIDTH 640
-#define IMAGE_HEIGHT 360
+#define IMAGE_WIDTH 1920
+#define IMAGE_HEIGHT 1080
 #define FOV 20
 
 void generateWorld(world &p_world) {
@@ -124,10 +124,12 @@ int main(int argc, char** argv) {
 	_config.d_fov = FOV * 0.0174532925199;
 	renderer _renderer(&_image, &_world, _config);
 
-	int sample = 130;
+	int sample = 80;
 	int bounce = 11;
 			
-	int ray_count = IMAGE_WIDTH * IMAGE_HEIGHT * sample * bounce;
+	unsigned long long ray_count = IMAGE_WIDTH * IMAGE_HEIGHT * sample * bounce;
+	double est_time = ray_count * 9.32032e-05;
+	std::clog << "Est Time (ms) " << est_time << " @ " << ray_count/1000000.0 << "_m rays" << std::endl;
 	double milliseconds;
 	{
 		scopeTimer mt_timer("MT Render", std::clog);
