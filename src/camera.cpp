@@ -8,14 +8,13 @@ camera::camera(const world* const p_world, const vec3 &p_position, double p_defo
 }
 
 void camera::init(const vec2i &p_imageResolution, const vec3 &p_target, const vec3 &p_upVector, double p_focusDistance) {	
-	m_focalLength = (m_position - p_target).magnitude();
 	double h = std::tan(m_fov / 2);
 	vec2i viewport_dimension;
 	viewport_dimension[1] = 2 * h * p_focusDistance;
 	viewport_dimension[0] = viewport_dimension[1] * (static_cast<double>(p_imageResolution[0]) / p_imageResolution[1]);
 
 	vec3 w = (m_position - p_target).unit();
-	vec3 u = p_upVector.cross(w);
+	vec3 u = p_upVector.cross(w).unit();
 	vec3 v = w.cross(u);
 
 	vec3 viewportU = static_cast<double>(viewport_dimension[0]) * u;
@@ -57,7 +56,7 @@ vec3 camera::randomDefocus() const {
 }
 
 color camera::renderPixel(const vec2i &p_pixelCoordinate, int p_sampleCount, int p_bounceLimit) const {
-	vec3 pixel_center = m_pixelOrigin + (m_pixelDeltaU * static_cast<double>(p_pixelCoordinate[1])) + (m_pixelDeltaV * static_cast<double>(p_pixelCoordinate[0]));
+	vec3 pixel_center = m_pixelOrigin + (m_pixelDeltaU * static_cast<double>(p_pixelCoordinate[0])) + (m_pixelDeltaV * static_cast<double>(p_pixelCoordinate[1]));
 	
 	color pixel_color(0.0);
 	double random_scalar = 1.0;

@@ -18,10 +18,10 @@ renderer::renderer(PPM * const p_ppm, const world * const p_world, const cameraC
 
 void renderer::renderImage(int p_sampleCount, int p_bounceLimit) const {
 	vec2i image_resolution = m_image->m_resolution;
-	for(int col = 0; col < image_resolution[0]; col++) {
-		for(int row = 0; row < image_resolution[1]; row++) {
+	for(int row = 0; row < image_resolution[1]; row++) {
+		for(int col = 0; col < image_resolution[0]; col++) {
 			color pixel_color = m_camera.renderPixel({col, row}, p_sampleCount, p_bounceLimit);
-			m_image->draw({col, row}, pixel_color);
+			m_image->draw(vec2i{col, row}, pixel_color);
 		}
 	}
 	m_image->writeImage();

@@ -22,11 +22,31 @@
 int main(int argc, char** argv) {
 	world _world(32);
 	_world.append(new sphere(
-			vec3(0.0),
+			vec3{0.0, 1.0, -1.0},
 			0.5,
 			new lambertian(
-				color(1.0),
+				color(0.8),
 				1.0
+			)
+		)
+	);
+	_world.append(new sphere(
+			vec3{0.0, 0.0, -1.0},
+			0.5,
+			new metal(
+				color(0.5),
+				1.0,
+				0.0
+			)
+		)
+	);
+	_world.append(new sphere(
+			vec3{0.0, -1.0, -1.0},
+			0.5,
+			new dielectric(
+				color(0.5),
+				1.0,
+				1.5
 			)
 		)
 	);
@@ -34,7 +54,8 @@ int main(int argc, char** argv) {
 	PPM _image("image.ppm", vec2i{IMAGE_WIDTH, IMAGE_HEIGHT});
 
 	cameraConfig _config;
-	_config.d_position = vec3{-2.0, 2.0, 1.0};
+	//_config.d_position = vec3{-2.0, 2.0, 1.0};
+	_config.d_position = vec3{0.0, 0.0, 1.0};
 	_config.d_target = vec3{0.0, 0.0, -1.0};
 	_config.d_upVector = vec3{0.0, 1.0, 0.0};
 	_config.d_focusDistance = 3.4;
@@ -42,7 +63,7 @@ int main(int argc, char** argv) {
 	_config.d_fov = constant::PI * 0.5;
 	renderer _renderer(&_image, &_world, _config);
 
-	_renderer.renderImage(1, 1);
+	_renderer.renderImage(50, 10);
 
 	return 0;
 }

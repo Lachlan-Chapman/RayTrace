@@ -35,7 +35,7 @@ private:
 	
 	vec3 m_pixelDeltaU, m_pixelDeltaV; //origins converting for viewport to screen res
 	
-	double m_focalLength, m_aspectRatio, m_sampleScale;
+	double m_aspectRatio, m_sampleScale;
 	double m_fov;
 
 	double m_defocusAngle;
