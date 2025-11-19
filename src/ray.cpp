@@ -6,9 +6,9 @@
 
 
 ray::ray() {}
-ray::ray(const vec3 &p_origin, const vec3 &p_direction, const interval &p_interval) : m_origin(p_origin), m_direction(p_direction), m_interval(p_interval) {}
+ray::ray(const vec3f &p_origin, const vec3f &p_direction, const interval &p_interval) : m_origin(p_origin), m_direction(p_direction), m_interval(p_interval) {}
 
-vec3 ray::at(double p_time) const {return m_origin + (m_direction * p_time);}
+vec3f ray::at(double p_time) const {return m_origin + (m_direction * p_time);}
 
 color ray::traceColor(const world& p_world, int p_maxBounce) const {
 	ray current_ray = *this;

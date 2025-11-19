@@ -250,11 +250,15 @@ struct vec : vec_operation<t_dimension, t_type> {
 
 
 //native supported vectors as "regular types". dim can use these similar to int and double but allowing for N dimensioned vectors
-using vec1 = vec<1, double>;
+using vec1f = vec<1, float>;
 using vec1i = vec<1, int>;
-using vec2 = vec<2, double>;
+
+using vec2f = vec<2, float>;
 using vec2i = vec<2, int>;
-using vec3 = vec<3, double>;
+
+using vec3f = vec<3, float>;
+using vec3d = vec<3, double>;
 using vec3i = vec<3, int>;
-using vec4 = vec<4, double>;
+
+using vec4f= vec<4, float>;
 using vec4i = vec<4, int>;

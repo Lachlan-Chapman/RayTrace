@@ -8,13 +8,13 @@
 
 class hitRecord {
 public:
-	vec3 m_point, m_normal;
+	vec3f m_point, m_normal;
 	double m_time; //time here is used fairly loosly. im going to treat it as walking along the ray through +- time. so at each time, you find yourself at some point along the ray P(t)
 	bool m_outside;
 	material *m_material;
 
 
-	void setDirection(const ray &p_ray, const vec3 &p_normal) { //will determine the inside outside based on the normal, so make sure the outside normal is passed in
+	void setDirection(const ray &p_ray, const vec3f &p_normal) { //will determine the inside outside based on the normal, so make sure the outside normal is passed in
 		m_outside = p_ray.m_direction.dot(p_normal) < 0; //hopefully the ray is going in the opposing direction as the outward normal menaing its coming toward to surface from the camera on the outside
 		m_normal = m_outside ? p_normal : -p_normal; //reverse the normal if this faces inward
 		//m_normal = p_normal;
@@ -34,11 +34,11 @@ protected:
 
 class sphere : public hittable {
 public:
-	sphere(const vec3 &p_center, double p_radius, material *p_material);
+	sphere(const vec3f &p_center, double p_radius, material *p_material);
 	bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const override;
 	hittable* clone() const override;
 
 private:
-	vec3 m_center;
+	vec3f m_center;
 	double m_radius;
 };

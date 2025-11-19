@@ -32,7 +32,7 @@ void generateWorld(world &p_world) {
 		double mat_selection = rng::decimal();
 		
 		color _col = (rng::vector() + color(0.2)).unit(); //brighten it slightly
-		vec3 _pos = vec3{rng::decimal(-25.0, 14.0), 0.0, rng::decimal(-13, 7)} * rng::vector();
+		vec3f _pos = vec3f{rng::decimal(-25.0, 14.0), 0.0, rng::decimal(-13, 7)} * rng::vector();
 		
 		double _rad = 0.2;
 		_pos[1] = _rad;
@@ -66,10 +66,10 @@ void generateWorld(world &p_world) {
 }
 
 void benchmarkVector() {
-	vec3 v(1, 2, 3);
+	vec3f v(1, 2, 3);
 	std::clog << GIT_HASH;
 	{
-		scopeTimer _timer(" [10'000'000] * vec3.unit()", std::clog);
+		scopeTimer _timer(" [10'000'000] * vec3f.unit()", std::clog);
 		for(int i = 0; i < 10'000'000; i++) {
 			v.unit();
 		}
@@ -80,9 +80,9 @@ void benchmarkRender(const world &p_world) {
 	PPM _image("image.ppm", vec2i{IMAGE_WIDTH, IMAGE_HEIGHT});
 
 	cameraConfig _config;
-	_config.d_position = vec3{15.0, 2.0, 4.0};
-	_config.d_target = vec3{0.0, 1.0, 0.0};
-	_config.d_upVector = vec3{0.0, 1.0, 0.0};
+	_config.d_position = vec3f{15.0, 2.0, 4.0};
+	_config.d_target = vec3f{0.0, 1.0, 0.0};
+	_config.d_upVector = vec3f{0.0, 1.0, 0.0};
 	_config.d_focusDistance = 10.0;
 	_config.d_defocusAngle = constant::PI / 18;
 	_config.d_fov = FOV * 0.0174532925199;
@@ -112,13 +112,14 @@ void benchmarkRender(const world &p_world) {
 		mt_time = mt_timer.milliseconds();
 	}
 	std::clog << GIT_HASH << " " << ray_count << " Rays @ " << mt_time << "(" << (mt_time/ray_count) << " ms/ray" << ")" << std::endl;
+
 }
  
 int main(int argc, char** argv) {	
 	world _world(OBJ_COUNT);
 	generateWorld(_world);
 	_world.append(new sphere( //ground
-			vec3{0.0, -1000.0, 0.0},
+			vec3f{0.0, -1000.0, 0.0},
 			1000,
 			new lambertian(
 				color(0.5),
@@ -127,7 +128,7 @@ int main(int argc, char** argv) {
 		)
 	);
 	_world.append(new sphere( //simple diffuse
-			vec3{-4.0, 1.0, 0.0},
+			vec3f{-4.0, 1.0, 0.0},
 			1.0,
 			new lambertian(
 				color{0.4, 0.5, 0.9},
@@ -136,7 +137,7 @@ int main(int argc, char** argv) {
 		)
 	);
 	_world.append(new sphere(
-			vec3{0.0, 1.0, 0.0},
+			vec3f{0.0, 1.0, 0.0},
 			1.0,
 			new dielectric(
 				color(1.0),
@@ -146,7 +147,7 @@ int main(int argc, char** argv) {
 		)
 	);
 	_world.append(new sphere(
-			vec3{0.0, 1.0, 0.0},
+			vec3f{0.0, 1.0, 0.0},
 			0.5,
 			new dielectric(
 				color(1.0),
@@ -156,7 +157,7 @@ int main(int argc, char** argv) {
 		)
 	);
 	_world.append(new sphere(
-			vec3{4.0, 1.0, 0.0},
+			vec3f{4.0, 1.0, 0.0},
 			1.0,
 			new metal(
 				color{0.9, 0.6, 0.5},

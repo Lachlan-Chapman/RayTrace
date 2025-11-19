@@ -32,7 +32,6 @@ def allObjectFiles():
 	return [str(_path) for _path in OBJ_DIRECTORY.glob("*.o")]
 
 
-
 def killOrphans():
 	for obj in OBJ_DIRECTORY.glob("*.o"):
 		src = SRC_DIRECTORY / (obj.stem + ".cpp")

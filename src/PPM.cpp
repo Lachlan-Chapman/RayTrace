@@ -49,15 +49,15 @@ void PPM::writeTestImage() {
 	}
 }
 
-vec3 PPM::toGamma(const vec3 &p_color, double p_gamma) const {
-	vec3 gamma_converted;
+vec3f PPM::toGamma(const vec3f &p_color, double p_gamma) const {
+	vec3f gamma_converted;
 	for(int i = 0; i < 3; i++) {
 		gamma_converted[i] = std::pow(p_color[i], 1 / p_gamma);
 	}
 	return gamma_converted;
 }
-vec3 PPM::toSRGB(const vec3 &p_color) const {
-	vec3 srgb_converted;
+vec3f PPM::toSRGB(const vec3f &p_color) const {
+	vec3f srgb_converted;
 	for(int i = 0; i < 3; i++) {
 		if(p_color[i] <= 0.0031308) {
 			srgb_converted[i] = 12.92 * p_color[i];

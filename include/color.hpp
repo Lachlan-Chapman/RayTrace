@@ -4,11 +4,11 @@
 #include "vec.hpp"
 
 
-class color : public vec<3, double> {
-	using super = vec<3, double>; //saves me from writing vec<3, float> all the time | also didnt know using could be used like this
+class color : public vec<3, float> {
+	using super = vec<3, float>; //saves me from writing vec<3, float> all the time | also didnt know using could be used like this
 public:
 	using super::vec; //this inherits all constructors as by default only member functions seem to be passed down
-	color(const super &p_vec) : super(p_vec) {} //copy constructor to merely allow vec3 to color conversion
+	color(const super &p_vec) : super(p_vec) {} //copy constructor to merely allow vec3f to color conversion
 };
 
 inline std::ostream& operator<<(std::ostream& out, const color& c) { //should convert out [0, 1] vector components to [0, 255] and print'
