@@ -8,8 +8,20 @@ BUILD_DIRECTORY = Path("build")
 
 EXECUTABLE = BUILD_DIRECTORY / "app"
 
+def getGitHash():
+	try:
+		hash = subprocess.run(
+			["git", "rev-parse", "--short", "HEAD"],
+			capture_output = True,
+			text = True,
+			check = True
+		)
+		return hash.stdout.strip()
+	except:
+		return "idk"
+
 CXX = "g++"
-CPP_FLAGS = ["-std=c++20", "-O0", "-g", "-Iinclude"]
+CPP_FLAGS = ["-std=c++20", f"-DGIT_HASH=\"{getGitHash()}\"", "-O0", "-g", "-Iinclude",]
 LINK_FLAGS = []
 
 def verifyDirectory():
@@ -18,6 +30,8 @@ def verifyDirectory():
 
 def allObjectFiles():
 	return [str(_path) for _path in OBJ_DIRECTORY.glob("*.o")]
+
+
 
 def killOrphans():
 	for obj in OBJ_DIRECTORY.glob("*.o"):

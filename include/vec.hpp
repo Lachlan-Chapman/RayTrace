@@ -125,7 +125,6 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 		return result;
 	}
 
-
 	constexpr vec<3, t_type> cross(const vec<3, t_type>& p_other) const requires (t_dimension == 3) { //neat little cpp20 that wont generate this function for non 3d vec
 		return {
 			m_elem[1] * p_other[2] - m_elem[2] * p_other[1],
@@ -240,11 +239,10 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 
 template <std::size_t t_dimension, arithmetic t_type>
 struct vec : vec_operation<t_dimension, t_type> {
-	using operators = vec_operation<t_dimension, t_type>;
-	
 	using value_type = t_type; //expose the template values if users ever want them
 	static constexpr std::size_t dimension_count = t_dimension;
-
+	
+	using operators = vec_operation<t_dimension, t_type>;
 	using operators::m_elem; //allow visibility to the data
 	using operators::vec_operation; //allowing visibility to the constructors
 };

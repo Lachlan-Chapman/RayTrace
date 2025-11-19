@@ -20,9 +20,14 @@
 #define IMAGE_WIDTH 100
 #define IMAGE_HEIGHT 100
 #define FOV 20
+#define OBJ_COUNT 128
+
+#ifndef GIT_HASH
+#define GIT_HASH "default"
+#endif
 
 void generateWorld(world &p_world) {
-	for(int i = 0; i < 122; i++) {
+	for(int i = 0; i < OBJ_COUNT-5; i++) {
 		material *_mat;
 		double mat_selection = rng::decimal();
 		
@@ -59,12 +64,59 @@ void generateWorld(world &p_world) {
 		));
 	}
 }
- 
-int main(int argc, char** argv) {
-	// return 0;
 
-	world _world(128);
-	//generateWorld(_world);
+void benchmarkVector() {
+	vec3 v(1, 2, 3);
+	std::clog << GIT_HASH;
+	{
+		scopeTimer _timer(" [10'000'000] * vec3.unit()", std::clog);
+		for(int i = 0; i < 10'000'000; i++) {
+			v.unit();
+		}
+	}
+}
+
+void benchmarkRender(const world &p_world) {
+	PPM _image("image.ppm", vec2i{IMAGE_WIDTH, IMAGE_HEIGHT});
+
+	cameraConfig _config;
+	_config.d_position = vec3{15.0, 2.0, 4.0};
+	_config.d_target = vec3{0.0, 1.0, 0.0};
+	_config.d_upVector = vec3{0.0, 1.0, 0.0};
+	_config.d_focusDistance = 10.0;
+	_config.d_defocusAngle = constant::PI / 18;
+	_config.d_fov = FOV * 0.0174532925199;
+	
+	renderer _renderer(&_image, &p_world, _config);
+	int sample = 1;
+	int bounce = 1;
+	int ray_count = IMAGE_WIDTH * IMAGE_HEIGHT * sample * bounce;
+	double st_time;
+	{
+		steadyTimer st_timer;
+		st_timer.start();
+		_renderer.renderImage(sample, bounce, vec2i{4, 1}); //scan lines appear to have an edge perhaps with cache locality
+		st_time = st_timer.milliseconds();
+	}
+	std::clog << GIT_HASH << " " << ray_count << " Rays @ " << st_time << "(" << (st_time/ray_count) << " ms/ray" << ")" << std::endl;
+	
+	
+	sample = 50;
+	bounce = 10;
+	ray_count = IMAGE_WIDTH * IMAGE_HEIGHT * sample * bounce;
+	double mt_time;
+	{
+		steadyTimer mt_timer;
+		mt_timer.start();
+		_renderer.renderImageMT(sample, bounce, vec2i{4, 1}, 0); //scan lines appear to have an edge perhaps with cache locality
+		mt_time = mt_timer.milliseconds();
+	}
+	std::clog << GIT_HASH << " " << ray_count << " Rays @ " << mt_time << "(" << (mt_time/ray_count) << " ms/ray" << ")" << std::endl;
+}
+ 
+int main(int argc, char** argv) {	
+	world _world(OBJ_COUNT);
+	generateWorld(_world);
 	_world.append(new sphere( //ground
 			vec3{0.0, -1000.0, 0.0},
 			1000,
@@ -114,30 +166,11 @@ int main(int argc, char** argv) {
 		)
 	);
 
-	PPM _image("image.ppm", vec2i{IMAGE_WIDTH, IMAGE_HEIGHT});
-
-	cameraConfig _config;
-	//_config.d_position = vec3{0.0, 1.0, 3.0};
-	_config.d_position = vec3{15.0, 2.0, 4.0};
-	_config.d_target = vec3{0.0, 1.0, 0.0};
-	_config.d_upVector = vec3{0.0, 1.0, 0.0};
-	_config.d_focusDistance = 10.0;
-	_config.d_defocusAngle = constant::PI / 18;
-	_config.d_fov = FOV * 0.0174532925199;
-	renderer _renderer(&_image, &_world, _config);
-
-	int sample = 50;
-	int bounce = 10;
-			
-	unsigned long long ray_count = IMAGE_WIDTH * IMAGE_HEIGHT * sample * bounce;
-	double est_time = ray_count * 9.32032e-05;
-	std::clog << "Est Time (ms) " << est_time << " @ " << ray_count/1000000.0 << "_m rays" << std::endl;
-	double milliseconds;
-	{
-		scopeTimer mt_timer("MT Render", std::clog);
-		_renderer.renderImageMT(sample, bounce, vec2i{4, 1}, 0); //scan lines appear to have an edge perhaps with cache locality
-		milliseconds = mt_timer.milliseconds();
+	for(int test_id = 0; test_id < 5; test_id++) {
+		std::clog << "Test " << test_id << std::endl;
+		benchmarkVector();
+		benchmarkRender(_world);
 	}
-	std::clog << "Rendered " << ray_count/1000000.0 << "_m Rays @ " << milliseconds / ray_count << "ms/ray\n" << std::endl;
+
 	return 0;
 }

@@ -38,7 +38,6 @@ void renderer::renderImage(int p_sampleCount, int p_bounceLimit, const vec2i &p_
 	for(int id = 0; id < tile_count; id++) {
 		renderTile(_generator[id], p_sampleCount, p_bounceLimit);
 	}
-	m_image->writeImage();
 }
 
 void renderer::threadFunction(std::atomic<int> &p_atomicId, int p_sampleCount, int p_bounceLimit) {
@@ -59,10 +58,9 @@ void renderer::renderImageMT(int p_sampleCount, int p_bounceLimit, const vec2i &
 
 	//thread setup
 	int system_thread_count = static_cast<int>(std::thread::hardware_concurrency());
-	std::clog << "System Thread Count " << system_thread_count << std::endl;
 	int thread_count = std::max<int>(system_thread_count - p_threadsSaved, 1); //minimum 1 thread but ideally reserve p_threadsSaved (default = 2) for the os
 	thread_count = std::min<int>(thread_count, system_thread_count); //dont exceed the available threads
-	std::clog << "Using " << thread_count << " Threads" << std::endl;
+	std::clog << GIT_HASH << " Using " << thread_count << " Threads" << std::endl;
 	
 	std::thread *threads = new std::thread[thread_count];
 	for(int thread_id = 0; thread_id < thread_count; thread_id++) {
@@ -80,6 +78,8 @@ void renderer::renderImageMT(int p_sampleCount, int p_bounceLimit, const vec2i &
 	}
 
 	delete[] threads;
+}
 
+void renderer::saveImage() const {
 	m_image->writeImage();
 }

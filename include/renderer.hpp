@@ -12,6 +12,7 @@ public:
 	
 	void renderImage(int p_sampleCount, int p_bounceLimit, const vec2i &p_tileDimension);
 	void renderImageMT(int p_sampleCount, int p_bounceLimit, const vec2i &p_tileDimension, int p_threadsSaved = 2);
+	void saveImage() const;
 
 private:
 	void threadFunction(std::atomic<int> &p_atomicId, int p_sampleCount, int p_bounceLimit);

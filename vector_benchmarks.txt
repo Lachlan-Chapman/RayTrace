@@ -1,0 +1,38 @@
+CONSTANTS
+10million unit() tests
+Single Threaded Test
+	128 objects
+	100x100
+	1 sample 1 bounce
+
+Multi Threaded Test (14 threads)
+	128 objects
+	100x100
+	50 sample 10 bounce
+
+Base
+	Test 0
+	d1e60cd [10'000'000] * vec3.unit(): 543.33 ms
+	d1e60cd 10000 Rays @ 76.6594(0.00766594 ms/ray)
+	d1e60cd Using 14 Threads
+	d1e60cd 5000000 Rays @ 574.232(0.000114846 ms/ray)
+	Test 1
+	d1e60cd [10'000'000] * vec3.unit(): 548.914 ms
+	d1e60cd 10000 Rays @ 77.0446(0.00770446 ms/ray)
+	d1e60cd Using 14 Threads
+	d1e60cd 5000000 Rays @ 542.327(0.000108465 ms/ray)
+	Test 2
+	d1e60cd [10'000'000] * vec3.unit(): 552.747 ms
+	d1e60cd 10000 Rays @ 76.9347(0.00769347 ms/ray)
+	d1e60cd Using 14 Threads
+	d1e60cd 5000000 Rays @ 539.376(0.000107875 ms/ray)
+	Test 3
+	d1e60cd [10'000'000] * vec3.unit(): 547.701 ms
+	d1e60cd 10000 Rays @ 76.8561(0.00768561 ms/ray)
+	d1e60cd Using 14 Threads
+	d1e60cd 5000000 Rays @ 540.974(0.000108195 ms/ray)
+	Test 4
+	d1e60cd [10'000'000] * vec3.unit(): 551.852 ms
+	d1e60cd 10000 Rays @ 77.4613(0.00774613 ms/ray)
+	d1e60cd Using 14 Threads
+	d1e60cd 5000000 Rays @ 578.007(0.000115601 ms/ray)
