@@ -4,18 +4,21 @@
 
 #include <concepts>
 
-inline float fast_inverse(float magnitude) { //based on the quake algo
-	long i;
-	float x2, y;
-	const float threeHalfs = 1.5f;
-	x2 = magnitude * 0.5f;
-	y = magnitude;
-	i = *(long*)&y; //reinterpret casts arent allowed in const expressions leaving this inline
-	i = 0x5F3759DF - (i >> 1);
-	y = *(float*)&i;
-	y = y * (threeHalfs - (x2 * y * y));
-	y = y * (threeHalfs - (x2 * y * y));
-	y = y * (threeHalfs - (x2 * y * y));
+#include <bit>
+#include <cstdint>
+
+inline float fast_inverse(float p_magnitude) { //based on the quake algo
+	float x2 = p_magnitude * 0.5f;
+	float y = p_magnitude;
+	std::uint32_t i = std::bit_cast<std::uint32_t>(y);
+	i = 0x5F3759DFu - (i >> 1);
+	y = std::bit_cast<float>(i); //bit cast for safe conversion between long and float incase they arent the same size on different platforms
+
+	float threeHalfs = 1.5f; //adjust slightly for different speed testing
+	y *= (threeHalfs - (x2 * y * y));
+	y *= (threeHalfs - (x2 * y * y));
+	y *= (threeHalfs - (x2 * y * y));
+
 	return y;
 }
 
@@ -86,18 +89,6 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 		}
 	};
 
-	//old ambigious way to handle N arg construction
-	// vec_operation(std::initializer_list<t_type> p_list) { //no im not going to do a variadic constructor for t_dimension vectors | stuck with init lists <- we did in the cpp20 update
-	// 	size_t dim = 0;
-	// 	for(t_type val : p_list) {
-	// 		if(dim < t_dimension) {m_elem[dim++] = val;}
-	// 		else {break;}
-	// 	}
-	// 	for(; dim < t_dimension; dim++) {
-	// 		this->m_elem[dim] = 0.0f;
-	// 	}
-	// };
-
 	template<typename... args>
 	requires (sizeof...(args) == t_dimension && (std::convertible_to<args, t_type> && ...))
 	vec_operation(args... p_args) {
@@ -107,30 +98,29 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 		}
 	}
 
-
-
-	constexpr float square_length() const {
-		float len = 0;
+	constexpr double square_length() const {
+		double len = 0;
 		for(size_t dim = 0; dim < t_dimension; dim++) {
 			len += this->m_elem[dim] * this->m_elem[dim];
 		}
 		return len;
 	};
 
-	constexpr float magnitude() const {
+	constexpr double magnitude() const {
 		double length = square_length();
-		return fast_inverse(length) * length;
+		return static_cast<double>(fast_inverse(static_cast<float>(length))) * length;
 	}
 
 	constexpr vec<t_dimension, t_type> unit() const {
 		double length = magnitude();
-		return vec<t_dimension, t_type>(*this) / (length != 0 ? length : 1.0); //avoid dividing by 0  (keep an eye out as this would cause a bug wont warn and instead catching a divide by 0)
+		return static_cast<vec<t_dimension, t_type>>(*this) / (length != 0 ? length : 1.0); //avoid dividing by 0 (keep an eye out as this would cause a bug wont warn and instead catching a divide by 0)
 	}
 
-	constexpr t_type dot(const vec<t_dimension, t_type> &p_other) const { //sums the pairwise product of all vector elements
-		double result = 0;
+	constexpr auto dot(const vec<t_dimension, t_type> &p_other) const { //sums the pairwise product of all vector elements
+		using promoted = std::conditional_t<std::is_integral_v<t_type>, long long, double>; //this will convert an int of t_type to long long to prevent overflow for large valued dots
+		promoted result = promoted{};
 		for(size_t dim = 0; dim < t_dimension; dim++) {
-			result += this->m_elem[dim] * p_other[dim];
+			result += static_cast<promoted>(this->m_elem[dim]) * static_cast<promoted>(p_other[dim]);
 		}
 		return result;
 	}
@@ -155,7 +145,7 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 	t_type& operator[](int dim) {return this->m_elem[dim];}
 
 	constexpr vec<t_dimension, t_type> operator-() const { //to negate the vec components
-		vec<t_dimension, t_type> cpy = vec<t_dimension, t_type>(0.0f);
+		vec<t_dimension, t_type> cpy;
 		for(size_t dim = 0; dim < t_dimension; dim++) {
 			cpy[dim] = -this->m_elem[dim];
 		}
@@ -202,67 +192,64 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 		}
 		return *this;
 	}	
+
+
+	friend constexpr vec<t_dimension, t_type> operator+(const vec<t_dimension, t_type>& _this, const vec<t_dimension, t_type>& p_other) {
+		vec<t_dimension, t_type> result;
+		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] + p_other[dim];}
+		return result;
+	};
+	friend constexpr vec<t_dimension, t_type> operator-(const vec<t_dimension, t_type>& _this, const vec<t_dimension, t_type>& p_other) {
+		vec<t_dimension, t_type> result;
+		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] - p_other[dim];}
+		return result;
+	}
+	friend constexpr vec<t_dimension, t_type> operator*(const vec<t_dimension, t_type>& _this, const vec<t_dimension, t_type>& p_other) {
+		vec<t_dimension, t_type> result;
+		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] * p_other[dim];}
+		return result;
+	}
+	friend constexpr vec<t_dimension, t_type> operator*(const vec<t_dimension, t_type>& _this, const t_type p_scale) {
+		vec<t_dimension, t_type> result;
+		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] * p_scale;}
+		return result;
+	}
+	friend constexpr vec<t_dimension, t_type> operator*(const t_type p_scale, const vec<t_dimension, t_type>& _this) { //allow for 0.5 * vec not restricting to vec * 0.5
+		return _this * p_scale;
+	}
+	friend constexpr vec<t_dimension, t_type> operator/(const vec<t_dimension, t_type>& _this, const vec<t_dimension, t_type>& p_other) {
+		vec<t_dimension, t_type> result;
+		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] / p_other[dim];}
+		return result;
+	}
+	friend constexpr vec<t_dimension, t_type> operator/(const vec<t_dimension, t_type>& _this, const t_type p_scale) {
+		vec<t_dimension, t_type> result;
+		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] / p_scale;}
+		return result;
+	}
+
+	friend inline std::ostream& operator<<(std::ostream& out, const vec<t_dimension, t_type>& v) {
+		out << '(';
+		for(size_t dim = 0; dim < t_dimension-1; dim++) {
+			out << v[dim] << ", ";
+		}
+		out << v[t_dimension-1] << ')';
+		return out;
+	}
 };
 
 template <std::size_t t_dimension, arithmetic t_type>
 struct vec : vec_operation<t_dimension, t_type> {
 	using operators = vec_operation<t_dimension, t_type>;
+	
+	using value_type = t_type; //expose the template values if users ever want them
+	static constexpr std::size_t dimension_count = t_dimension;
+
 	using operators::m_elem; //allow visibility to the data
 	using operators::vec_operation; //allowing visibility to the constructors
 };
 
-template <size_t t_dimension, arithmetic t_type>
-constexpr vec<t_dimension, t_type> operator+(const vec<t_dimension, t_type>& _this, const vec<t_dimension, t_type>& p_other) {
-	vec<t_dimension, t_type> result;
-	for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] + p_other[dim];}
-	return result;
-};
-template <size_t t_dimension, arithmetic t_type>
-constexpr vec<t_dimension, t_type> operator-(const vec<t_dimension, t_type>& _this, const vec<t_dimension, t_type>& p_other) {
-	vec<t_dimension, t_type> result;
-	for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] - p_other[dim];}
-	return result;
-}
-template <size_t t_dimension, arithmetic t_type>
-constexpr vec<t_dimension, t_type> operator*(const vec<t_dimension, t_type>& _this, const vec<t_dimension, t_type>& p_other) {
-	vec<t_dimension, t_type> result;
-	for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] * p_other[dim];}
-	return result;
-}
 
-template <size_t t_dimension, arithmetic t_type>
-constexpr vec<t_dimension, t_type> operator*(const vec<t_dimension, t_type>& _this, const t_type p_scale) {
-	vec<t_dimension, t_type> result;
-	for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] * p_scale;}
-	return result;
-}
-template <size_t t_dimension, arithmetic t_type>
-constexpr vec<t_dimension, t_type> operator*(const t_type p_scale, const vec<t_dimension, t_type>& _this) { //allow for 0.5 * vec not restricting to vec * 0.5
-	return _this * p_scale;
-}
-
-template <size_t t_dimension, arithmetic t_type>
-constexpr vec<t_dimension, t_type> operator/(const vec<t_dimension, t_type>& _this, const vec<t_dimension, t_type>& p_other) {
-	vec<t_dimension, t_type> result;
-	for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] / p_other[dim];}
-	return result;
-}
-template <size_t t_dimension, arithmetic t_type>
-constexpr vec<t_dimension, t_type> operator/(const vec<t_dimension, t_type>& _this, const t_type p_scale) {
-	vec<t_dimension, t_type> result;
-	for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] / p_scale;}
-	return result;
-}
-
-template <size_t t_dimension, arithmetic t_type>
-inline std::ostream& operator<<(std::ostream& out, const vec<t_dimension, t_type>& v) {
-	out << '(';
-	for(size_t dim = 0; dim < t_dimension-1; dim++) {
-		out << v[dim] << ", ";
-	}
-	out << v[t_dimension-1] << ')';
-	return out;
-}
 
 //native supported vectors as "regular types". dim can use these similar to int and double but allowing for N dimensioned vectors
 using vec1 = vec<1, double>;

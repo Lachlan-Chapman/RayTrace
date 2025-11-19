@@ -62,9 +62,6 @@ void generateWorld(world &p_world) {
  
 int main(int argc, char** argv) {
 	// return 0;
-	vec3 _vecA(1.0, 2, 4);
-	std::clog << _vecA.x;
-
 
 	world _world(128);
 	//generateWorld(_world);
