@@ -5,7 +5,7 @@
 namespace rng {
 	inline double decimal() {
 		static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-		static std::mt19937 generator;
+		static std::mt19937 generator; //seeded with 1 by default so if the program needs randomness, seed with current time or something manually
 		return distribution(generator);
 	}
 

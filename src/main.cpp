@@ -17,8 +17,8 @@
 
 #include "profiler.hpp"
 
-#define IMAGE_WIDTH 1920
-#define IMAGE_HEIGHT 1080
+#define IMAGE_WIDTH 100
+#define IMAGE_HEIGHT 100
 #define FOV 20
 
 void generateWorld(world &p_world) {
@@ -59,10 +59,15 @@ void generateWorld(world &p_world) {
 		));
 	}
 }
-
+ 
 int main(int argc, char** argv) {
+	// return 0;
+	vec3 _vecA(1.0, 2, 4);
+	std::clog << _vecA.x;
+
+
 	world _world(128);
-	generateWorld(_world);
+	//generateWorld(_world);
 	_world.append(new sphere( //ground
 			vec3{0.0, -1000.0, 0.0},
 			1000,
@@ -124,8 +129,8 @@ int main(int argc, char** argv) {
 	_config.d_fov = FOV * 0.0174532925199;
 	renderer _renderer(&_image, &_world, _config);
 
-	int sample = 80;
-	int bounce = 11;
+	int sample = 50;
+	int bounce = 10;
 			
 	unsigned long long ray_count = IMAGE_WIDTH * IMAGE_HEIGHT * sample * bounce;
 	double est_time = ray_count * 9.32032e-05;
@@ -139,4 +144,3 @@ int main(int argc, char** argv) {
 	std::clog << "Rendered " << ray_count/1000000.0 << "_m Rays @ " << milliseconds / ray_count << "ms/ray\n" << std::endl;
 	return 0;
 }
-
