@@ -21,7 +21,7 @@ bool dielectric::reflect(const ray& p_ray, const hitRecord& p_record, vec3f& p_a
 	p_attenuation = m_albedo * m_reflectance; //set color
 
 	//set up variables
-	vec3f unit_dir = p_ray.m_direction.unit();
+	vec3f unit_dir = p_ray.m_direction;
 	double cos = std::fmin((-unit_dir).dot(p_record.m_normal), 1.0);
 	double sin = std::sqrt(1.0 - cos * cos);
 	double fixed_refraction = p_record.m_outside ? (1.0 / m_refraction) : m_refraction;
@@ -38,18 +38,7 @@ bool dielectric::reflect(const ray& p_ray, const hitRecord& p_record, vec3f& p_a
 			out_dir = refract(unit_dir, p_record.m_normal, fixed_refraction);
 		}
 	}
-	//out_dir = refract(unit_dir, p_record.m_normal, fixed_refraction);
-
 	p_reflected = ray(p_record.m_point, out_dir, p_ray.m_interval);
-
-	// std::clog 
-	// << "\n===== DIELECTRIC SCATTER =====\n"
-	// << "OUTSIDE? " << (p_record.m_outside ? "YES" : "NO") << "\n"
-	// << "HIT POINT: " << p_record.m_point << "\n"
-	// << "NORMAL: " << p_record.m_normal << "\n"
-	// << "INCOMING DIR: " << p_ray.m_direction << "\n"
-	// << "REFRACTED DIR: " << out_dir << "\n";
-
 
 	return true;
 }
