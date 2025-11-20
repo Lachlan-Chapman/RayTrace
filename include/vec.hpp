@@ -127,10 +127,15 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 
 	constexpr vec<3, t_type> cross(const vec<3, t_type>& p_other) const requires (t_dimension == 3) { //neat little cpp20 that wont generate this function for non 3d vec
 		return {
-			m_elem[1] * p_other[2] - m_elem[2] * p_other[1],
-			m_elem[2] * p_other[0] - m_elem[0] * p_other[2],
-			m_elem[0] * p_other[1] - m_elem[1] * p_other[0]
+			m_elem[1] * p_other.m_elem[2] - m_elem[2] * p_other.m_elem[1],
+			m_elem[2] * p_other.m_elem[0] - m_elem[0] * p_other.m_elem[2],
+			m_elem[0] * p_other.m_elem[1] - m_elem[1] * p_other.m_elem[0]
 		};
+		// return {
+		// 	this->y * p_other.z - this->z * p_other.y,
+		// 	this->z * p_other.x - this->x * p_other.z,
+		// 	this->x * p_other.y - this->y * p_other.x
+		// };
 	}
 
 	template <typename t_cast>
@@ -140,8 +145,8 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 		return result;
 	}
 
-	t_type operator[](int dim) const {return this->m_elem[dim];}
-	t_type& operator[](int dim) {return this->m_elem[dim];}
+	t_type operator[](int dim) const {return m_elem[dim];}
+	t_type& operator[](int dim) {return m_elem[dim];}
 
 	constexpr vec<t_dimension, t_type> operator-() const { //to negate the vec components
 		vec<t_dimension, t_type> cpy;
