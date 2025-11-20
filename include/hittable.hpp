@@ -15,7 +15,7 @@ public:
 
 
 	void setDirection(const ray &p_ray, const vec3f &p_normal) { //will determine the inside outside based on the normal, so make sure the outside normal is passed in
-		m_outside = p_ray.m_direction.dot(p_normal) < 0; //hopefully the ray is going in the opposing direction as the outward normal menaing its coming toward to surface from the camera on the outside
+		m_outside = dot(p_ray.m_direction, p_normal) < 0; //hopefully the ray is going in the opposing direction as the outward normal menaing its coming toward to surface from the camera on the outside
 		m_normal = m_outside ? p_normal : -p_normal; //reverse the normal if this faces inward
 		//m_normal = p_normal;
 	}

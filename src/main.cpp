@@ -26,6 +26,8 @@
 #define GIT_HASH "default"
 #endif
 
+
+
 void generateWorld(world &p_world) {
 	for(int i = 0; i < OBJ_COUNT-5; i++) {
 		material *_mat;

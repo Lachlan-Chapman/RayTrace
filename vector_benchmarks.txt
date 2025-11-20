@@ -63,3 +63,30 @@ vec3f = vec<3, double> NOW IS vec3f = vec<3, float>
 	e9c7ac6 10000 Rays @ 84.9566(0.00849566 ms/ray)
 	e9c7ac6 Using 14 Threads
 	e9c7ac6 5000000 Rays @ 556.709(0.000111342 ms/ray)
+
+adding SIMD operator overloads for vec<3, float> && vec<4, float>
+	Test 0
+	c4c8883 [10'000'000] * vec3f.unit(): 1015.1 ms
+	c4c8883 10000 Rays @ 301.671(0.0301671 ms/ray)
+	c4c8883 Using 14 Threads
+	c4c8883 5000000 Rays @ 2932(0.000586399 ms/ray)
+	Test 1
+	c4c8883 [10'000'000] * vec3f.unit(): 1024.59 ms
+	c4c8883 10000 Rays @ 303.012(0.0303012 ms/ray)
+	c4c8883 Using 14 Threads
+	c4c8883 5000000 Rays @ 3030.41(0.000606081 ms/ray)
+	Test 2
+	c4c8883 [10'000'000] * vec3f.unit(): 1027.49 ms
+	c4c8883 10000 Rays @ 303.752(0.0303752 ms/ray)
+	c4c8883 Using 14 Threads
+	c4c8883 5000000 Rays @ 3033.64(0.000606728 ms/ray)
+	Test 3
+	c4c8883 [10'000'000] * vec3f.unit(): 1028.86 ms
+	c4c8883 10000 Rays @ 302.504(0.0302504 ms/ray)
+	c4c8883 Using 14 Threads
+	c4c8883 5000000 Rays @ 2951.36(0.000590273 ms/ray)
+	Test 4
+	c4c8883 [10'000'000] * vec3f.unit(): 1017.54 ms
+	c4c8883 10000 Rays @ 301.519(0.0301519 ms/ray)
+	c4c8883 Using 14 Threads
+	c4c8883 5000000 Rays @ 2923.83(0.000584766 ms/ray)

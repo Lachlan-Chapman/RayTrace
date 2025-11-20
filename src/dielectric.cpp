@@ -5,7 +5,7 @@
 dielectric::dielectric() : dielectric(color(1.0), 1.0, 1.0) {}
 dielectric::dielectric(const color& p_albedo, double p_reflectance, double p_refraction) : material(p_albedo, p_reflectance), m_refraction(p_refraction) {}
 vec3f dielectric::refract(const vec3f &p_ray, const vec3f &p_normal, double p_refraction) const {
-	double cos = std::fmin((-p_ray).dot(p_normal), 1.0);
+	double cos = std::fmin(dot(-p_ray, p_normal), 1.0);
 	vec3f refract_perp = p_refraction * (p_ray + cos * p_normal);
 	vec3f refract_para = -std::sqrt(std::fabs(1.0 - refract_perp.square_length())) * p_normal;
 	return (refract_perp + refract_para).unit();
@@ -22,7 +22,7 @@ bool dielectric::reflect(const ray& p_ray, const hitRecord& p_record, vec3f& p_a
 
 	//set up variables
 	vec3f unit_dir = p_ray.m_direction.unit();
-	double cos = std::fmin((-unit_dir).dot(p_record.m_normal), 1.0);
+	double cos = std::fmin(dot(-unit_dir, p_record.m_normal), 1.0);
 	double sin = std::sqrt(1.0 - cos * cos);
 	double fixed_refraction = p_record.m_outside ? (1.0 / m_refraction) : m_refraction;
 

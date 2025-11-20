@@ -14,8 +14,8 @@ void camera::init(const vec2i &p_imageResolution, const vec3d &p_target, const v
 	viewport_dimension[0] = viewport_dimension[1] * (static_cast<double>(p_imageResolution[0]) / p_imageResolution[1]);
 
 	vec3d w = (m_position - p_target).unit();
-	vec3d u = p_upVector.cross(w).unit();
-	vec3d v = w.cross(u);
+	vec3d u = cross(p_upVector, w).unit();
+	vec3d v = cross(w, u);
 
 	vec3d viewportU = static_cast<double>(viewport_dimension[0]) * u;
 	vec3d viewportV = static_cast<double>(viewport_dimension[1]) * -v;
