@@ -66,27 +66,27 @@ vec3f = vec<3, double> NOW IS vec3f = vec<3, float>
 
 adding SIMD operator overloads for vec<3, float> && vec<4, float>
 	Test 0
-	c4c8883 [10'000'000] * vec3f.unit(): 1015.1 ms
-	c4c8883 10000 Rays @ 301.671(0.0301671 ms/ray)
-	c4c8883 Using 14 Threads
-	c4c8883 5000000 Rays @ 2932(0.000586399 ms/ray)
+	c360775 [10'000'000] * vec3f.unit(): 1007.98 ms
+	c360775 10000 Rays @ 304.33(0.030433 ms/ray)
+	c360775 Using 14 Threads
+	c360775 5000000 Rays @ 2921.25(0.00058425 ms/ray)
 	Test 1
-	c4c8883 [10'000'000] * vec3f.unit(): 1024.59 ms
-	c4c8883 10000 Rays @ 303.012(0.0303012 ms/ray)
-	c4c8883 Using 14 Threads
-	c4c8883 5000000 Rays @ 3030.41(0.000606081 ms/ray)
+	c360775 [10'000'000] * vec3f.unit(): 1012.33 ms
+	c360775 10000 Rays @ 303.933(0.0303933 ms/ray)
+	c360775 Using 14 Threads
+	c360775 5000000 Rays @ 2960.82(0.000592163 ms/ray)
 	Test 2
-	c4c8883 [10'000'000] * vec3f.unit(): 1027.49 ms
-	c4c8883 10000 Rays @ 303.752(0.0303752 ms/ray)
-	c4c8883 Using 14 Threads
-	c4c8883 5000000 Rays @ 3033.64(0.000606728 ms/ray)
+	c360775 [10'000'000] * vec3f.unit(): 1011.8 ms
+	c360775 10000 Rays @ 305.713(0.0305713 ms/ray)
+	c360775 Using 14 Threads
+	c360775 5000000 Rays @ 2962.75(0.00059255 ms/ray)
 	Test 3
-	c4c8883 [10'000'000] * vec3f.unit(): 1028.86 ms
-	c4c8883 10000 Rays @ 302.504(0.0302504 ms/ray)
-	c4c8883 Using 14 Threads
-	c4c8883 5000000 Rays @ 2951.36(0.000590273 ms/ray)
+	c360775 [10'000'000] * vec3f.unit(): 1015.2 ms
+	c360775 10000 Rays @ 305.007(0.0305007 ms/ray)
+	c360775 Using 14 Threads
+	c360775 5000000 Rays @ 2952.35(0.00059047 ms/ray)
 	Test 4
-	c4c8883 [10'000'000] * vec3f.unit(): 1017.54 ms
-	c4c8883 10000 Rays @ 301.519(0.0301519 ms/ray)
-	c4c8883 Using 14 Threads
-	c4c8883 5000000 Rays @ 2923.83(0.000584766 ms/ray)
+	c360775 [10'000'000] * vec3f.unit(): 1018.82 ms
+	c360775 10000 Rays @ 307.266(0.0307266 ms/ray)
+	c360775 Using 14 Threads
+	c360775 5000000 Rays @ 2949.57(0.000589914 ms/ray)

@@ -27,12 +27,12 @@ template <typename t_type>
 concept arithmetic = std::integral<t_type> || std::floating_point<t_type>; //constraint type must be a number basically
 
 template <std::size_t t_dimension, typename t_type>
-concept simd_enabled = 
-#ifdef __SSE__
-	(t_dimension == 3 || t_dimension == 4) && std::same_as<t_type, float>;
-#else
-	false;
-#endif
+concept simd_enabled = false;
+// #ifdef __SSE__
+// 	(t_dimension == 3 || t_dimension == 4) && std::same_as<t_type, float>;
+// #else
+// 	false;
+// #endif
 
 template <std::size_t t_dimension, arithmetic t_type>
 struct vec; //forward decleration of the final type that the user will use
@@ -108,12 +108,18 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 	}
 
 	constexpr t_type square_length() const { //regardless of simd or scalar, it will use the appropriate dot
-		return dot(*this, *this);
+		return dot(
+			static_cast<const vec<t_dimension, t_type>&>(*this),
+			static_cast<const vec<t_dimension, t_type>&>(*this)
+		);
 	};
 
 
 	constexpr t_type magnitude() const { //simd or scalar will also use the appropriate dot
-		auto length_squared = dot(*this, *this);
+		auto length_squared = dot(
+			static_cast<const vec<t_dimension, t_type>&>(*this),
+			static_cast<const vec<t_dimension, t_type>&>(*this)
+		);
 		return static_cast<t_type>(fast_inverse(static_cast<float>(length_squared)) * length_squared);
 	}
 
@@ -297,7 +303,8 @@ struct alignas(16) vec_data<3, float> {
 #ifdef __SSE__ //has the compiler allowed for streaming SIMD extensions?
 //#warning "SSE ENABLED"
 #include <xmmintrin.h>
-inline vec3f operator+(const vec3f &p_a, const vec3f &p_b) {
+template <std::size_t t_dimension, arithmetic t_type>
+inline vec3f operator+(const vec3f &p_a, const vec3f &p_b) requires(simd_enabled<t_dimension, t_type>) {
 	vec3f result;
 	__m128 v_a = _mm_load_ps(p_a.m_elem);
 	__m128 v_b = _mm_load_ps(p_b.m_elem);
@@ -307,7 +314,8 @@ inline vec3f operator+(const vec3f &p_a, const vec3f &p_b) {
 	return result;
 }
 
-inline vec3f operator-(const vec3f &p_a) {
+template <std::size_t t_dimension, arithmetic t_type>
+inline vec3f operator-(const vec3f &p_a) requires(simd_enabled<t_dimension, t_type>) {
 	vec3f result;
 	const __m128 sign_mask = _mm_set1_ps(-0.0f); //the sign bit it set everything else is still just 0
 	__m128 v_vec = _mm_load_ps(p_a.m_elem);
@@ -316,7 +324,8 @@ inline vec3f operator-(const vec3f &p_a) {
 	return result;
 }
 
-inline vec3f operator-(const vec3f &p_a, const vec3f &p_b) {
+template <std::size_t t_dimension, arithmetic t_type>
+inline vec3f operator-(const vec3f &p_a, const vec3f &p_b) requires(simd_enabled<t_dimension, t_type>) {
 	vec3f result;
 	__m128 v_a = _mm_load_ps(p_a.m_elem);
 	__m128 v_b = _mm_load_ps(p_b.m_elem);
@@ -326,7 +335,8 @@ inline vec3f operator-(const vec3f &p_a, const vec3f &p_b) {
 	return result;
 }
 
-inline vec3f operator*(const vec3f &p_a, float p_scalar) {
+template <std::size_t t_dimension, arithmetic t_type>
+inline vec3f operator*(const vec3f &p_a, float p_scalar) requires(simd_enabled<t_dimension, t_type>) {
 	vec3f result;
 	__m128 v_vec = _mm_load_ps(p_a.m_elem);
 	__m128 v_scalar = _mm_set1_ps(p_scalar);
@@ -335,11 +345,13 @@ inline vec3f operator*(const vec3f &p_a, float p_scalar) {
 	return result;
 }
 
-inline vec3f operator*(float p_scalar, const vec3f &p_a) {
+template <std::size_t t_dimension, arithmetic t_type>
+inline vec3f operator*(float p_scalar, const vec3f &p_a) requires(simd_enabled<t_dimension, t_type>) {
 	return p_a * p_scalar; //reuse the above opreator | this just allows for the commutative nature of *
 }
 
-inline vec3f operator*(const vec3f &p_a, const vec3f &p_b) {
+template <std::size_t t_dimension, arithmetic t_type>
+inline vec3f operator*(const vec3f &p_a, const vec3f &p_b) requires(simd_enabled<t_dimension, t_type>) {
 	vec3f result;
 	__m128 v_a = _mm_load_ps(p_a.m_elem);
 	__m128 v_b = _mm_load_ps(p_b.m_elem);
@@ -349,11 +361,13 @@ inline vec3f operator*(const vec3f &p_a, const vec3f &p_b) {
 	return result;
 }
 
-inline vec3f operator/(const vec3f &p_a, float p_scalar) {
+template <std::size_t t_dimension, arithmetic t_type>
+inline vec3f operator/(const vec3f &p_a, float p_scalar) requires(simd_enabled<t_dimension, t_type>) {
 	return p_a * (1.0 / p_scalar); //reuse the * SIMD set just needing a single extra division operation to avoid looping div instructions
 }
 
-inline vec3f operator/(const vec3f &p_a, const vec3f &p_b) {
+template <std::size_t t_dimension, arithmetic t_type>
+inline vec3f operator/(const vec3f &p_a, const vec3f &p_b) requires(simd_enabled<t_dimension, t_type>) {
 	vec3f result;
 	__m128 v_a = _mm_load_ps(p_a.m_elem);
 	__m128 v_b = _mm_load_ps(p_b.m_elem);
@@ -363,7 +377,8 @@ inline vec3f operator/(const vec3f &p_a, const vec3f &p_b) {
 	return result;
 }
 
-inline float dot(const vec3f &p_a, const vec3f &p_b) { //? = doesnt matter
+template <std::size_t t_dimension, arithmetic t_type>
+inline float dot(const vec3f &p_a, const vec3f &p_b) requires(simd_enabled<t_dimension, t_type>) { //? = doesnt matter
 	__m128 v_a = _mm_load_ps(p_a.m_elem); //ax, ay, az, aw
 	__m128 v_b = _mm_load_ps(p_b.m_elem); //bx, by, bz, bw
 	
@@ -385,7 +400,8 @@ inline float dot(const vec3f &p_a, const vec3f &p_b) { //? = doesnt matter
 	//[axbx+azbz + ayby+awbw] = dot product of 2 4D vectors
 }
 
-inline vec3f cross(const vec3f &p_a, const vec3f &p_b) { //? = doesnt matter
+template <std::size_t t_dimension, arithmetic t_type>
+inline vec3f cross(const vec3f &p_a, const vec3f &p_b) requires(simd_enabled<t_dimension, t_type>) { //? = doesnt matter
 	//aybz - azby
 	//azbx - axbz
 	//axby - aybx
