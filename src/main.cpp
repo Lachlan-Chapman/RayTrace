@@ -112,7 +112,7 @@ void benchmarkRender(const world &p_world) {
 		mt_time = mt_timer.milliseconds();
 	}
 	std::clog << GIT_HASH << " " << ray_count << " Rays @ " << mt_time << "(" << (mt_time/ray_count) << " ms/ray" << ")" << std::endl;
-
+	_renderer.saveImage();
 }
  
 int main(int argc, char** argv) {	
@@ -172,6 +172,7 @@ int main(int argc, char** argv) {
 		benchmarkVector();
 		benchmarkRender(_world);
 	}
+
 
 	return 0;
 }

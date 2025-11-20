@@ -26,7 +26,7 @@ color ray::traceColor(const world& p_world, int p_maxBounce) const {
 				return color(0.5); //the material said scattering is no longer so all light was absorbed
 			}
 		} else {
-			double t = 0.5 * (current_ray.m_direction.unit()[1] + 1.0);
+			double t = 0.5 * (current_ray.m_direction[1] + 1.0);
 			color sky = (1.0 - t) * color(1.0) + t * color{0.5, 0.7, 1.0};
 			//sky = color{1.0, 0.0, 0.0};
 			return attenuation * sky;
