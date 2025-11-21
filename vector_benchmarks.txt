@@ -1,5 +1,7 @@
 CONSTANTS
 10million unit() tests
+use amd oc cpu profile
+
 
 tile size = {4, 1}
 Single Threaded Test
@@ -96,4 +98,36 @@ using diffuseFast() and removed a .unit() from lambertian mat (lambertian optimi
 	b4270f4 10000 Rays @ 88.7139(0.00887139 ms/ray)
 	b4270f4 Using 14 Threads
 	b4270f4 5000000 Rays @ 523.697(0.000104739 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+
+remove this-> accessor
+	Test 0
+	2e3d9aa [10'000'000] * vec3f.unit(): 578.131 ms
+	2e3d9aa 10000 Rays @ 84.1363(0.00841363 ms/ray)
+	2e3d9aa Using 14 Threads
+	2e3d9aa 5000000 Rays @ 514.526(0.000102905 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 1
+	2e3d9aa [10'000'000] * vec3f.unit(): 585.685 ms
+	2e3d9aa 10000 Rays @ 86.558(0.0086558 ms/ray)
+	2e3d9aa Using 14 Threads
+	2e3d9aa 5000000 Rays @ 516.014(0.000103203 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 2
+	2e3d9aa [10'000'000] * vec3f.unit(): 586.763 ms
+	2e3d9aa 10000 Rays @ 89.8283(0.00898283 ms/ray)
+	2e3d9aa Using 14 Threads
+	2e3d9aa 5000000 Rays @ 530.743(0.000106149 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 3
+	2e3d9aa [10'000'000] * vec3f.unit(): 583.14 ms
+	2e3d9aa 10000 Rays @ 86.5586(0.00865586 ms/ray)
+	2e3d9aa Using 14 Threads
+	2e3d9aa 5000000 Rays @ 538.966(0.000107793 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 4
+	2e3d9aa [10'000'000] * vec3f.unit(): 584.357 ms
+	2e3d9aa 10000 Rays @ 87.8854(0.00878854 ms/ray)
+	2e3d9aa Using 14 Threads
+	2e3d9aa 5000000 Rays @ 538.359(0.000107672 ms/ray)
 	Done Rendering 100x100 Pixel(s)

@@ -3,6 +3,12 @@
 #include "ray.hpp"
 class hitRecord; //forward decleration
 
+//helpers to make material creation more readable
+constexpr double reflectance(double p_value) {return p_value;}
+constexpr double roughness(double p_value) {return p_value;}
+constexpr double refraction(double p_value) {return p_value;}
+constexpr double ior(double p_value) {return p_value;}
+
 class material {
 public:
 	material();

@@ -40,20 +40,20 @@ void generateWorld(world &p_world) {
 		if(mat_selection < 0.5) {
 			_mat = new metal(
 				_col,
-				1.0,
-				0.0
+				reflectance(1.0),
+				roughness(0.0)
 			);
 		} else if(mat_selection < 0.75) {
 			_mat = new dielectric(
 				_col,
-				1.0,
-				1.5
+				reflectance(1.0),
+				ior(1.5)
 			);
 		} else {
 			_mat = new metal(
 				_col,
-				1.0,
-				rng::decimal(0.7, 1.0)
+				reflectance(1.0),
+				roughness(rng::decimal(0.7, 1.0))
 			);
 		}
 		
@@ -119,50 +119,50 @@ int main(int argc, char** argv) {
 	world _world(OBJ_COUNT);
 	generateWorld(_world);
 	_world.append(new sphere( //ground
-			vec3f{0.0, -1000.0, 0.0},
-			1000,
+			position{0.0, -1000.0, 0.0},
+			radius(1000),
 			new lambertian(
 				color(0.5),
-				1.0
+				reflectance(1.0)
 			)
 		)
 	);
 	_world.append(new sphere( //simple diffuse
-			vec3f{-4.0, 1.0, 0.0},
-			1.0,
+			position{-4.0, 1.0, 0.0},
+			radius(1.0),
 			new lambertian(
 				color{0.4, 0.5, 0.9},
-				1.0
+				reflectance(1.0)
 			)
 		)
 	);
 	_world.append(new sphere(
-			vec3f{0.0, 1.0, 0.0},
-			1.0,
+			position{0.0, 1.0, 0.0},
+			radius(1.0),
 			new dielectric(
 				color(1.0),
-				1.0,
-				1.5
+				reflectance(1.0),
+				ior(1.5)
 			)
 		)
 	);
 	_world.append(new sphere(
-			vec3f{0.0, 1.0, 0.0},
-			0.5,
+			position{0.0, 1.0, 0.0},
+			radius(0.5),
 			new dielectric(
 				color(1.0),
-				1.0,
-				1.5
+				reflectance(1.0),
+				ior(1.5)
 			)
 		)
 	);
 	_world.append(new sphere(
-			vec3f{4.0, 1.0, 0.0},
-			1.0,
+			position{4.0, 1.0, 0.0},
+			radius(1.0),
 			new metal(
 				color{0.9, 0.6, 0.5},
-				1.0,
-				0.0
+				reflectance(1.0),
+				roughness(0.0)
 			)
 		)
 	);

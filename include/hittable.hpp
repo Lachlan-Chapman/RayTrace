@@ -5,6 +5,15 @@
 #include "interval.hpp"
 #include "material.hpp"
 
+//helper to make obj creation more readable
+class position : public vec<3, float> {
+	using super = vec<3, float>; //saves me from writing vec<3, float> all the time | also didnt know using could be used like this
+public:
+	using super::vec; //this inherits all constructors as by default only member functions seem to be passed down
+	position(const super &p_vec) : super(p_vec) {} //copy constructor to merely allow vec3f to color conversion
+};
+
+constexpr double radius(double p_value) {return p_value;}
 
 class hitRecord {
 public:
