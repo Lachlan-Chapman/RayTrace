@@ -14,6 +14,7 @@ public:
 };
 
 constexpr double radius(double p_value) {return p_value;}
+constexpr double width(double p_value) {return p_value;}
 
 class hitRecord {
 public:
@@ -32,13 +33,14 @@ public:
 
 class hittable {
 public:
-	hittable(material *p_material) : m_material(p_material) {}
+	hittable(const vec3f &p_center, material *p_material) : m_material(p_material), m_center(p_center) {}
 	virtual ~hittable() {delete m_material;}; //by making the destructor virtual it will late bind the destructor of children classes so i can delete a child type via a base ptr and it will use the true type's destructor.
 	virtual bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const = 0;
 	virtual hittable* clone() const = 0; //for deep copying while maintaining polymorphic heap objects
 
 protected:
 	material *m_material;
+	vec3f m_center;
 };
 
 class sphere : public hittable {
@@ -48,6 +50,21 @@ public:
 	hittable* clone() const override;
 
 private:
-	vec3f m_center;
 	double m_radius;
 };
+
+
+
+class cube : public hittable {
+public:
+	cube();
+	cube(const vec3f &p_center, double p_width, material *p_material);
+	bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const override;
+protected:
+	vec3f calculateNormal(const vec3f p_point) const;
+	vec2f calculateIntersection(const ray &p_ray, int p_dimensionIndex) const;
+	vec3f m_center, m_minCorner, m_maxCorner;
+	double m_width;
+};
+
+class AABB : public cube {};

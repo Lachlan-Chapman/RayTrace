@@ -31,38 +31,32 @@ def verifyDirectory():
 def getObjectFiles():
 	return [str(_path) for _path in OBJ_DIRECTORY.glob("*.o")]
 
-
-def killObjectOrphans(): #delete object files with no associated cpp file
-	for obj in OBJ_DIRECTORY.glob("*.o"):
-		src = SRC_DIRECTORY / (obj.stem + ".cpp")
-		if not src.exists():
-			obj.unlink(missing_ok = True)
-			dependency = obj.with_suffix(".d") #to handle dependency files also
-			dependency.unlink(missing_ok = True)
-
 def getMissingObject(): #get cpp files without any associated object
 	stale = []
 	for src in SRC_DIRECTORY.rglob("*.cpp"):
 		obj = OBJ_DIRECTORY / (src.stem + ".o") #does object file exist for cpp
-		if not obj.exists():
+		if(not obj.exists()):
+			print(f"missing object {src}")
 			stale.append((src, obj)) #pair to compile
 	return stale
 
 def getMissingDependency(): #get object files without dependency
 	stale = []
-	for src in SRC_DIRECTORY.rglob(".cpp"):
-		dep = OBJ_DIRECTORY / (src.stem + ".o")
+	for src in SRC_DIRECTORY.rglob("*.cpp"):
+		dep = OBJ_DIRECTORY / (src.stem + ".d")
 		obj = OBJ_DIRECTORY / (src.stem + ".o")
-		if not dep.exists():
+		if(not dep.exists()):
+			print(f"missing dependency {src}")
 			stale.append((src, obj))
 	return stale
 
 def getModifiedCpp(): #get cpp files that have changed since last object compilation
 	stale = []
-	for src in SRC_DIRECTORY.rglob(".cpp"):
+	for src in SRC_DIRECTORY.rglob("*.cpp"):
 		dep = OBJ_DIRECTORY / (src.stem + ".o")
 		obj = OBJ_DIRECTORY / (src.stem + ".o")
 		if obj.exists() and src.stat().st_mtime > obj.stat().st_mtime:
+			print(f"modified cpp {src}")
 			stale.append((src, obj))
 	return stale
 
@@ -79,7 +73,7 @@ def parseDependency(dep_file): #a dependency not mentioning a new hpp include
 
 def getModifiedDependency():
 	stale = []
-	for src in SRC_DIRECTORY.rglob(".cpp"):
+	for src in SRC_DIRECTORY.rglob("*.cpp"):
 		obj = OBJ_DIRECTORY / (src.stem + ".o")
 		dep = OBJ_DIRECTORY / (src.stem + ".d")
 
@@ -92,6 +86,7 @@ def getModifiedDependency():
 		for _dep in deps:
 			_path = Path(_dep)
 			if _path.exists() and _path.stat().st_mtime > obj_time:
+				print(f"modified dependency {src}")
 				stale.append((src, obj))
 				break
 	return stale
@@ -140,7 +135,6 @@ def link(obj_files):
 
 def main():
 	verifyDirectory()
-	killObjectOrphans() #clean o files with no counter cpp file
 	pairs = getStaleFiles() #set of all cpp files that have some reason to compile such as no .o file, changed .hpp file or new/removes #includes
 	if not pairs:
 		print(f"++ No Changes | Skipping Build ++")

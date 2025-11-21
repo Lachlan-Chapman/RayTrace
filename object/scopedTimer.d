@@ -1,2 +1,2 @@
-object/scopedTimer.o: src/scopedTimer.cpp include/profiler.hpp
+object/scopedTimer.o: src/benchmark/scopedTimer.cpp include/profiler.hpp
 include/profiler.hpp:

@@ -115,7 +115,8 @@ void benchmarkRender(const world &p_world) {
 	_renderer.saveImage();
 }
  
-int main(int argc, char** argv) {	
+int main(int argc, char** argv) {
+	return 1;	
 	world _world(OBJ_COUNT);
 	generateWorld(_world);
 	_world.append(new sphere( //ground

@@ -6,6 +6,8 @@
 
 #include <bit>
 #include <cstdint>
+#include <limits>
+//change
 
 inline float fast_inverse(float p_magnitude) { //based on the quake algo
 	float x2 = p_magnitude * 0.5f;
@@ -125,6 +127,46 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 		return result;
 	}
 
+	constexpr t_type min() const {
+		t_type smallest = m_elem[0];
+		for(size_t dim = 1; dim < t_dimension; dim++) {
+			if(m_elem[dim] < smallest) {smallest = m_elem[dim];}
+		}
+		return smallest;
+	}
+
+	constexpr t_type max() const {
+		t_type largest = m_elem[0];
+		for(size_t dim = 1; dim < t_dimension; dim++) {
+			if(m_elem[dim] > largest) {largest = m_elem[dim];}
+		}
+		return largest;
+	}
+
+	constexpr size_t minDimension() const {
+		size_t smallest_dimension = 0;
+		t_type smallest = m_elem[0];
+		for(size_t dim = 1; dim < t_dimension; dim++) {
+			if(m_elem[dim] > smallest) {
+				smallest = m_elem[dim];
+				smallest_dimension = dim;
+			}
+		}
+		return smallest_dimension;
+	}
+
+	constexpr size_t maxDimension() const {
+		size_t largest_dimension = 0;
+		t_type largest = m_elem[0];
+		for(size_t dim = 1; dim < t_dimension; dim++) {
+			if(m_elem[dim] > largest) {
+				largest = m_elem[dim];
+				largest_dimension = dim;
+			}
+		}
+		return largest_dimension;
+	}
+
 	constexpr vec<3, t_type> cross(const vec<3, t_type>& p_other) const requires (t_dimension == 3) { //neat little cpp20 that wont generate this function for non 3d vec
 		return {
 			m_elem[1] * p_other.m_elem[2] - m_elem[2] * p_other.m_elem[1],
@@ -154,6 +196,14 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 			cpy[dim] = -m_elem[dim];
 		}
 		return cpy;
+	}
+
+	constexpr vec<t_dimension, t_type>& operator=(const vec<t_dimension, t_type> &p_other) {
+		if(this == &p_other) {return *this;}
+		for(size_t dim = 0; dim < t_dimension; dim++) {
+			m_elem[dim] = p_other[dim];
+		}
+		return *this;
 	}
 
 	/* assignment operators */
@@ -255,6 +305,14 @@ struct vec : vec_operation<t_dimension, t_type> {
 
 
 //native supported vectors as "regular types". dim can use these similar to int and double but allowing for N dimensioned vectors
+
+enum class dimension : int {
+	x = 0,
+	y = 1,
+	z = 2,
+	w = 4
+};
+
 using vec1f = vec<1, float>;
 using vec1i = vec<1, int>;
 
@@ -267,3 +325,4 @@ using vec3i = vec<3, int>;
 
 using vec4f= vec<4, float>;
 using vec4i = vec<4, int>;
+

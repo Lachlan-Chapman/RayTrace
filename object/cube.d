@@ -1,5 +1,5 @@
-object/sphere.o: src/object/sphere.cpp include/hittable.hpp \
- include/vec.hpp include/ray.hpp include/color.hpp include/interval.hpp \
+object/cube.o: src/object/cube.cpp include/hittable.hpp include/vec.hpp \
+ include/ray.hpp include/color.hpp include/interval.hpp \
  include/material.hpp
 include/hittable.hpp:
 include/vec.hpp:

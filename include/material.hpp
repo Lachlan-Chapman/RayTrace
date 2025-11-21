@@ -53,3 +53,9 @@ private:
 	double schlick(double p_theta, double p_refraction) const;
 	double m_refraction;
 };
+
+class passthrough : public material {
+public:
+	passthrough();
+	bool reflect(const ray &p_ray, const hitRecord &p_record, vec3f &p_attenuation, ray &p_reflected) const override;
+};

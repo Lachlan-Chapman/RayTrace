@@ -1,2 +1,2 @@
-object/steadyTimer.o: src/steadyTimer.cpp include/profiler.hpp
+object/steadyTimer.o: src/benchmark/steadyTimer.cpp include/profiler.hpp
 include/profiler.hpp:
