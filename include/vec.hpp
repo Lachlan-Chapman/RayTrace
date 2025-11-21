@@ -6,8 +6,7 @@
 
 #include <bit>
 #include <cstdint>
-#include <limits>
-//change
+
 
 inline float fast_inverse(float p_magnitude) { //based on the quake algo
 	float x2 = p_magnitude * 0.5f;

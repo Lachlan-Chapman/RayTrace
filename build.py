@@ -1,5 +1,7 @@
 import subprocess
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+from typing import List, Tuple
 
 SRC_DIRECTORY = Path("src")
 INCLUDE_DIRECTORY = Path("include")
@@ -105,11 +107,11 @@ def getStaleFiles():
 
 	return list(unique.values())
 
-def compile(pairs):
+def compileST(pairs: (Path, Path)):
 	obj_files = [] #empty arr to store all the new object files
 
 	for src, obj in pairs:
-		print(f"-- compiling {src} -> {obj} --")
+		print(f"-- Compiling {src} -> {obj} --")
 		try:
 			subprocess.run([CXX, "-c", "-MMD", "-MP", *CPP_FLAGS, str(src), "-o", str(obj)], check = True)
 		except subprocess.CalledProcessError:
@@ -118,6 +120,33 @@ def compile(pairs):
 			raise SystemExit(1)
 		obj_files.append(str(obj))
 	return obj_files
+
+def compileWorker(src: Path, obj: Path):
+	cmd = [CXX, "-c", "-MMD", "-MP", *CPP_FLAGS, str(src), "-o", str(obj)]
+	print(f"-- Compiling {src} -> {obj} --")
+	try:
+		subprocess.run(cmd, check = True)
+		return None
+	except subprocess.CalledProcessError as _err:
+		return _err
+
+
+def compileMT(pairs):
+	with ThreadPoolExecutor(max_workers = 8) as pool:
+		futures = [pool.submit(compileWorker, src, obj) for (src, obj) in pairs] #run func for each item in pairs
+		for _fut in as_completed(futures):
+			_err = _fut.result()
+			if _err is not None:
+				print(f"\n=== Failed To Compile {pair[0]}")
+				print(_err)
+				for f in futures:
+					if not f.done():
+						f.cancel() #dont bother compiling any more, the error is probably going to permiate.
+				return False
+	
+	print("Compiling Complete")
+	return True
+
 
 def link(obj_files):
 	if not obj_files: #no obj files were made so theres nothing new to link
@@ -139,7 +168,12 @@ def main():
 	if not pairs:
 		print(f"++ No Changes | Skipping Build ++")
 	else:
-		compile(pairs) #compile whats new
+		useMultiThread = True
+		if(useMultiThread):
+			if (not compileMT(pairs)): #compile whats new
+				exit(1)
+		else:
+			compileST(pairs)
 	
 	obj_files = getObjectFiles()
 	link(obj_files) #link if needed
