@@ -1,6 +1,6 @@
 #include "hittable.hpp"
 sphere::sphere() : sphere(vec3f(0.0), 1.0, new passthrough()) {}
-sphere::sphere(const vec3f &p_center, double p_radius, material *p_material) : hittable(m_center, p_material), m_radius(p_radius) {} //im allowing for 0 and negative radii
+sphere::sphere(const vec3f &p_center, double p_radius, material *p_material) : hittable(p_center, p_material), m_radius(p_radius) {} //im allowing for 0 and negative radii
 hittable* sphere::clone() const {return new sphere(m_center, m_radius, m_material);}
 
 

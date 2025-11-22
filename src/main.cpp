@@ -26,6 +26,101 @@
 #define GIT_HASH "default"
 #endif
 
+//tracer validation
+void testRender(const char* p_testName, const world &p_world) {	
+	cameraConfig _config;
+	_config.d_position = vec3f{6.0, 0.0, 3.5};
+	_config.d_target = vec3f{0.0, 0.0, 0.0};
+	_config.d_upVector = vec3f{0.0, 1.0, 0.0};
+	_config.d_focusDistance = 10.0;
+	_config.d_defocusAngle = constant::PI / 18;
+	_config.d_fov = 90.0 * 0.0174532925199; //const from deg to radians
+
+	PPM _image(p_testName, vec2i{150, 150});
+	renderer _renderer(&_image, &p_world, _config);
+	int sample = 1;
+	int bounce = 10;
+	_renderer.renderImageMT(sample, bounce, vec2i{4, 1}); //scan lines appear to have an edge perhaps with cache locality
+	_renderer.saveImage();
+}
+void testSphere() {
+	world _world(4);
+	_world.append(new sphere(
+		vec3f(0, -5, 0),
+		1.0,
+		new lambertian(
+			color(0.9, 0.8, 0.7),
+			1.0
+		)
+	));
+
+	_world.append(new sphere(
+		vec3f(0, -2, 0),
+		1.0,
+		new metal(
+			color(0.9, 0.8, 0.7),
+			1.0,
+			1.0
+		)
+	));
+
+	_world.append(new sphere(
+		vec3f(0, 1, 0),
+		1.0,
+		new dielectric(
+			color(0.9, 0.8, 0.7),
+			1.0,
+			1.5
+		)
+	));
+
+	_world.append(new sphere(
+		vec3f(0, 4, 0),
+		1.0,
+		new passthrough()
+	));
+	testRender("testSphere.ppm", _world);
+}
+void testCube() {
+	world _world(4);
+	_world.append(new cube(
+		vec3f(0, -5, 0),
+		1.0,
+		new lambertian(
+			color(0.9, 0.8, 0.7),
+			1.0
+		)
+	));
+
+	_world.append(new cube(
+		vec3f(0, -2, 0),
+		1.0,
+		new metal(
+			color(0.9, 0.8, 0.7),
+			1.0,
+			1.0
+		)
+	));
+
+	_world.append(new cube(
+		vec3f(0, 1, 0),
+		1.0,
+		new dielectric(
+			color(0.9, 0.8, 0.7),
+			1.0,
+			1.5
+		)
+	));
+
+	_world.append(new cube(
+		vec3f(0, 4, 0),
+		1.0,
+		new passthrough()
+	));
+	testRender("testCube.ppm", _world);
+}
+
+//benchmark
 void generateWorld(world &p_world) {
 	for(int i = 0; i < OBJ_COUNT-5; i++) {
 		material *_mat;
@@ -63,8 +158,57 @@ void generateWorld(world &p_world) {
 			_mat
 		));
 	}
+	
+	
+	p_world.append(new sphere( //ground
+			position{0.0, -1000.0, 0.0},
+			radius(1000),
+			new lambertian(
+				color(0.5),
+				reflectance(1.0)
+			)
+		)
+	);
+	p_world.append(new sphere( //simple diffuse
+			position{-4.0, 1.0, 0.0},
+			radius(1.0),
+			new lambertian(
+				color{0.4, 0.5, 0.9},
+				reflectance(1.0)
+			)
+		)
+	);
+	p_world.append(new sphere(
+			position{0.0, 1.0, 0.0},
+			radius(1.0),
+			new dielectric(
+				color(1.0),
+				reflectance(1.0),
+				ior(1.5)
+			)
+		)
+	);
+	p_world.append(new sphere(
+			position{0.0, 1.0, 0.0},
+			radius(0.5),
+			new dielectric(
+				color(1.0),
+				reflectance(1.0),
+				ior(1.5)
+			)
+		)
+	);
+	p_world.append(new sphere(
+			position{4.0, 1.0, 0.0},
+			radius(1.0),
+			new metal(
+				color{0.9, 0.6, 0.5},
+				reflectance(1.0),
+				roughness(0.0)
+			)
+		)
+	);
 }
-
 void benchmarkVector() {
 	vec3f v(1, 2, 3);
 	std::clog << GIT_HASH;
@@ -75,7 +219,6 @@ void benchmarkVector() {
 		}
 	}
 }
-
 void benchmarkRender(const world &p_world) {
 	PPM _image("image.ppm", vec2i{IMAGE_WIDTH, IMAGE_HEIGHT});
 
@@ -101,8 +244,8 @@ void benchmarkRender(const world &p_world) {
 	std::clog << GIT_HASH << " " << ray_count << " Rays @ " << st_time << "(" << (st_time/ray_count) << " ms/ray" << ")" << std::endl;
 	
 	
-	sample =1;
-	bounce = 20;
+	sample = 50;
+	bounce = 10;
 	ray_count = IMAGE_WIDTH * IMAGE_HEIGHT * sample * bounce;
 	double mt_time;
 	{
@@ -115,108 +258,20 @@ void benchmarkRender(const world &p_world) {
 	_renderer.saveImage();
 }
 
-void testRender() {
-	world _world(1);
-	// _world.append(new cube(
-	// 	vec3f(0),
-	// 	2.0,
-	// 	// new metal(
-	// 	// 	color(0, 0, 0.86), 
-	// 	// 	1.0,
-	// 	// 	1.0
-	// 	// )
-	// 	new lambertian(
-	// 		color(0, 0, 0.5), 
-	// 		1.0
-	// 	)
-	// ));
 
-	_world.append(new sphere(
-		vec3f(0, 5, 0),
-		1.0,
-		new lambertian(
-			color(1),
-			1.0
-		)
-	));
-	cameraConfig _config;
-	_config.d_position = vec3f{15.0, 2.0, 4.0};
-	_config.d_target = vec3f{0.0, 1.0, 0.0};
-	_config.d_upVector = vec3f{0.0, 1.0, 0.0};
-	_config.d_focusDistance = 10.0;
-	_config.d_defocusAngle = constant::PI / 18;
-	_config.d_fov = FOV * 0.0174532925199;
 
-	PPM _image("test.ppm", vec2i{250, 250});
-	renderer _renderer(&_image, &_world, _config);
-	int sample = 1;
-	int bounce = 1;
-	int ray_count = IMAGE_WIDTH * IMAGE_HEIGHT * sample * bounce;
-	double st_time;
-	{
-		steadyTimer st_timer;
-		st_timer.start();
-		_renderer.renderImage(sample, bounce, vec2i{4, 1}); //scan lines appear to have an edge perhaps with cache locality
-		st_time = st_timer.milliseconds();
-	}
-	_renderer.saveImage();
 
-}
+
 
 int main(int argc, char** argv) {
-	testRender();
-	return 1;	
+	//testSphere();
+	//testCube();
+	//return 1;
+
+
+
 	world _world(OBJ_COUNT);
 	generateWorld(_world);
-	_world.append(new sphere( //ground
-			position{0.0, -1000.0, 0.0},
-			radius(1000),
-			new lambertian(
-				color(0.5),
-				reflectance(1.0)
-			)
-		)
-	);
-	_world.append(new sphere( //simple diffuse
-			position{-4.0, 1.0, 0.0},
-			radius(1.0),
-			new lambertian(
-				color{0.4, 0.5, 0.9},
-				reflectance(1.0)
-			)
-		)
-	);
-	_world.append(new sphere(
-			position{0.0, 1.0, 0.0},
-			radius(1.0),
-			new dielectric(
-				color(1.0),
-				reflectance(1.0),
-				ior(1.5)
-			)
-		)
-	);
-	_world.append(new sphere(
-			position{0.0, 1.0, 0.0},
-			radius(0.5),
-			new dielectric(
-				color(1.0),
-				reflectance(1.0),
-				ior(1.5)
-			)
-		)
-	);
-	_world.append(new sphere(
-			position{4.0, 1.0, 0.0},
-			radius(1.0),
-			new metal(
-				color{0.9, 0.6, 0.5},
-				reflectance(1.0),
-				roughness(0.0)
-			)
-		)
-	);
-
 	for(int test_id = 0; test_id < 5; test_id++) {
 		std::clog << "Test " << test_id << std::endl;
 		benchmarkVector();

@@ -28,6 +28,7 @@ color ray::traceColor(const world& p_world, int p_maxBounce) const {
 		} else {
 			float t = 0.5 * (current_ray.m_direction[1] + 1.0);
 			color sky = (1.0 - t) * color(1.0) + t * color{0.5, 0.7, 1.0};
+			//color sky = (1.0 - t) * color(1, 0, 0) + t * color(0, 1, 0); //debug green to red sky
 			//std::clog << "Sky Hit @ " << current_ray.m_origin << std::endl;
 			return attenuation * sky;
 		}
