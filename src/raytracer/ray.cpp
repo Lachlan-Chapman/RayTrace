@@ -14,26 +14,25 @@ vec3f ray::at(float p_time) const {return m_origin + (m_direction * p_time);}
 color ray::traceColor(const world& p_world, int p_maxBounce) const {
 	ray current_ray = *this;
 	color attenuation(1.0); //start off full white (full energy)
-	for(int bounce_id = 0; bounce_id <= p_maxBounce; bounce_id++) {
+	for(int bounce_id = 0; bounce_id <= p_maxBounce; bounce_id++) { //<= allows that 0 bounce allows the initial ray, 1 is 1 reflection so it matches
 		hitRecord _record; //record for this bounce instance
-		if(p_world.intersect(current_ray, interval::forward, _record)) { //did we hit a shape & which one was it
+		if(p_world.intersect(current_ray, interval(0.001, constant::INF), _record)) { //did we hit a shape & which one was it
 			ray scattered;
 			color material_attenuation;
-			//std::clog << "Intersected @ bounce " << bounce_id << std::endl;
 			if(_record.m_material->reflect(current_ray, _record, material_attenuation, scattered)) { //true means this material scattered
 				attenuation *= material_attenuation; //combine the colors
 				current_ray = scattered;
 			} else {
-				return color(0.5); //the material said scattering is no longer so all light was absorbed
+				return color(0.0); //the material said scattering is no longer so all light was absorbed
 			}
 		} else {
 			float t = 0.5 * (current_ray.m_direction[1] + 1.0);
 			color sky = (1.0 - t) * color(1.0) + t * color{0.5, 0.7, 1.0};
-			//sky = color{1.0, 0.0, 0.0};
+			//std::clog << "Sky Hit @ " << current_ray.m_origin << std::endl;
 			return attenuation * sky;
 		}
 	}
 	
-	//return color{1.0, 0.0, 1.0}; //debug magenta for dead rays
+	return color{1.0, 0.0, 1.0}; //debug magenta for dead rays
 	return attenuation; //dead bounce limit
 }

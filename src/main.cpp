@@ -38,7 +38,7 @@ void generateWorld(world &p_world) {
 		_pos[1] = _rad;
 
 		if(mat_selection < 0.5) {
-			_mat = new metal(
+			_mat = new metal( //mistake, should be lambertian but the benchmarking settings are now set so. also metal uses the lambertian material so speed ups to it would affect metals also
 				_col,
 				reflectance(1.0),
 				roughness(0.0)
@@ -101,8 +101,8 @@ void benchmarkRender(const world &p_world) {
 	std::clog << GIT_HASH << " " << ray_count << " Rays @ " << st_time << "(" << (st_time/ray_count) << " ms/ray" << ")" << std::endl;
 	
 	
-	sample = 50;
-	bounce = 10;
+	sample =1;
+	bounce = 20;
 	ray_count = IMAGE_WIDTH * IMAGE_HEIGHT * sample * bounce;
 	double mt_time;
 	{
@@ -114,8 +114,57 @@ void benchmarkRender(const world &p_world) {
 	std::clog << GIT_HASH << " " << ray_count << " Rays @ " << mt_time << "(" << (mt_time/ray_count) << " ms/ray" << ")" << std::endl;
 	_renderer.saveImage();
 }
- 
+
+void testRender() {
+	world _world(1);
+	// _world.append(new cube(
+	// 	vec3f(0),
+	// 	2.0,
+	// 	// new metal(
+	// 	// 	color(0, 0, 0.86), 
+	// 	// 	1.0,
+	// 	// 	1.0
+	// 	// )
+	// 	new lambertian(
+	// 		color(0, 0, 0.5), 
+	// 		1.0
+	// 	)
+	// ));
+
+	_world.append(new sphere(
+		vec3f(0, 5, 0),
+		1.0,
+		new lambertian(
+			color(1),
+			1.0
+		)
+	));
+	cameraConfig _config;
+	_config.d_position = vec3f{15.0, 2.0, 4.0};
+	_config.d_target = vec3f{0.0, 1.0, 0.0};
+	_config.d_upVector = vec3f{0.0, 1.0, 0.0};
+	_config.d_focusDistance = 10.0;
+	_config.d_defocusAngle = constant::PI / 18;
+	_config.d_fov = FOV * 0.0174532925199;
+
+	PPM _image("test.ppm", vec2i{250, 250});
+	renderer _renderer(&_image, &_world, _config);
+	int sample = 1;
+	int bounce = 1;
+	int ray_count = IMAGE_WIDTH * IMAGE_HEIGHT * sample * bounce;
+	double st_time;
+	{
+		steadyTimer st_timer;
+		st_timer.start();
+		_renderer.renderImage(sample, bounce, vec2i{4, 1}); //scan lines appear to have an edge perhaps with cache locality
+		st_time = st_timer.milliseconds();
+	}
+	_renderer.saveImage();
+
+}
+
 int main(int argc, char** argv) {
+	testRender();
 	return 1;	
 	world _world(OBJ_COUNT);
 	generateWorld(_world);

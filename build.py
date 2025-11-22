@@ -137,7 +137,7 @@ def compileMT(pairs):
 		for _fut in as_completed(futures):
 			_err = _fut.result()
 			if _err is not None:
-				print(f"\n=== Failed To Compile {pair[0]}")
+				print(f"\n=== Failed To Compile {pairs[0][0]}")
 				print(_err)
 				for f in futures:
 					if not f.done():

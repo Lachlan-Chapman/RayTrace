@@ -17,6 +17,7 @@ public:
 	virtual bool reflect(const ray &p_ray, const hitRecord &p_record, vec3f &p_attenuation, ray &p_reflected) const = 0;
 
 protected: //belong to the class not the instance as they operate purely on the incoming param data
+	static vec3f transformByNormal(const vec3f &p_localDirection, const vec3f &p_normal);
 	static vec3f diffuse();
 	static vec3f diffuseFast(const vec3f &p_normal);
 	static vec3f mirror(const vec3f &p_ray, const vec3f &p_normal);

@@ -45,6 +45,7 @@ protected:
 
 class sphere : public hittable {
 public:
+	sphere();	
 	sphere(const vec3f &p_center, double p_radius, material *p_material);
 	bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const override;
 	hittable* clone() const override;
@@ -60,6 +61,7 @@ public:
 	cube();
 	cube(const vec3f &p_center, double p_width, material *p_material);
 	bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const override;
+	hittable* clone() const override;
 protected:
 	vec3f calculateNormal(const vec3f p_point) const;
 	vec2f calculateIntersection(const ray &p_ray, int p_dimensionIndex) const;
