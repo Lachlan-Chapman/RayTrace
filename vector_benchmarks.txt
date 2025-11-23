@@ -131,3 +131,36 @@ remove this-> accessor
 	2e3d9aa Using 14 Threads
 	2e3d9aa 5000000 Rays @ 538.359(0.000107672 ms/ray)
 	Done Rendering 100x100 Pixel(s)
+
+
+code restructure to add dedicated physics classes like rectangularBounds
+	Test 0
+	cf9cb3c [10'000'000] * vec3f.unit(): 522.731 ms
+	cf9cb3c 10000 Rays @ 85.0491(0.00850491 ms/ray)
+	5c12b4c Using 14 Threads
+	cf9cb3c 5000000 Rays @ 532.959(0.000106592 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 1
+	cf9cb3c [10'000'000] * vec3f.unit(): 527.327 ms
+	cf9cb3c 10000 Rays @ 85.5712(0.00855712 ms/ray)
+	5c12b4c Using 14 Threads
+	cf9cb3c 5000000 Rays @ 525.179(0.000105036 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 2
+	cf9cb3c [10'000'000] * vec3f.unit(): 527.998 ms
+	cf9cb3c 10000 Rays @ 87.4629(0.00874629 ms/ray)
+	5c12b4c Using 14 Threads
+	cf9cb3c 5000000 Rays @ 537.121(0.000107424 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 3
+	cf9cb3c [10'000'000] * vec3f.unit(): 531.582 ms
+	cf9cb3c 10000 Rays @ 86.0134(0.00860134 ms/ray)
+	5c12b4c Using 14 Threads
+	cf9cb3c 5000000 Rays @ 553.599(0.00011072 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 4
+	cf9cb3c [10'000'000] * vec3f.unit(): 540.088 ms
+	cf9cb3c 10000 Rays @ 88.3009(0.00883009 ms/ray)
+	5c12b4c Using 14 Threads
+	cf9cb3c 5000000 Rays @ 542.106(0.000108421 ms/ray)
+	Done Rendering 100x100 Pixel(s)

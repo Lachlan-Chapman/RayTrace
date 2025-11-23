@@ -6,6 +6,7 @@
 #include "random.hpp"
 
 #include "hittable.hpp"
+#include "sceneObject.hpp"
 #include "material.hpp"
 #include "world.hpp"
 
@@ -46,7 +47,7 @@ void testRender(const char* p_testName, const world &p_world) {
 void testSphere() {
 	world _world(4);
 	_world.append(new sphere(
-		vec3f(0, -5, 0),
+		position(0, -5, 0),
 		1.0,
 		new lambertian(
 			color(0.9, 0.8, 0.7),
@@ -55,7 +56,7 @@ void testSphere() {
 	));
 
 	_world.append(new sphere(
-		vec3f(0, -2, 0),
+		position(0, -2, 0),
 		1.0,
 		new metal(
 			color(0.9, 0.8, 0.7),
@@ -65,7 +66,7 @@ void testSphere() {
 	));
 
 	_world.append(new sphere(
-		vec3f(0, 1, 0),
+		position(0, 1, 0),
 		1.0,
 		new dielectric(
 			color(0.9, 0.8, 0.7),
@@ -75,7 +76,7 @@ void testSphere() {
 	));
 
 	_world.append(new sphere(
-		vec3f(0, 4, 0),
+		position(0, 4, 0),
 		1.0,
 		new passthrough()
 	));
@@ -84,8 +85,8 @@ void testSphere() {
 void testRectangle() {
 	world _world(4);
 	_world.append(new rectangle(
-		vec3f(0, -5, 0),
-		vec3f(1.0),
+		position(0, -5, 0),
+		size(1.0),
 		new lambertian(
 			color(0.9, 0.8, 0.7),
 			1.0
@@ -93,8 +94,8 @@ void testRectangle() {
 	));
 
 	_world.append(new rectangle(
-		vec3f(0, -2, 0),
-		vec3f(1.0),
+		position(0, -2, 0),
+		size(1.0),
 		new metal(
 			color(0.9, 0.8, 0.7),
 			1.0,
@@ -103,8 +104,8 @@ void testRectangle() {
 	));
 
 	_world.append(new rectangle(
-		vec3f(0, 1, 0),
-		vec3f(1.0),
+		position(0, 1, 0),
+		size(1.0),
 		new dielectric(
 			color(0.9, 0.8, 0.7),
 			1.0,
@@ -113,8 +114,8 @@ void testRectangle() {
 	));
 
 	_world.append(new rectangle(
-		vec3f(0, 4, 0),
-		vec3f(1.0),
+		position(0, 4, 0),
+		size(1.0),
 		new passthrough()
 	));
 	testRender("testRectangle.ppm", _world);
@@ -259,7 +260,7 @@ void benchmarkRender(const world &p_world) {
 }
 
 int main(int argc, char** argv) {
-	testSphere();
+	//testSphere();
 	testRectangle();
 	return 1;
 

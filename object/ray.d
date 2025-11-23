@@ -1,7 +1,7 @@
 object/ray.o: src/raytracer/ray.cpp include/constant.hpp include/ray.hpp \
  include/vec.hpp include/color.hpp include/interval.hpp \
  include/hittable.hpp include/material.hpp include/world.hpp \
- include/BVH.hpp
+ include/sceneObject.hpp include/BVH.hpp
 include/constant.hpp:
 include/ray.hpp:
 include/vec.hpp:
@@ -10,4 +10,5 @@ include/interval.hpp:
 include/hittable.hpp:
 include/material.hpp:
 include/world.hpp:
+include/sceneObject.hpp:
 include/BVH.hpp:

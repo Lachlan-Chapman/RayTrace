@@ -337,4 +337,3 @@ using vec3i = vec<3, int>;
 
 using vec4f= vec<4, float>;
 using vec4i = vec<4, int>;
-

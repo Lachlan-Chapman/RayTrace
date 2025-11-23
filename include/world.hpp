@@ -1,5 +1,6 @@
 #pragma once
 #include "hittable.hpp"
+#include "sceneObject.hpp"
 #include "BVH.hpp"
 class world {
 public:

@@ -5,13 +5,8 @@
 #include "interval.hpp"
 #include "material.hpp"
 
-//helper to make obj creation more readable
-class position : public vec<3, float> {
-public:
-	using super = vec<3, float>; //saves me from writing vec<3, float> all the time | also didnt know using could be used like this
-	using super::vec; //this inherits all constructors as by default only member functions seem to be passed down
-	position(const super &p_vec) : super(p_vec) {} //copy constructor to merely allow vec3f to color conversion
-};
+
+using position = vec<3, float>; //alias for better readability writing out object constructors
 
 //when writing, the f may be ommited in values however, who am i to tell you to use float or doubles, its a single instruction to cast at run time so im not to concerned over performance
 template<arithmetic t_arithmetic>
@@ -39,39 +34,29 @@ public:
 	hittable() = delete; //every child class is to define its own default constructor which passes some value to the p_center param | force a default location per hittable type (im not saying here what they should all be)
 	hittable(const vec3f &p_center) : m_center(p_center) {}
 	virtual bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const = 0;
-	
 protected:
 	vec3f m_center;
 };
 
-class sceneObject : public hittable { //material based stuff
+//class sphere; //forward decleration
+class sphericalBounds : public hittable {
+	friend class sphere;
 public:
-	sceneObject() = delete; //same as hittable, child classes must set default properties for the material | sceneObject is not responsible for that choice, sphere and cube etc decide what material they want by default
-	sceneObject(const vec3f &p_center, material *p_material);
-	virtual ~sceneObject() {delete m_material;}; //allowing for late binded destructors if the child class wants to override this destructor
-	virtual sceneObject* clone() const = 0; //for deep copying mainly when using the world operator=
-protected:
-	material *m_material;
-};
-
-class sphere : public sceneObject {
-public:
-	sphere();
-	sphere(const vec3f &p_center, float p_radius, material *p_material);
+	sphericalBounds(); //default
+	sphericalBounds(const vec3f &p_center, float p_radius); //pos + radius
 	bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const override;
-	sceneObject* clone() const override;
-
-private:
+protected:
 	float m_radius;
 };
 
-
-class AABB : public hittable {
+//class rectangle; //forward decleration
+class rectangularBounds : public hittable {
+	friend class rectangle;
 public:
-	AABB();
-	AABB(const vec3f &p_minCorner, const vec3f &p_maxCorner);
-	AABB(const vec3f &p_center, float p_size); //simple cube (mainly used for easy testing)
-	AABB(const AABB &p_other);
+	rectangularBounds(); //default
+	rectangularBounds(const vec3f &p_minCorner, const vec3f &p_maxCorner); //corner
+	rectangularBounds(const vec3f &p_center, float p_radius); //cube
+
 	bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const override;
 protected:
 	float dimensionDistance(int p_dimensionIndex) const; //general form to get | may need it for loops
@@ -83,16 +68,4 @@ protected:
 	vec2f calculateIntersection(const ray &p_ray, int p_dimensionIndex) const;
 	
 	vec3f m_minCorner, m_maxCorner, m_dimensions;
-};
-
-class rectangle : public sceneObject {
-public:
-	rectangle();
-	rectangle(const vec3f &p_center, float p_width, material *p_material);
-	rectangle(const vec3f &p_minCorner, const vec3f &p_maxCorner, material *p_material);
-	rectangle(const AABB p_AABB, material *p_material);
-	bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const override;
-	sceneObject* clone() const override;
-protected:
-	AABB m_AABB; //going to go composite based for this object allowing AABB to be pure intersection code. but by rectangle having hittable, it means the world object can be sure it will have an intersect function to handle both physics and material interaction 
 };

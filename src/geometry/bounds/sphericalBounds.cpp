@@ -1,13 +1,18 @@
 #include "hittable.hpp"
-sphere::sphere(const vec3f &p_center, float p_radius, material *p_material) : sceneObject(p_center, p_material), m_radius(p_radius) {} //im allowing for 0 and negative radii
+sphericalBounds::sphericalBounds(const vec3f &p_center, float p_radius) :
+	hittable(p_center),
+	m_radius(p_radius)
+{}
 
-sphere::sphere() : sphere(vec3f(0.0), size(1.0), new passthrough()) {} //defaults a 2wide invisible sphere at (0, 0, 0)
-
-sceneObject* sphere::clone() const {return new sphere(m_center, m_radius, m_material);}
-
+sphericalBounds::sphericalBounds() :
+	sphericalBounds(
+		vec3f(0.0),
+		1.0
+	)
+{}
 
 //sub -2h for b in the original quadratic equation and solve for h and it simplifies significantly
-bool sphere::intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const {
+bool sphericalBounds::intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const {
 	vec3f to_center = p_ray.m_origin - m_center;
 	float a = p_ray.m_direction.square_length(); //same result as previous a but with 2 function calls not 3
 	//float h = p_ray.m_direction.dot(to_center);
@@ -34,6 +39,5 @@ bool sphere::intersect(const ray &p_ray, interval p_interval, hitRecord &p_recor
 	//HERE NORMAL ARE UNIT
 	vec3f normal = (p_record.m_point - m_center) / m_radius; //vector in the dir from the center to the point of intersection normalised given the vector will have mag = to the sphere rad
 	p_record.setDirection(p_ray, normal);
-	p_record.m_material = m_material;
 	return true;
 }

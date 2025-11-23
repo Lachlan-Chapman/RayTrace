@@ -2,7 +2,7 @@
 #include "hittable.hpp"
 
 template<std::size_t t_children>
-class BVHNode : public AABB {
+class BVHNode : public rectangularBounds {
 public:
 	BVHNode();
 	
