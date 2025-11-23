@@ -1,18 +1,18 @@
 #include "world.hpp"
 
 world::world() : world(1) {} //by default create one object sized world
-world::world(int p_size) : m_size(p_size), m_objectCount(0) {
-	m_object = new hittable*[p_size];
+world::world(int p_size) : m_objectCapacity(p_size), m_objectCount(0) {
+	m_object = new sceneObject*[p_size];
 	for(int i = 0; i < p_size; i++) {
 		m_object[i] = nullptr;
 	}
 }
 
-world::world(const world &p_other) : m_size(p_other.m_size), m_objectCount(p_other.m_objectCount) {
-	m_object = new hittable*[m_size];
-	for(int i = 0; i < m_size; i++) {
+world::world(const world &p_other) : m_objectCapacity(p_other.m_objectCapacity), m_objectCount(p_other.m_objectCount) {
+	m_object = new sceneObject*[m_objectCapacity];
+	for(int i = 0; i < m_objectCapacity; i++) {
 		if(i < m_objectCount && p_other[i] != nullptr) {
-			m_object[i] = p_other[i]->clone();
+			m_object[i] = p_other[i]->clone(); //the old ptr still exists, the p_other has ownership and handles its destruction
 		} else {
 			m_object[i] = nullptr;
 		}
@@ -27,8 +27,8 @@ world::~world() {
 	m_object = nullptr;
 }
 
-bool world::append(hittable *p_object) { //have to instantiate outside to maintain the ability to late bind for child types
-	if(m_objectCount < m_size) {
+bool world::append(sceneObject *p_object) { //have to instantiate outside to maintain the ability to late bind for child types
+	if(m_objectCount < m_objectCapacity) {
 		m_object[m_objectCount++] = p_object;
 		return true;
 	} else {

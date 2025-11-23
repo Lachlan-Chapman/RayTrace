@@ -1,5 +1,6 @@
 #pragma once
 #include "hittable.hpp"
+#include "BVH.hpp"
 class world {
 public:
 	world();
@@ -12,8 +13,8 @@ public:
 	//world& operator=(const world&) = delete;
 
 
-	hittable* operator[](int p_index) const {return m_object[p_index];}
-	hittable*& operator[](int p_index) {return m_object[p_index];}
+	sceneObject* operator[](int p_index) const {return m_object[p_index];}
+	sceneObject*& operator[](int p_index) {return m_object[p_index];}
 	world& operator=(const world& p_other) {
 		if(this == &p_other) {return *this;} //dont copy over itself and break
 		for(int i = 0; i < m_objectCount; i++) {
@@ -23,10 +24,10 @@ public:
 		m_object = nullptr;
 
 		m_objectCount = p_other.m_objectCount;
-		m_size = p_other.m_size;
+		m_objectCapacity = p_other.m_objectCapacity;
 
-		m_object = new hittable*[m_size];
-		for(int i = 0; i < m_size; i++) {
+		m_object = new sceneObject*[m_objectCapacity];
+		for(int i = 0; i < m_objectCapacity; i++) {
 			if(i < m_objectCount && p_other[i] != nullptr) {
 				m_object[i] = p_other[i]->clone();
 			} else {
@@ -36,9 +37,13 @@ public:
 		return *this;
 	}
 
-	bool append(hittable *p_object);
+	bool append(sceneObject *p_object);
 	bool intersect(const ray &p_ray, const interval &p_interval, hitRecord &p_record) const;
 private:
-	hittable **m_object;
-	int m_size, m_objectCount;
+	sceneObject **m_object;
+	int m_objectCapacity, m_objectCount;
+
+	BVHNode<2> *m_node;
+	int m_BVHCapacity, m_BVHCount;
+	BVH *m_bvh; //allow for various bvh techniques so we will be late binding
 };

@@ -81,20 +81,20 @@ void testSphere() {
 	));
 	testRender("testSphere.ppm", _world);
 }
-void testCube() {
+void testRectangle() {
 	world _world(4);
-	_world.append(new cube(
+	_world.append(new rectangle(
 		vec3f(0, -5, 0),
-		1.0,
+		vec3f(1.0),
 		new lambertian(
 			color(0.9, 0.8, 0.7),
 			1.0
 		)
 	));
 
-	_world.append(new cube(
+	_world.append(new rectangle(
 		vec3f(0, -2, 0),
-		1.0,
+		vec3f(1.0),
 		new metal(
 			color(0.9, 0.8, 0.7),
 			1.0,
@@ -102,9 +102,9 @@ void testCube() {
 		)
 	));
 
-	_world.append(new cube(
+	_world.append(new rectangle(
 		vec3f(0, 1, 0),
-		1.0,
+		vec3f(1.0),
 		new dielectric(
 			color(0.9, 0.8, 0.7),
 			1.0,
@@ -112,12 +112,12 @@ void testCube() {
 		)
 	));
 
-	_world.append(new cube(
+	_world.append(new rectangle(
 		vec3f(0, 4, 0),
-		1.0,
+		vec3f(1.0),
 		new passthrough()
 	));
-	testRender("testCube.ppm", _world);
+	testRender("testRectangle.ppm", _world);
 }
 
 //benchmark
@@ -162,7 +162,7 @@ void generateWorld(world &p_world) {
 	
 	p_world.append(new sphere( //ground
 			position{0.0, -1000.0, 0.0},
-			radius(1000),
+			size(1000.0),
 			new lambertian(
 				color(0.5),
 				reflectance(1.0)
@@ -171,7 +171,7 @@ void generateWorld(world &p_world) {
 	);
 	p_world.append(new sphere( //simple diffuse
 			position{-4.0, 1.0, 0.0},
-			radius(1.0),
+			size(1.0),
 			new lambertian(
 				color{0.4, 0.5, 0.9},
 				reflectance(1.0)
@@ -180,7 +180,7 @@ void generateWorld(world &p_world) {
 	);
 	p_world.append(new sphere(
 			position{0.0, 1.0, 0.0},
-			radius(1.0),
+			size(1.0),
 			new dielectric(
 				color(1.0),
 				reflectance(1.0),
@@ -190,7 +190,7 @@ void generateWorld(world &p_world) {
 	);
 	p_world.append(new sphere(
 			position{0.0, 1.0, 0.0},
-			radius(0.5),
+			size(0.5),
 			new dielectric(
 				color(1.0),
 				reflectance(1.0),
@@ -200,7 +200,7 @@ void generateWorld(world &p_world) {
 	);
 	p_world.append(new sphere(
 			position{4.0, 1.0, 0.0},
-			radius(1.0),
+			size(1.0),
 			new metal(
 				color{0.9, 0.6, 0.5},
 				reflectance(1.0),
@@ -258,15 +258,10 @@ void benchmarkRender(const world &p_world) {
 	_renderer.saveImage();
 }
 
-
-
-
-
-
 int main(int argc, char** argv) {
-	//testSphere();
-	//testCube();
-	//return 1;
+	testSphere();
+	testRectangle();
+	return 1;
 
 
 

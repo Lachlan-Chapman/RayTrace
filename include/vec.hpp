@@ -226,9 +226,13 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 		}
 		return *this;
 	}
-	constexpr vec_operation& operator*=(const t_type p_scale) {
+
+	/*having internal discussions whether to route all compound assignment operators via the according binary arithmetic operator | for now ill leave it until im sure routing through another function call isnt going to slow me down */
+	template<arithmetic t_arithmetic> //let me do a vec<3, float> * 0.5 (double literal) without making a big deal of it
+	constexpr vec_operation& operator*=(const t_arithmetic p_scale) {
+		const t_type scale = static_cast<t_type>(p_scale); //explicit cast to make code say exactly what im allowing for
 		for(size_t dim = 0; dim < t_dimension; dim++) {
-			m_elem[dim] *= p_scale;
+			m_elem[dim] *= scale;
 		}
 		return *this;
 	}
@@ -239,9 +243,12 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 		}
 		return *this;
 	}
-	constexpr vec_operation& operator/=(const t_type p_scale) {
+
+	template<arithmetic t_arithmetic>
+	constexpr vec_operation& operator/=(const t_arithmetic p_scale) {
+		t_type scale = static_cast<t_type>(p_scale);
 		for(size_t dim = 0; dim < t_dimension; dim++) {
-			m_elem[dim] /= p_scale;
+			m_elem[dim] /= scale;
 		}
 		return *this;
 	}	
@@ -262,9 +269,12 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] * p_other[dim];}
 		return result;
 	}
-	friend constexpr vec<t_dimension, t_type> operator*(const vec<t_dimension, t_type>& _this, const t_type p_scale) {
+
+	template<arithmetic t_arithmetic>
+	friend constexpr vec<t_dimension, t_type> operator*(const vec<t_dimension, t_type>& _this, const t_arithmetic p_scale) {
 		vec<t_dimension, t_type> result;
-		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] * p_scale;}
+		t_type scale = static_cast<t_type>(p_scale);
+		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] * scale;}
 		return result;
 	}
 	friend constexpr vec<t_dimension, t_type> operator*(const t_type p_scale, const vec<t_dimension, t_type>& _this) { //allow for 0.5 * vec not restricting to vec * 0.5
@@ -275,9 +285,12 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] / p_other[dim];}
 		return result;
 	}
-	friend constexpr vec<t_dimension, t_type> operator/(const vec<t_dimension, t_type>& _this, const t_type p_scale) {
+
+	template<arithmetic t_arithmetic>
+	friend constexpr vec<t_dimension, t_type> operator/(const vec<t_dimension, t_type>& _this, const t_arithmetic p_scale) {
 		vec<t_dimension, t_type> result;
-		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] / p_scale;}
+		t_type scale = static_cast<t_type>(p_scale);
+		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] / scale;}
 		return result;
 	}
 

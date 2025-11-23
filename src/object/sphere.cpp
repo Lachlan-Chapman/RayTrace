@@ -1,7 +1,9 @@
 #include "hittable.hpp"
-sphere::sphere() : sphere(vec3f(0.0), 1.0, new passthrough()) {}
-sphere::sphere(const vec3f &p_center, double p_radius, material *p_material) : hittable(p_center, p_material), m_radius(p_radius) {} //im allowing for 0 and negative radii
-hittable* sphere::clone() const {return new sphere(m_center, m_radius, m_material);}
+sphere::sphere(const vec3f &p_center, float p_radius, material *p_material) : sceneObject(p_center, p_material), m_radius(p_radius) {} //im allowing for 0 and negative radii
+
+sphere::sphere() : sphere(vec3f(0.0), size(1.0), new passthrough()) {} //defaults a 2wide invisible sphere at (0, 0, 0)
+
+sceneObject* sphere::clone() const {return new sphere(m_center, m_radius, m_material);}
 
 
 //sub -2h for b in the original quadratic equation and solve for h and it simplifies significantly

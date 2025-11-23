@@ -1,33 +1,25 @@
 #include "hittable.hpp"
-cube::cube() : cube(vec3f(0.0), width(1.0), new passthrough()) {}
-cube::cube(const vec3f &p_center, double p_width, material *p_material) : hittable(m_center, p_material), m_width(p_width) {
-	double half_width = m_width * 0.5;
-	m_minCorner = vec3f(
-		p_center.x - half_width,
-		p_center.y - half_width,
-		p_center.z - half_width
-	);
+AABB::AABB() : AABB(vec3f(0.0), 1.0) {}
 
-	m_maxCorner = vec3f(
-		p_center.x + half_width,
-		p_center.y + half_width,
-		p_center.z + half_width
+AABB::AABB(const vec3f &p_center, float p_radius) : hittable(p_center), m_dimensions(2 * p_radius) {}
+AABB::AABB(const vec3f &p_minCorner, const vec3f &p_maxCorner) : hittable(vec3f(0.0)) { //must default the hittable to then set its center
+	m_dimensions = vec3f(
+		width(),
+		height(),
+		depth()
 	);
+	vec3f half_widths = m_dimensions * 0.5;
+	m_center = m_minCorner + half_widths;
 }
 
-hittable* cube::clone() const {return new cube(m_center, m_width, m_material);}
+AABB::AABB(const AABB &p_other) : hittable(p_other.m_center), m_minCorner(p_other.m_minCorner), m_maxCorner(p_other.m_maxCorner), m_dimensions(p_other.m_dimensions) {}
 
-vec2f cube::calculateIntersection(const ray &p_ray, int p_dimensionIndex) const {
-	int axis = static_cast<int>(p_dimensionIndex);
-	float t0 = (m_minCorner[axis] - p_ray.m_origin[axis]) / p_ray.m_direction[axis];
-	float t1 = (m_maxCorner[axis] - p_ray.m_origin[axis]) / p_ray.m_direction[axis];
-	return vec2f(
-		std::min(t0, t1), //we need to check because we dont know what plane is closest. if im looking at the back of the cube, then the "secondary" plane is closest
-		std::max(t0, t1)
-	);
-}
+float AABB::dimensionDistance(int p_dimensionIndex) const { return m_maxCorner[p_dimensionIndex] - m_minCorner[p_dimensionIndex]; }
+float AABB::width() const { return m_maxCorner.x - m_minCorner.x; }
+float AABB::height() const { return m_maxCorner.y - m_minCorner.y; }
+float AABB::depth() const { return m_maxCorner.z - m_minCorner.z; }
 
-vec3f cube::calculateNormal(const vec3f p_point) const {
+vec3f AABB::calculateNormal(const vec3f p_point) const {
 	vec<6, float> plane_distances;
 	for(int dim = 0; dim < 3; dim++) {
 		plane_distances[dim] = std::fabs(p_point[dim] - m_minCorner[dim]);
@@ -49,8 +41,16 @@ vec3f cube::calculateNormal(const vec3f p_point) const {
 	return vec3f(0.0); //instead of default in the switch, this assures the picky compiler that we will return something in a non existent case
 }
 
-//slab collision algo
-bool cube::intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const {
+vec2f AABB::calculateIntersection(const ray &p_ray, int p_dimensionIndex) const { //if the dimension::dim is used, the caller does that, keeping args as int allows for loop usage
+	float t0 = (m_minCorner[p_dimensionIndex] - p_ray.m_origin[p_dimensionIndex]) / p_ray.m_direction[p_dimensionIndex];
+	float t1 = (m_maxCorner[p_dimensionIndex] - p_ray.m_origin[p_dimensionIndex]) / p_ray.m_direction[p_dimensionIndex];
+	return vec2f(
+		std::min(t0, t1), //we need to check because we dont know what plane is closest. if im looking at the back of the rectangle, then the "secondary" plane is closest
+		std::max(t0, t1)
+	);
+}
+
+bool AABB::intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const {
 	vec2f xPlane_intersection = calculateIntersection(p_ray, static_cast<int>(dimension::x));
 	vec2f yPlane_intersection = calculateIntersection(p_ray, static_cast<int>(dimension::y));
 	vec2f zPlane_intersection = calculateIntersection(p_ray, static_cast<int>(dimension::z));
@@ -60,6 +60,7 @@ bool cube::intersect(const ray &p_ray, interval p_interval, hitRecord &p_record)
 		std::max(yPlane_intersection[0], zPlane_intersection[0])
 	);
 
+
 	float exit_distance = std::min( //what is the closest intersection with the 2nd plane
 		xPlane_intersection[1],
 		std::min(yPlane_intersection[1], zPlane_intersection[1])
@@ -67,11 +68,11 @@ bool cube::intersect(const ray &p_ray, interval p_interval, hitRecord &p_record)
 
 	if(!p_interval.contains(enter_distance)) {return false;}
 	if(enter_distance > exit_distance) {return false;} //miss | dont bother calculating the ray interaction of course
-
+	
 	p_record.m_time = enter_distance; //dist to closest plane
-	p_record.m_point = p_ray.at(p_record.m_time); //this would be the point on th surface, not adjusting would cause infinite self intersection
 
+	p_record.m_point = p_ray.at(p_record.m_time);
 	p_record.setDirection(p_ray, calculateNormal(p_record.m_point));
-	p_record.m_material = m_material;
+
 	return true;
 }
