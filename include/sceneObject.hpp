@@ -1,6 +1,8 @@
 #pragma once
 #include "hittable.hpp"
+class BVHMedian;
 class sceneObject { //material based stuff
+	friend class BVHMedian;
 public:
 	sceneObject() = delete; //same as hittable, child classes must set default properties for the material | sceneObject is not responsible for that choice, sphere and cube etc decide what material they want by default
 	sceneObject(hittable *p_bounds, material *p_material); //children constructor create and pass bounds ptr here, and the base class handled ownership unless the delete func is overriden ofc, this forced the child constructor to create the bounds
@@ -11,8 +13,8 @@ public:
 	virtual bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const = 0;
 	virtual sceneObject* clone() const = 0; //for deep copying mainly when using the world operator=
 protected:
-	material *m_material;
 	hittable *m_bounds;
+	material *m_material;
 };
 
 

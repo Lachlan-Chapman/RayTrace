@@ -18,6 +18,8 @@
 
 #include "profiler.hpp"
 
+#include "BVHTechniques.hpp"
+
 #define IMAGE_WIDTH 100
 #define IMAGE_HEIGHT 100
 #define FOV 20
@@ -44,7 +46,7 @@ void testRender(const char* p_testName, const world &p_world) {
 	_renderer.saveImage();
 }
 void testSphere() {
-	world _world(4);
+	world _world(4, BVHTechnique::median, 2);
 	_world.append(new sphere(
 		position(0, -5, 0),
 		size(1.0),
@@ -82,7 +84,7 @@ void testSphere() {
 	testRender("testSphere.ppm", _world);
 }
 void testRectangle() {
-	world _world(4);
+	world _world(4, BVHTechnique::median, 2);
 	_world.append(new rectangle(
 		position(0, -5, 0),
 		size(1.0),
@@ -265,7 +267,7 @@ int main(int argc, char** argv) {
 
 
 
-	world _world(world::MAX_OBJECTS);
+	world _world(world::MAX_OBJECTS, BVHTechnique::median, 2);
 	generateWorld(_world);
 	for(int test_id = 0; test_id < 5; test_id++) {
 		std::clog << "Test " << test_id << std::endl;

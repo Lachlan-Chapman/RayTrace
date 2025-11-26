@@ -23,7 +23,7 @@ sphere::sphere(const vec3f &p_center, float p_radius, material *p_material) : //
 sceneObject* sphere::clone() const {
 	sphericalBounds* _bounds = dynamic_cast<sphericalBounds*>(m_bounds);
 	if(!_bounds) {return nullptr;}
-	return new sphere(_bounds->m_center, _bounds->m_radius, m_material);
+	return new sphere(_bounds->center(), _bounds->m_radius, m_material);
 }
 
 

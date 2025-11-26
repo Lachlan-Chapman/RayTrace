@@ -16,7 +16,7 @@ sphericalBounds::sphericalBounds() :
 
 //sub -2h for b in the original quadratic equation and solve for h and it simplifies significantly
 bool sphericalBounds::intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const {
-	vec3f to_center = p_ray.m_origin - m_center;
+	vec3f to_center = p_ray.m_origin - center();
 	float a = p_ray.m_direction.square_length(); //same result as previous a but with 2 function calls not 3
 	//float h = p_ray.m_direction.dot(to_center);
 	float h = to_center.dot(p_ray.m_direction);
@@ -40,7 +40,7 @@ bool sphericalBounds::intersect(const ray &p_ray, interval p_interval, hitRecord
 	p_record.m_point = p_ray.at(root); //the position in world space of the intersection
 	
 	//HERE NORMAL ARE UNIT
-	vec3f normal = (p_record.m_point - m_center) / m_radius; //vector in the dir from the center to the point of intersection normalised given the vector will have mag = to the sphere rad
+	vec3f normal = (p_record.m_point - center()) / m_radius; //vector in the dir from the center to the point of intersection normalised given the vector will have mag = to the sphere rad
 	p_record.setDirection(p_ray, normal);
 	return true;
 }

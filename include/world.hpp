@@ -10,7 +10,7 @@ public:
 	static constexpr int MAX_OBJECTS = 128;
 
 	world();
-	world(int p_size);
+	world(int p_objectCount, BVHTechnique p_technique, int p_nodeChildCount);
 	world(const world &p_other);
 	~world();
 
@@ -41,8 +41,10 @@ public:
 	bool append(sceneObject *p_object);
 	bool intersect(const ray &p_ray, const interval &p_interval, hitRecord &p_record) const;
 private:
+	void createBVH(BVHTechnique p_technique, int p_nodeChildCount);
+
 	sceneObject **m_object; //must store ptrs to non concrete types
 	int m_objectCapacity, m_objectCount;
 
-	BVH<2> *m_bvh; //allow for various bvh techniques so we will be late binding
+	BVH *m_bvh; //allow for various bvh techniques so we will be late binding
 };

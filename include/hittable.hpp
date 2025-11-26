@@ -19,7 +19,6 @@ public:
 	bool m_outside;
 	material *m_material;
 
-
 	void setDirection(const ray &p_ray, const vec3f &p_normal) { //will determine the inside outside based on the normal, so make sure the outside normal is passed in
 		m_outside = p_ray.m_direction.dot(p_normal) < 0; //hopefully the ray is going in the opposing direction as the outward normal menaing its coming toward to surface from the camera on the outside
 		m_normal = m_outside ? p_normal : -p_normal; //reverse the normal if this faces inward
@@ -37,14 +36,13 @@ public:
 	virtual bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const = 0;
 
 	float dimensionDistance(int p_dimensionIndex) const; //general form to get | may need it for loops
+	vec3f center() const;
 	float width() const; //x axis
 	float height() const; //y axis
 	float depth() const; //z axis
 
 	//all bounds store data relating to a perfectly fitting rectangle around the object
 	vec3f m_minCorner, m_maxCorner, m_dimensions;
-protected:
-	vec3f m_center;
 };
 
 //class sphere; //forward decleration

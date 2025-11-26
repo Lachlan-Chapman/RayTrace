@@ -1,14 +1,30 @@
 #include "world.hpp"
+#include "BVHTechniques.hpp"
 
-world::world() : world(1) {} //by default create one object sized world
-world::world(int p_size) : m_objectCapacity(p_size), m_objectCount(0) {
-	m_object = new sceneObject*[p_size];
-	for(int i = 0; i < p_size; i++) {
-		m_object[i] = nullptr;
+void world::createBVH(BVHTechnique p_technique, int p_nodeChildCount) {
+	switch(p_technique) {
+		case BVHTechnique::median:
+			m_bvh = new BVHMedian(m_object, m_objectCapacity, p_nodeChildCount);
+			break;
 	}
 }
 
-world::world(const world &p_other) : m_objectCapacity(p_other.m_objectCapacity), m_objectCount(p_other.m_objectCount) {
+world::world() : world(1, BVHTechnique::median, 2) {}
+
+world::world(int p_objectCount, BVHTechnique p_technique, int p_nodeChildCount) :
+	m_objectCapacity(p_objectCount),
+	m_objectCount(0), 
+	m_bvh(nullptr)
+{
+	m_object = new sceneObject*[m_objectCapacity];
+	for(int i = 0; i < m_objectCapacity; i++) { m_object[i] = nullptr; }
+	createBVH(p_technique, p_nodeChildCount);
+}
+
+world::world(const world &p_other) :
+	m_objectCapacity(p_other.m_objectCapacity),
+	m_objectCount(p_other.m_objectCount)
+{
 	m_object = new sceneObject*[m_objectCapacity];
 	for(int i = 0; i < m_objectCapacity; i++) {
 		if(i < m_objectCount && p_other[i] != nullptr) {
