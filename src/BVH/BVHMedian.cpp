@@ -17,8 +17,9 @@ BVHMedian::~BVHMedian() {
 
 BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, int p_endId) const {
 	//handle being a object holding node
-	bool is_leaf = (p_endId - p_startId) == 1;
-	if(is_leaf) {
+	
+	int span = p_endId - p_startId;
+	if(span == 1) { //leaf
 		int obj_id = m_globalIndex[p_startId];
 		const sceneObject *renderable = p_objects[obj_id];
 		return new BVHNode(
@@ -58,7 +59,8 @@ BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, in
 	);
 
 	//create the new node with children split using the variable child count
-	int split_offset = (p_endId - p_startId) / m_nodeChildCount;
+	int child_count = std::min(m_nodeChildCount, span); //in the case where i have 2 object for a 4 child node, we only wanna make 2 children
+	int split_offset = (p_endId - p_startId) / child_count;
 	BVHNode *node = new BVHNode(
 		BVHBounds(
 			min_corner, 
@@ -68,7 +70,7 @@ BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, in
 		-1 //no renderable since its not a leaf
 	);
 
-	for(int child_id = 0; child_id < m_nodeChildCount; child_id++) {
+	for(int child_id = 0; child_id < child_count; child_id++) {
 		int child_start = p_startId + (child_id * split_offset);
 		int child_end = p_startId + ((child_id+1) * split_offset);
 		child_end = (child_id == (m_nodeChildCount - 1)) ? p_endId : child_end; //last child gets the left over children in the case of a imperfect division like 5 objects with 3 children

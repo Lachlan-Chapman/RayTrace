@@ -260,3 +260,35 @@ BVH specific bound appears to be working for complex scenes | its still slow and
 	578992d Using 14 Threads
 	578992d 5000000 Rays @ 862.683(0.000172537 ms/ray)
 	Done Rendering 100x100 Pixel(s)
+
+using fixed stack (array) over std::stack
+	Test 0
+	6afef19 [10'000'000] * vec3f.unit(): 505.186 ms
+	6afef19 10000 Rays @ 127.628(0.0127628 ms/ray)
+	578992d Using 14 Threads
+	6afef19 5000000 Rays @ 767.571(0.000153514 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 1
+	6afef19 [10'000'000] * vec3f.unit(): 510.313 ms
+	6afef19 10000 Rays @ 128.159(0.0128159 ms/ray)
+	578992d Using 14 Threads
+	6afef19 5000000 Rays @ 723.052(0.00014461 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 2
+	6afef19 [10'000'000] * vec3f.unit(): 528.106 ms
+	6afef19 10000 Rays @ 132.273(0.0132273 ms/ray)
+	578992d Using 14 Threads
+	6afef19 5000000 Rays @ 758.417(0.000151683 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 3
+	6afef19 [10'000'000] * vec3f.unit(): 522.308 ms
+	6afef19 10000 Rays @ 129.339(0.0129339 ms/ray)
+	578992d Using 14 Threads
+	6afef19 5000000 Rays @ 706.747(0.000141349 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 4
+	6afef19 [10'000'000] * vec3f.unit(): 525.298 ms
+	6afef19 10000 Rays @ 130.847(0.0130847 ms/ray)
+	578992d Using 14 Threads
+	6afef19 5000000 Rays @ 707.2(0.00014144 ms/ray)
+	Done Rendering 100x100 Pixel(s)
