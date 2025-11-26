@@ -50,34 +50,51 @@ vec2f rectangularBounds::calculateIntersection(const ray &p_ray, int p_dimension
 }
 
 bool rectangularBounds::intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const {
-	vec2f xPlane_intersection = calculateIntersection(p_ray, static_cast<int>(dimension::x));
-	vec2f yPlane_intersection = calculateIntersection(p_ray, static_cast<int>(dimension::y));
-	vec2f zPlane_intersection = calculateIntersection(p_ray, static_cast<int>(dimension::z));
+	vec3f origin(p_ray.m_origin);
+	vec3f dir(p_ray.m_direction);
 
-	float enter_distance = std::max( //what is the furthest away inital plane intersection
-		xPlane_intersection[0],
-		std::max(yPlane_intersection[0], zPlane_intersection[0])
+	const vec3f inverse_direction(
+		dir.x == 0 ? std::numeric_limits<float>::infinity() : 1.0f / dir.x,
+		dir.y == 0 ? std::numeric_limits<float>::infinity() : 1.0f / dir.y,
+		dir.z == 0 ? std::numeric_limits<float>::infinity() : 1.0f / dir.z
 	);
 
-
-	float exit_distance = std::min( //what is the closest intersection with the 2nd plane
-		xPlane_intersection[1],
-		std::min(yPlane_intersection[1], zPlane_intersection[1])
-	);
-
-	if(enter_distance > exit_distance) {
-		//std::clog << "failed distance " << p_ray.m_origin << " | " << p_ray.m_direction << std::endl;
-		return false;
-	} //if the furthest, closest plane is greater than the closest, furthest plane : its a miss	
-	if(!p_interval.contains(enter_distance)) {
-		//std::clog << "failed interval" << p_ray.m_origin << " | " << p_ray.m_direction << std::endl;
-		return false;
+	vec3f t_enter = (m_minCorner - origin) * inverse_direction;
+	vec3f t_exit = (m_maxCorner + origin) * inverse_direction;
+	for(int dim = 0; dim < 3; dim++) {
+		if(dir[dim] == 0.0f) {
+			//basically if your parrallel in direction and not in the box, the chance you never hit the box is high so we discard, if your in the box the chance is 100%. 
+			//to test, put a box in front of you and walk parra to its front face. then inside a room walk in any direction parra or not, you wont get out without hitting a wall
+			if(origin[dim] < m_minCorner[dim] || origin[dim] > m_maxCorner[dim]) { return false; }
+		}
+		t_enter[dim] = -std::numeric_limits<float>::infinity(); //inside slab so remove all intervals
+		t_exit[dim] = std::numeric_limits<float>::infinity(); //inside slab so remove all intervals
 	}
-	//std::clog << "rect HIT" << p_ray.m_origin << " | " << p_ray.m_direction << std::endl;
-	p_record.m_time = enter_distance; //dist to closest plane
 
-	p_record.m_point = p_ray.at(p_record.m_time);
+	vec3f axis_t_enter(
+		std::min(t_enter.x, t_exit.x),
+		std::min(t_enter.y, t_exit.y),
+		std::min(t_enter.z, t_exit.z)
+	);
+
+	vec3f axis_t_exit(
+		std::max(t_enter.x, t_exit.x),
+		std::max(t_enter.y, t_exit.y),
+		std::max(t_enter.z, t_exit.z)
+	);
+
+	float enter_distance = axis_t_enter.max();
+	float exit_distance = axis_t_exit.min();
+
+	//interval clamp
+	if(enter_distance < p_interval.m_min) { enter_distance = p_interval.m_min; }
+	if(exit_distance > p_interval.m_max) { exit_distance = p_interval.m_max; }
+
+	if(enter_distance > exit_distance) { return false; }
+
+	p_record.m_time = enter_distance;
+	p_record.m_point = p_ray.at(enter_distance);
 	p_record.setDirection(p_ray, calculateNormal(p_record.m_point));
-
 	return true;
+
 }

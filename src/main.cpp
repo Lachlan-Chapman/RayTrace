@@ -214,15 +214,15 @@ void generateWorld(world &p_world) {
 	}
 	
 	
-	// p_world.append(new sphere( //ground
-	// 		position{0.0, -1000.0, 0.0},
-	// 		size(1000.0),
-	// 		new lambertian(
-	// 			color(0.5),
-	// 			reflectance(1.0)
-	// 		)
-	// 	)
-	// );
+	p_world.append(new sphere( //ground
+			position{0.0, -1000.0, 0.0},
+			size(1000.0),
+			new lambertian(
+				color(0.5),
+				reflectance(1.0)
+			)
+		)
+	);
 	p_world.append(new sphere( //simple diffuse
 			position{-4.0, 1.0, 0.0},
 			size(1.0),
