@@ -1,8 +1,8 @@
 #include "hittable.hpp"
 sphericalBounds::sphericalBounds(const vec3f &p_center, float p_radius) :
 	hittable(
-		vec3f(p_center - m_radius),
-		vec3f(p_center + m_radius)
+		vec3f(p_center - p_radius),
+		vec3f(p_center + p_radius)
 	),
 	m_radius(p_radius)
 {}
@@ -42,5 +42,6 @@ bool sphericalBounds::intersect(const ray &p_ray, interval p_interval, hitRecord
 	//HERE NORMAL ARE UNIT
 	vec3f normal = (p_record.m_point - center()) / m_radius; //vector in the dir from the center to the point of intersection normalised given the vector will have mag = to the sphere rad
 	p_record.setDirection(p_ray, normal);
+	//std::clog << "sphere hit " << p_ray.m_origin << " | " << p_ray.m_direction << std::endl;
 	return true;
 }

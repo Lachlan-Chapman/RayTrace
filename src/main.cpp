@@ -31,7 +31,7 @@
 //tracer validation
 void testRender(const char* p_testName, const world &p_world) {	
 	cameraConfig _config;
-	_config.d_position = vec3f{6.0, 0.0, 3.5};
+	_config.d_position = vec3f{6.0, 0.0, 4.0};
 	_config.d_target = vec3f{0.0, 0.0, 0.0};
 	_config.d_upVector = vec3f{0.0, 1.0, 0.0};
 	_config.d_focusDistance = 10.0;
@@ -43,8 +43,44 @@ void testRender(const char* p_testName, const world &p_world) {
 	int sample = 1;
 	int bounce = 10;
 	_renderer.renderImageMT(sample, bounce, vec2i{4, 1}); //scan lines appear to have an edge perhaps with cache locality
+	//_renderer.renderImage(sample, bounce, vec2i{4, 1}); //scan lines appear to have an edge perhaps with cache locality
 	_renderer.saveImage();
 }
+void testBVH() {
+	world _world(2, BVHTechnique::median, 2);
+	_world.append(new rectangle(
+		position(0, 2, 0),
+		size(1.0),
+		new lambertian(
+			color(0.7),
+			1.0
+		)
+	));
+
+	_world.append(new rectangle(
+		position(0, 0, 0),
+		size(1.0),
+		new lambertian(
+			color(0.7),
+			1.0
+		)
+	));
+
+	_world.buildBVH();
+	// hitRecord _record;
+	// _world.intersect(
+	// 	ray(
+	// 		position(0, 0, 4),
+	// 		vec3f(0, 0, -1),
+	// 		interval::forward
+	// 	),
+	// 	interval::forward,
+	// 	_record
+	// );
+
+	testRender("BVH.ppm", _world);
+}
+
 void testSphere() {
 	world _world(4, BVHTechnique::median, 2);
 	_world.append(new sphere(
@@ -81,6 +117,7 @@ void testSphere() {
 		size(1.0),
 		new passthrough()
 	));
+	_world.buildBVH();
 	testRender("testSphere.ppm", _world);
 }
 void testRectangle() {
@@ -119,7 +156,22 @@ void testRectangle() {
 		size(1.0),
 		new passthrough()
 	));
+	_world.buildBVH();
 	testRender("testRectangle.ppm", _world);
+}
+
+void testBenchmark(world &p_world) {
+	hitRecord _record;
+	p_world.intersect(
+		ray(
+			position(0, 0, 4),
+			vec3f(0, 0, -1),
+			interval::forward
+		),
+		interval::forward,
+		_record
+	);
+	testRender("bvh_mt_test.ppm", p_world);
 }
 
 //benchmark
@@ -162,15 +214,15 @@ void generateWorld(world &p_world) {
 	}
 	
 	
-	p_world.append(new sphere( //ground
-			position{0.0, -1000.0, 0.0},
-			size(1000.0),
-			new lambertian(
-				color(0.5),
-				reflectance(1.0)
-			)
-		)
-	);
+	// p_world.append(new sphere( //ground
+	// 		position{0.0, -1000.0, 0.0},
+	// 		size(1000.0),
+	// 		new lambertian(
+	// 			color(0.5),
+	// 			reflectance(1.0)
+	// 		)
+	// 	)
+	// );
 	p_world.append(new sphere( //simple diffuse
 			position{-4.0, 1.0, 0.0},
 			size(1.0),
@@ -210,6 +262,7 @@ void generateWorld(world &p_world) {
 			)
 		)
 	);
+	p_world.buildBVH();
 }
 void benchmarkVector() {
 	vec3f v(1, 2, 3);
@@ -253,7 +306,7 @@ void benchmarkRender(const world &p_world) {
 	{
 		steadyTimer mt_timer;
 		mt_timer.start();
-		_renderer.renderImageMT(sample, bounce, vec2i{4, 1}, 0); //scan lines appear to have an edge perhaps with cache locality
+		_renderer.renderImageMT(sample, bounce, vec2i{4, 1}, 0); //scan lines appear to have an edge perhaps with cache locality		
 		mt_time = mt_timer.milliseconds();
 	}
 	std::clog << GIT_HASH << " " << ray_count << " Rays @ " << mt_time << "(" << (mt_time/ray_count) << " ms/ray" << ")" << std::endl;
@@ -261,6 +314,7 @@ void benchmarkRender(const world &p_world) {
 }
 
 int main(int argc, char** argv) {
+	//testBVH();
 	//testSphere();
 	//testRectangle();
 	//return 1;
@@ -269,6 +323,8 @@ int main(int argc, char** argv) {
 
 	world _world(world::MAX_OBJECTS, BVHTechnique::median, 2);
 	generateWorld(_world);
+
+	//testBenchmark(_world);
 	for(int test_id = 0; test_id < 5; test_id++) {
 		std::clog << "Test " << test_id << std::endl;
 		benchmarkVector();

@@ -65,9 +65,15 @@ bool rectangularBounds::intersect(const ray &p_ray, interval p_interval, hitReco
 		std::min(yPlane_intersection[1], zPlane_intersection[1])
 	);
 
-	if(enter_distance > exit_distance) {return false;} //if the furthest, closest plane is greater than the closest, furthest plane : its a miss	
-	if(!p_interval.contains(enter_distance)) {return false;}
-	
+	if(enter_distance > exit_distance) {
+		//std::clog << "failed distance " << p_ray.m_origin << " | " << p_ray.m_direction << std::endl;
+		return false;
+	} //if the furthest, closest plane is greater than the closest, furthest plane : its a miss	
+	if(!p_interval.contains(enter_distance)) {
+		//std::clog << "failed interval" << p_ray.m_origin << " | " << p_ray.m_direction << std::endl;
+		return false;
+	}
+	//std::clog << "rect HIT" << p_ray.m_origin << " | " << p_ray.m_direction << std::endl;
 	p_record.m_time = enter_distance; //dist to closest plane
 
 	p_record.m_point = p_ray.at(p_record.m_time);

@@ -2,7 +2,8 @@
 #include "BVHTechniques.hpp"
 
 BVH::BVH(const sceneObject* const *p_objects, int p_objectCount) :
-	m_objects(p_objects)
+	m_objects(p_objects),
+	m_built(false)
 {
 	m_globalIndex = new int[p_objectCount];
 	for(int id = 0; id < p_objectCount; id++) {

@@ -17,6 +17,7 @@ color ray::traceColor(const world& p_world, int p_maxBounce) const {
 	for(int bounce_id = 0; bounce_id <= p_maxBounce; bounce_id++) { //<= allows that 0 bounce allows the initial ray, 1 is 1 reflection so it matches
 		hitRecord _record; //record for this bounce instance
 		if(p_world.intersect(current_ray, interval(0.001, constant::INF), _record)) { //did we hit a shape & which one was it
+			//std::clog << "Object hit" << std::endl;
 			ray scattered;
 			color material_attenuation;
 			if(_record.m_material->reflect(current_ray, _record, material_attenuation, scattered)) { //true means this material scattered

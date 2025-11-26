@@ -18,6 +18,8 @@ public:
 	virtual ~BVH();
 	virtual BVHNode* build(const sceneObject* const *p_objects, int p_startId, int p_endId) const = 0; //for a build based on N object count
 	virtual bool intersect(const ray &p_ray, const interval &p_interval, hitRecord &p_record) const = 0; //all the collison code to find the scene obj
+	bool m_built;
+	BVHNode *m_root;
 protected:
 	int *m_globalIndex; //this stores the indecies of objects in the sceneObject array. using indecies to allow it to traverse any type really
 	const sceneObject* const *m_objects;
@@ -34,8 +36,8 @@ public:
 	~BVHMedian();
 	BVHNode* build(const sceneObject* const *p_objects, int p_startId, int p_endId) const override;
 	bool intersect(const ray &p_ray, const interval &p_interval, hitRecord &p_record) const override;
+	
 private:
 	dimension getSplitAxis(const sceneObject* const *p_objects, int p_startId, int p_endId);
-	BVHNode *m_root; //defining this here rather than parent, as <2> is specific to classic (for now)
 	int m_nodeChildCount;
 };

@@ -9,9 +9,7 @@
 BVHMedian::BVHMedian(const sceneObject* const *p_objects, int p_objectCount, int p_nodeChildCount) :
 	BVH(p_objects, p_objectCount),
 	m_nodeChildCount(p_nodeChildCount)
-{
-	m_root = build(p_objects, 0, 0);
-}
+{}
 
 BVHMedian::~BVHMedian() {
 	delete m_root; //bvhnodes have ownership over their own childrens ptrs, so it will recursively go through and delete children.
@@ -19,8 +17,9 @@ BVHMedian::~BVHMedian() {
 
 BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, int p_endId) const {
 	//handle being a object holding node
-	bool is_leaf = (p_startId - p_endId) == 1;
+	bool is_leaf = (p_endId - p_startId) == 1;
 	if(is_leaf) {
+		//std::clog << "Is Leaf" << std::endl;
 		const sceneObject *renderable = p_objects[p_startId];
 		return new BVHNode(
 			rectangularBounds( //whatever the object type, use its simple rect bound
@@ -51,8 +50,8 @@ BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, in
 		this->m_globalIndex + p_startId,
 		this->m_globalIndex + p_endId,
 		[&](int p_a, int p_b) { //[&] means to allow access to external scope vars like p_objects and longest_axis
-			const sceneObject *objA = p_objects[this->m_globalIndex[p_a]];
-			const sceneObject *objB = p_objects[this->m_globalIndex[p_b]];
+			const sceneObject *objA = p_objects[p_a];
+			const sceneObject *objB = p_objects[p_b];
 
 			return objA->m_bounds->center()[longest_axis] < objB->m_bounds->center()[longest_axis];
 		}
@@ -79,7 +78,6 @@ BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, in
 		node->m_children[child_id] = build(p_objects, child_start, child_end);
 	}
 	return node;
-
 }
 
 
@@ -91,17 +89,18 @@ bool BVHMedian::intersect(const ray &p_ray, const interval &p_interval, hitRecor
 	bool hit_anything = false;
 
 	hitRecord rubbish_record; //need a hit record for the quick bounds check, but i dont want to reconstruct one each loop
+	int loop_count = 0;
 	while(!search_stack.empty()) {
 		BVHNode *node = search_stack.top();
 		search_stack.pop();
 
 		//simple AABB test to skip quickly
 		
-		if(!node->m_bounds.intersect(p_ray, smallest_interval, rubbish_record)) { continue; }
-
+		if(!node->m_bounds.intersect(p_ray, interval::universe, rubbish_record)) { continue; }
+		
 		if(node->isLeaf()) {
 			hitRecord current_hit;
-			const sceneObject *renderable = m_objects[m_globalIndex[node->m_renderableId]];
+			const sceneObject *renderable = m_objects[node->m_renderableId];
 			if(renderable->intersect(p_ray, smallest_interval, current_hit)) {
 				hit_anything = true;
 				smallest_interval.m_max = current_hit.m_time;
@@ -114,7 +113,7 @@ bool BVHMedian::intersect(const ray &p_ray, const interval &p_interval, hitRecor
 			for(int child_id = 0; child_id < m_nodeChildCount; child_id++) {
 				BVHNode *_child = node->m_children[child_id];
 				hitRecord aabb_record;
-				if(_child && _child->m_bounds.intersect(p_ray, smallest_interval, aabb_record)) { //allowing for the fact children can be left nullptr if not needed
+				if(_child && _child->m_bounds.intersect(p_ray, interval::universe, aabb_record)) { //allowing for the fact children can be left nullptr if not needed
 					child_hits[hit_count++] = nodeRecord{_child, aabb_record.m_time};
 				}
 			}
