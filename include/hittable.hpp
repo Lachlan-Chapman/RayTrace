@@ -32,8 +32,17 @@ public:
 class hittable { //physics based stuff
 public:
 	hittable() = delete; //every child class is to define its own default constructor which passes some value to the p_center param | force a default location per hittable type (im not saying here what they should all be)
-	hittable(const vec3f &p_center) : m_center(p_center) {}
+	hittable(const vec3f &p_center);
+	hittable(const vec3f &p_minCorner, const vec3f &p_maxCorner);
 	virtual bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const = 0;
+
+	float dimensionDistance(int p_dimensionIndex) const; //general form to get | may need it for loops
+	float width() const; //x axis
+	float height() const; //y axis
+	float depth() const; //z axis
+
+	//all bounds store data relating to a perfectly fitting rectangle around the object
+	vec3f m_minCorner, m_maxCorner, m_dimensions;
 protected:
 	vec3f m_center;
 };
@@ -59,13 +68,6 @@ public:
 
 	bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const override;
 protected:
-	float dimensionDistance(int p_dimensionIndex) const; //general form to get | may need it for loops
-	float width() const; //x axis
-	float height() const; //y axis
-	float depth() const; //z axis
-	
 	vec3f calculateNormal(const vec3f p_point) const;
 	vec2f calculateIntersection(const ray &p_ray, int p_dimensionIndex) const;
-	
-	vec3f m_minCorner, m_maxCorner, m_dimensions;
 };

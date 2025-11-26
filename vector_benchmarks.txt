@@ -164,3 +164,35 @@ code restructure to add dedicated physics classes like rectangularBounds
 	5c12b4c Using 14 Threads
 	cf9cb3c 5000000 Rays @ 542.106(0.000108421 ms/ray)
 	Done Rendering 100x100 Pixel(s)
+
+complete seperation of material and object bound handling. scene objects now contain a bounds object rather than being a bounds object
+	Test 0
+	2fd47ee [10'000'000] * vec3f.unit(): 501.043 ms
+	2fd47ee 10000 Rays @ 87.4971(0.00874971 ms/ray)
+	cf9cb3c Using 14 Threads
+	2fd47ee 5000000 Rays @ 558.567(0.000111713 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 1
+	2fd47ee [10'000'000] * vec3f.unit(): 513.546 ms
+	2fd47ee 10000 Rays @ 87.678(0.0087678 ms/ray)
+	cf9cb3c Using 14 Threads
+	2fd47ee 5000000 Rays @ 574.708(0.000114942 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 2
+	2fd47ee [10'000'000] * vec3f.unit(): 515.741 ms
+	2fd47ee 10000 Rays @ 88.737(0.0088737 ms/ray)
+	cf9cb3c Using 14 Threads
+	2fd47ee 5000000 Rays @ 607.211(0.000121442 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 3
+	2fd47ee [10'000'000] * vec3f.unit(): 512.503 ms
+	2fd47ee 10000 Rays @ 87.9892(0.00879892 ms/ray)
+	cf9cb3c Using 14 Threads
+	2fd47ee 5000000 Rays @ 562.582(0.000112516 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 4
+	2fd47ee [10'000'000] * vec3f.unit(): 513.67 ms
+	2fd47ee 10000 Rays @ 88.8908(0.00888908 ms/ray)
+	cf9cb3c Using 14 Threads
+	2fd47ee 5000000 Rays @ 568.174(0.000113635 ms/ray)
+	Done Rendering 100x100 Pixel(s)

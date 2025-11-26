@@ -1,6 +1,9 @@
 #include "hittable.hpp"
 sphericalBounds::sphericalBounds(const vec3f &p_center, float p_radius) :
-	hittable(p_center),
+	hittable(
+		vec3f(p_center - m_radius),
+		vec3f(p_center + m_radius)
+	),
 	m_radius(p_radius)
 {}
 

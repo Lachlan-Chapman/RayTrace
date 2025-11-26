@@ -67,25 +67,25 @@ struct vec_data<4, t_type> {
 };
 
 template <std::size_t t_dimension, arithmetic t_type>
-struct vec_operation : vec_data<t_dimension, t_type> {
+struct vec_operation : public vec_data<t_dimension, t_type> {
 	using data = vec_data<t_dimension, t_type>;
 	using data::m_elem;
 
 	vec_operation() {
-		for(size_t dim = 0; dim < t_dimension; dim++) {
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {
 			m_elem[dim] = t_type{};
 		}
 	}
 
 	template<typename t_other_type> //allows me to copy float into int (relying on static_cast handling conversions when needed)
 	vec_operation(const vec<t_dimension, t_other_type> &p_other) { //enforces they are the same length at least
-		for(size_t dim = 0; dim < t_dimension; dim++) {
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {
 			m_elem[dim] = static_cast<t_type>(p_other[dim]);
 		}
 	}
 
 	vec_operation(t_type p_scale) {
-		for(size_t dim = 0; dim < t_dimension; dim++) {
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {
 			m_elem[dim] = p_scale;
 		}
 	};
@@ -94,14 +94,14 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 	requires (sizeof...(args) == t_dimension && (std::convertible_to<args, t_type> && ...))
 	vec_operation(args... p_args) {
 		t_type values[] = { static_cast<t_type>(p_args)... };
-		for(size_t dim = 0; dim < t_dimension; dim++) {
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {
 			m_elem[dim] = values[dim];
 		}
 	}
 
 	constexpr double square_length() const {
 		double len = 0;
-		for(size_t dim = 0; dim < t_dimension; dim++) {
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {
 			len += m_elem[dim] * m_elem[dim];
 		}
 		return len;
@@ -120,7 +120,7 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 	constexpr auto dot(const vec<t_dimension, t_type> &p_other) const { //sums the pairwise product of all vector elements
 		using promoted = std::conditional_t<std::is_integral_v<t_type>, long long, double>; //this will convert an int of t_type to long long to prevent overflow for large valued dots
 		promoted result = promoted{};
-		for(size_t dim = 0; dim < t_dimension; dim++) {
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {
 			result += static_cast<promoted>(m_elem[dim]) * static_cast<promoted>(p_other[dim]);
 		}
 		return result;
@@ -128,7 +128,7 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 
 	constexpr t_type min() const {
 		t_type smallest = m_elem[0];
-		for(size_t dim = 1; dim < t_dimension; dim++) {
+		for(std::size_t dim = 1; dim < t_dimension; dim++) {
 			if(m_elem[dim] < smallest) {smallest = m_elem[dim];}
 		}
 		return smallest;
@@ -136,16 +136,16 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 
 	constexpr t_type max() const {
 		t_type largest = m_elem[0];
-		for(size_t dim = 1; dim < t_dimension; dim++) {
+		for(std::size_t dim = 1; dim < t_dimension; dim++) {
 			if(m_elem[dim] > largest) {largest = m_elem[dim];}
 		}
 		return largest;
 	}
 
-	constexpr size_t minDimension() const {
-		size_t smallest_dimension = 0;
+	constexpr std::size_t minDimension() const {
+		std::size_t smallest_dimension = 0;
 		t_type smallest = m_elem[0];
-		for(size_t dim = 1; dim < t_dimension; dim++) {
+		for(std::size_t dim = 1; dim < t_dimension; dim++) {
 			if(m_elem[dim] > smallest) {
 				smallest = m_elem[dim];
 				smallest_dimension = dim;
@@ -154,10 +154,10 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 		return smallest_dimension;
 	}
 
-	constexpr size_t maxDimension() const {
-		size_t largest_dimension = 0;
+	constexpr std::size_t maxDimension() const {
+		std::size_t largest_dimension = 0;
 		t_type largest = m_elem[0];
-		for(size_t dim = 1; dim < t_dimension; dim++) {
+		for(std::size_t dim = 1; dim < t_dimension; dim++) {
 			if(m_elem[dim] > largest) {
 				largest = m_elem[dim];
 				largest_dimension = dim;
@@ -182,7 +182,7 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 	template <typename t_cast>
 	operator vec<t_dimension, t_cast>() const { //should enforce equal sizes
 		vec<t_dimension, t_cast> result;
-		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = static_cast<t_cast>(m_elem[dim]);}
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {result[dim] = static_cast<t_cast>(m_elem[dim]);}
 		return result;
 	}
 
@@ -191,7 +191,7 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 
 	constexpr vec<t_dimension, t_type> operator-() const { //to negate the vec components
 		vec<t_dimension, t_type> cpy;
-		for(size_t dim = 0; dim < t_dimension; dim++) {
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {
 			cpy[dim] = -m_elem[dim];
 		}
 		return cpy;
@@ -199,7 +199,7 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 
 	constexpr vec<t_dimension, t_type>& operator=(const vec<t_dimension, t_type> &p_other) {
 		if(this == &p_other) {return *this;}
-		for(size_t dim = 0; dim < t_dimension; dim++) {
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {
 			m_elem[dim] = p_other[dim];
 		}
 		return *this;
@@ -207,21 +207,21 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 
 	/* assignment operators */
 	constexpr vec_operation& operator+=(const vec<t_dimension, t_type>& p_other) {
-		for(size_t dim = 0; dim < t_dimension; dim++) {
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {
 			m_elem[dim] += p_other[dim];
 		}
 		return *this;
 	};
 
 	constexpr vec_operation& operator-=(const vec<t_dimension, t_type>& p_other) {
-		for(size_t dim = 0; dim < t_dimension; dim++) {
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {
 			m_elem[dim] -= p_other[dim];
 		}
 		return *this;
 	}
 
 	constexpr vec_operation& operator*=(const vec<t_dimension, t_type>& p_other) {
-		for(size_t dim = 0; dim < t_dimension; dim++) {
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {
 			m_elem[dim] *= p_other[dim];
 		}
 		return *this;
@@ -231,14 +231,14 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 	template<arithmetic t_arithmetic> //let me do a vec<3, float> * 0.5 (double literal) without making a big deal of it
 	constexpr vec_operation& operator*=(const t_arithmetic p_scale) {
 		const t_type scale = static_cast<t_type>(p_scale); //explicit cast to make code say exactly what im allowing for
-		for(size_t dim = 0; dim < t_dimension; dim++) {
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {
 			m_elem[dim] *= scale;
 		}
 		return *this;
 	}
 
 	constexpr vec_operation& operator/=(const vec<t_dimension, t_type>& p_other) {
-		for(size_t dim = 0; dim < t_dimension; dim++) {
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {
 			m_elem[dim] /= p_other[dim];
 		}
 		return *this;
@@ -247,7 +247,7 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 	template<arithmetic t_arithmetic>
 	constexpr vec_operation& operator/=(const t_arithmetic p_scale) {
 		t_type scale = static_cast<t_type>(p_scale);
-		for(size_t dim = 0; dim < t_dimension; dim++) {
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {
 			m_elem[dim] /= scale;
 		}
 		return *this;
@@ -256,17 +256,17 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 
 	friend constexpr vec<t_dimension, t_type> operator+(const vec<t_dimension, t_type>& _this, const vec<t_dimension, t_type>& p_other) {
 		vec<t_dimension, t_type> result;
-		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] + p_other[dim];}
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] + p_other[dim];}
 		return result;
 	};
 	friend constexpr vec<t_dimension, t_type> operator-(const vec<t_dimension, t_type>& _this, const vec<t_dimension, t_type>& p_other) {
 		vec<t_dimension, t_type> result;
-		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] - p_other[dim];}
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] - p_other[dim];}
 		return result;
 	}
 	friend constexpr vec<t_dimension, t_type> operator*(const vec<t_dimension, t_type>& _this, const vec<t_dimension, t_type>& p_other) {
 		vec<t_dimension, t_type> result;
-		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] * p_other[dim];}
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] * p_other[dim];}
 		return result;
 	}
 
@@ -274,7 +274,7 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 	friend constexpr vec<t_dimension, t_type> operator*(const vec<t_dimension, t_type>& _this, const t_arithmetic p_scale) {
 		vec<t_dimension, t_type> result;
 		t_type scale = static_cast<t_type>(p_scale);
-		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] * scale;}
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] * scale;}
 		return result;
 	}
 	friend constexpr vec<t_dimension, t_type> operator*(const t_type p_scale, const vec<t_dimension, t_type>& _this) { //allow for 0.5 * vec not restricting to vec * 0.5
@@ -282,7 +282,7 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 	}
 	friend constexpr vec<t_dimension, t_type> operator/(const vec<t_dimension, t_type>& _this, const vec<t_dimension, t_type>& p_other) {
 		vec<t_dimension, t_type> result;
-		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] / p_other[dim];}
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] / p_other[dim];}
 		return result;
 	}
 
@@ -290,13 +290,13 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 	friend constexpr vec<t_dimension, t_type> operator/(const vec<t_dimension, t_type>& _this, const t_arithmetic p_scale) {
 		vec<t_dimension, t_type> result;
 		t_type scale = static_cast<t_type>(p_scale);
-		for(size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] / scale;}
+		for(std::size_t dim = 0; dim < t_dimension; dim++) {result[dim] = _this[dim] / scale;}
 		return result;
 	}
 
 	friend inline std::ostream& operator<<(std::ostream& out, const vec<t_dimension, t_type>& v) {
 		out << '(';
-		for(size_t dim = 0; dim < t_dimension-1; dim++) {
+		for(std::size_t dim = 0; dim < t_dimension-1; dim++) {
 			out << v[dim] << ", ";
 		}
 		out << v[t_dimension-1] << ')';
@@ -305,7 +305,7 @@ struct vec_operation : vec_data<t_dimension, t_type> {
 };
 
 template <std::size_t t_dimension, arithmetic t_type>
-struct vec : vec_operation<t_dimension, t_type> {
+struct vec : public vec_operation<t_dimension, t_type> {
 	using value_type = t_type; //expose the template values if users ever want them
 	static constexpr std::size_t dimension_count = t_dimension;
 	

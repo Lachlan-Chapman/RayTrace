@@ -21,7 +21,6 @@
 #define IMAGE_WIDTH 100
 #define IMAGE_HEIGHT 100
 #define FOV 20
-#define OBJ_COUNT 128
 
 #ifndef GIT_HASH
 #define GIT_HASH "default"
@@ -48,7 +47,7 @@ void testSphere() {
 	world _world(4);
 	_world.append(new sphere(
 		position(0, -5, 0),
-		1.0,
+		size(1.0),
 		new lambertian(
 			color(0.9, 0.8, 0.7),
 			1.0
@@ -57,7 +56,7 @@ void testSphere() {
 
 	_world.append(new sphere(
 		position(0, -2, 0),
-		1.0,
+		size(1.0),
 		new metal(
 			color(0.9, 0.8, 0.7),
 			1.0,
@@ -67,7 +66,7 @@ void testSphere() {
 
 	_world.append(new sphere(
 		position(0, 1, 0),
-		1.0,
+		size(1.0),
 		new dielectric(
 			color(0.9, 0.8, 0.7),
 			1.0,
@@ -77,7 +76,7 @@ void testSphere() {
 
 	_world.append(new sphere(
 		position(0, 4, 0),
-		1.0,
+		size(1.0),
 		new passthrough()
 	));
 	testRender("testSphere.ppm", _world);
@@ -123,7 +122,7 @@ void testRectangle() {
 
 //benchmark
 void generateWorld(world &p_world) {
-	for(int i = 0; i < OBJ_COUNT-5; i++) {
+	for(int i = 0; i < world::MAX_OBJECTS-5; i++) {
 		material *_mat;
 		double mat_selection = rng::decimal();
 		
@@ -261,12 +260,12 @@ void benchmarkRender(const world &p_world) {
 
 int main(int argc, char** argv) {
 	//testSphere();
-	testRectangle();
-	return 1;
+	//testRectangle();
+	//return 1;
 
 
 
-	world _world(OBJ_COUNT);
+	world _world(world::MAX_OBJECTS);
 	generateWorld(_world);
 	for(int test_id = 0; test_id < 5; test_id++) {
 		std::clog << "Test " << test_id << std::endl;

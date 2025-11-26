@@ -8,32 +8,15 @@ rectangularBounds::rectangularBounds() : //default constructor
 {}
 
 rectangularBounds::rectangularBounds(const vec3f &p_minCorner, const vec3f &p_maxCorner) : //corner defined constructor
-	hittable(vec3f(0.0)),
-	m_minCorner(p_minCorner),
-	m_maxCorner(p_maxCorner)
-{
-	m_dimensions = vec3f(
-		width(),
-		height(),
-		depth()
-	);
-	vec3f half_widths = m_dimensions * 0.5;
-	m_center = m_minCorner + half_widths;
-}
+	hittable(p_minCorner, p_maxCorner)
+{}
 
 rectangularBounds::rectangularBounds(const vec3f &p_center, float p_radius) : //simple cube constructor
-	hittable(p_center),
-	m_dimensions(2 * p_radius)
-{
-	vec3f half_widths = m_dimensions * 0.5;
-	m_minCorner = m_center - half_widths;
-	m_maxCorner = m_center + half_widths;
-}
-
-float rectangularBounds::dimensionDistance(int p_dimensionIndex) const { return m_maxCorner[p_dimensionIndex] - m_minCorner[p_dimensionIndex]; }
-float rectangularBounds::width() const { return m_maxCorner.x - m_minCorner.x; }
-float rectangularBounds::height() const { return m_maxCorner.y - m_minCorner.y; }
-float rectangularBounds::depth() const { return m_maxCorner.z - m_minCorner.z; }
+	hittable(
+		vec3f(p_center - p_radius),
+		vec3f(p_center + p_radius)
+	)
+{}
 
 vec3f rectangularBounds::calculateNormal(const vec3f p_point) const {
 	vec<6, float> plane_distances;
@@ -42,7 +25,7 @@ vec3f rectangularBounds::calculateNormal(const vec3f p_point) const {
 		plane_distances[3 + dim] = std::fabs(p_point[dim] - m_maxCorner[dim]);
 	}
 
-	size_t smallest_dimension = plane_distances.minDimension();
+	std::size_t smallest_dimension = plane_distances.minDimension();
 
 	switch(smallest_dimension) { //HERE NORMAL ARE UNIT
 		case 0: return vec3f(-1, 0, 0); // x = min.x

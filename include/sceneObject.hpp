@@ -5,7 +5,6 @@ public:
 	sceneObject() = delete; //same as hittable, child classes must set default properties for the material | sceneObject is not responsible for that choice, sphere and cube etc decide what material they want by default
 	sceneObject(hittable *p_bounds, material *p_material); //children constructor create and pass bounds ptr here, and the base class handled ownership unless the delete func is overriden ofc, this forced the child constructor to create the bounds
 	virtual ~sceneObject() {
-		delete m_bounds;
 		delete m_material;
 	};
 

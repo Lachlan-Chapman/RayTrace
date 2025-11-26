@@ -1,18 +1,18 @@
 #pragma once
 #include "hittable.hpp"
 #include "sceneObject.hpp"
-#include "BVH.hpp"
+#include "BVHTechniques.hpp"
+
+
+
 class world {
 public:
+	static constexpr int MAX_OBJECTS = 128;
+
 	world();
 	world(int p_size);
 	world(const world &p_other);
 	~world();
-
-	//used to catch memory corrupting culprits 
-	//world(const world&) = delete;
-	//world& operator=(const world&) = delete;
-
 
 	sceneObject* operator[](int p_index) const {return m_object[p_index];}
 	sceneObject*& operator[](int p_index) {return m_object[p_index];}
@@ -41,10 +41,8 @@ public:
 	bool append(sceneObject *p_object);
 	bool intersect(const ray &p_ray, const interval &p_interval, hitRecord &p_record) const;
 private:
-	sceneObject **m_object;
+	sceneObject **m_object; //must store ptrs to non concrete types
 	int m_objectCapacity, m_objectCount;
 
-	BVHNode<2> *m_node;
-	int m_BVHCapacity, m_BVHCount;
-	BVH *m_bvh; //allow for various bvh techniques so we will be late binding
+	BVH<2> *m_bvh; //allow for various bvh techniques so we will be late binding
 };
