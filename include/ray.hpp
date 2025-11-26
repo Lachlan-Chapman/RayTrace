@@ -15,6 +15,7 @@ public:
 	color traceColor(const world &p_world, int) const;
 
 	interval m_interval;
-	vec3f m_origin, m_direction;
+	vec3f m_origin, m_direction, m_inverseDirection;
+	vec3i m_directionSigns; //using int as bool here
 private:
 };

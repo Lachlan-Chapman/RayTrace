@@ -45,7 +45,6 @@ public:
 	vec3f m_minCorner, m_maxCorner, m_dimensions;
 };
 
-//class sphere; //forward decleration
 class sphericalBounds : public hittable {
 	friend class sphere;
 public:
@@ -56,7 +55,6 @@ protected:
 	float m_radius;
 };
 
-//class rectangle; //forward decleration
 class rectangularBounds : public hittable {
 	friend class rectangle;
 public:
@@ -68,4 +66,13 @@ public:
 protected:
 	vec3f calculateNormal(const vec3f p_point) const;
 	vec2f calculateIntersection(const ray &p_ray, int p_dimensionIndex) const;
+};
+
+class BVHNode; //forward dec
+class BVHBounds : public hittable {
+	friend class BVHNode;
+public:
+	BVHBounds(); //default
+	BVHBounds(const vec3f &p_minCorner, const vec3f &p_maxCorner); //corner
+	bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const override;
 };

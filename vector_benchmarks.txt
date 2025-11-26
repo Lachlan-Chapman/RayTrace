@@ -196,3 +196,35 @@ complete seperation of material and object bound handling. scene objects now con
 	cf9cb3c Using 14 Threads
 	2fd47ee 5000000 Rays @ 568.174(0.000113635 ms/ray)
 	Done Rendering 100x100 Pixel(s)
+
+implemented BVH and re wrote rectangular bounds intersection code
+	Test 0
+	32e4143 [10'000'000] * vec3f.unit(): 509.184 ms
+	32e4143 10000 Rays @ 2140.59(0.214059 ms/ray)
+	c9ba60a Using 14 Threads
+	32e4143 5000000 Rays @ 12777.8(0.00255556 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 1
+	32e4143 [10'000'000] * vec3f.unit(): 523.934 ms
+	32e4143 10000 Rays @ 2160.93(0.216093 ms/ray)
+	c9ba60a Using 14 Threads
+	32e4143 5000000 Rays @ 13158.5(0.00263169 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 2
+	32e4143 [10'000'000] * vec3f.unit(): 524.683 ms
+	32e4143 10000 Rays @ 2140.94(0.214094 ms/ray)
+	c9ba60a Using 14 Threads
+	32e4143 5000000 Rays @ 12695.3(0.00253906 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 3
+	32e4143 [10'000'000] * vec3f.unit(): 509.186 ms
+	32e4143 10000 Rays @ 2134.38(0.213438 ms/ray)
+	c9ba60a Using 14 Threads
+	32e4143 5000000 Rays @ 12682.5(0.0025365 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 4
+	32e4143 [10'000'000] * vec3f.unit(): 516.022 ms
+	32e4143 10000 Rays @ 2133.75(0.213375 ms/ray)
+	c9ba60a Using 14 Threads
+	32e4143 5000000 Rays @ 12699.2(0.00253985 ms/ray)
+	Done Rendering 100x100 Pixel(s)

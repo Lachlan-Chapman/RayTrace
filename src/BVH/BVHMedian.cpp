@@ -19,15 +19,15 @@ BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, in
 	//handle being a object holding node
 	bool is_leaf = (p_endId - p_startId) == 1;
 	if(is_leaf) {
-		//std::clog << "Is Leaf" << std::endl;
-		const sceneObject *renderable = p_objects[p_startId];
+		int obj_id = m_globalIndex[p_startId];
+		const sceneObject *renderable = p_objects[obj_id];
 		return new BVHNode(
-			rectangularBounds( //whatever the object type, use its simple rect bound
+			BVHBounds( //whatever the object type, use its simple rect bound
 				renderable->m_bounds->m_minCorner,
 				renderable->m_bounds->m_maxCorner
 			),
 			m_nodeChildCount,
-			p_startId //this node has all the values of the renderable
+			obj_id //this node has all the values of the renderable
 		);
 	}
 
@@ -60,7 +60,7 @@ BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, in
 	//create the new node with children split using the variable child count
 	int split_offset = (p_endId - p_startId) / m_nodeChildCount;
 	BVHNode *node = new BVHNode(
-		rectangularBounds(
+		BVHBounds(
 			min_corner, 
 			max_corner
 		),
@@ -96,7 +96,7 @@ bool BVHMedian::intersect(const ray &p_ray, const interval &p_interval, hitRecor
 
 		//simple AABB test to skip quickly
 		
-		if(!node->m_bounds.intersect(p_ray, interval::universe, rubbish_record)) { continue; }
+		if(!node->m_bounds.intersect(p_ray, smallest_interval, rubbish_record)) { continue; }
 		
 		if(node->isLeaf()) {
 			hitRecord current_hit;
@@ -113,7 +113,7 @@ bool BVHMedian::intersect(const ray &p_ray, const interval &p_interval, hitRecor
 			for(int child_id = 0; child_id < m_nodeChildCount; child_id++) {
 				BVHNode *_child = node->m_children[child_id];
 				hitRecord aabb_record;
-				if(_child && _child->m_bounds.intersect(p_ray, interval::universe, aabb_record)) { //allowing for the fact children can be left nullptr if not needed
+				if(_child && _child->m_bounds.intersect(p_ray, smallest_interval, aabb_record)) { //allowing for the fact children can be left nullptr if not needed
 					child_hits[hit_count++] = nodeRecord{_child, aabb_record.m_time};
 				}
 			}

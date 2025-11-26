@@ -6,10 +6,33 @@
 
 
 ray::ray() {}
-ray::ray(const ray &p_other) : m_origin(p_other.m_origin), m_direction(p_other.m_direction), m_interval(p_other.m_interval) {}
-ray::ray(const vec3f &p_origin, const vec3f &p_direction, const interval &p_interval) : m_origin(p_origin), m_direction(p_direction), m_interval(p_interval) {}
+ray::ray(const ray &p_other) :
+	m_origin(p_other.m_origin),
+	m_direction(p_other.m_direction),
+	m_interval(p_other.m_interval),
+	m_inverseDirection(p_other.m_inverseDirection),
+	m_directionSigns(p_other.m_directionSigns)
+{}
 
-vec3f ray::at(float p_time) const {return m_origin + (m_direction * p_time);}
+ray::ray(const vec3f &p_origin, const vec3f &p_direction, const interval &p_interval) :
+	m_origin(p_origin),
+	m_direction(p_direction),
+	m_interval(p_interval)
+{
+	for(int dim = 0; dim < 3; dim++) {
+		m_inverseDirection[dim] = 
+			(m_direction[dim] == 0.0f) ? 
+			std::numeric_limits<float>::infinity() :
+			(1.0f / m_direction[dim]);
+		
+		m_directionSigns[dim] = 
+			(m_direction[dim] < 0.0f) ? 
+			1 :
+			0;
+	}
+}
+
+vec3f ray::at(float p_time) const { return m_origin + (m_direction * p_time); }
 
 color ray::traceColor(const world& p_world, int p_maxBounce) const {
 	ray current_ray = *this;

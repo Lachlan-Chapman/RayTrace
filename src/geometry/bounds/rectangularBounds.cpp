@@ -60,7 +60,7 @@ bool rectangularBounds::intersect(const ray &p_ray, interval p_interval, hitReco
 	);
 
 	vec3f t_enter = (m_minCorner - origin) * inverse_direction;
-	vec3f t_exit = (m_maxCorner + origin) * inverse_direction;
+	vec3f t_exit = (m_maxCorner - origin) * inverse_direction;
 	for(int dim = 0; dim < 3; dim++) {
 		if(dir[dim] == 0.0f) {
 			//basically if your parrallel in direction and not in the box, the chance you never hit the box is high so we discard, if your in the box the chance is 100%. 
