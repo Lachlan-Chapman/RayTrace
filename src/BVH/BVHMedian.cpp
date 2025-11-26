@@ -82,17 +82,17 @@ BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, in
 
 
 bool BVHMedian::intersect(const ray &p_ray, const interval &p_interval, hitRecord &p_record) const {
-	std::stack<BVHNode*> search_stack;
-	search_stack.push(m_root);
+	BVHNode* search_stack[64];
+	int top = 0;
+	search_stack[top++] = m_root;
 
 	interval smallest_interval = p_interval; //ensure we only check for object closer than the current hit
 	bool hit_anything = false;
 
 	hitRecord rubbish_record; //need a hit record for the quick bounds check, but i dont want to reconstruct one each loop
 	int loop_count = 0;
-	while(!search_stack.empty()) {
-		BVHNode *node = search_stack.top();
-		search_stack.pop();
+	while(top > 0) {
+		BVHNode *node = search_stack[--top];
 
 		//simple AABB test to skip quickly
 		
@@ -126,7 +126,7 @@ bool BVHMedian::intersect(const ray &p_ray, const interval &p_interval, hitRecor
 			);
 
 			for(int child_id = 0; child_id < hit_count; child_id++) {
-				search_stack.push(child_hits[child_id].m_node);
+				search_stack[top++] = child_hits[child_id].m_node;
 			}
 		}
 	}

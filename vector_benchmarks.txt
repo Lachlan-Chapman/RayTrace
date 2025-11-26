@@ -228,3 +228,35 @@ implemented BVH and re wrote rectangular bounds intersection code
 	c9ba60a Using 14 Threads
 	32e4143 5000000 Rays @ 12699.2(0.00253985 ms/ray)
 	Done Rendering 100x100 Pixel(s)
+
+BVH specific bound appears to be working for complex scenes | its still slow and needs a look over, i believe the std::stack is shit
+	Test 0
+	578992d [10'000'000] * vec3f.unit(): 525.791 ms
+	578992d 10000 Rays @ 143.519(0.0143519 ms/ray)
+	578992d Using 14 Threads
+	578992d 5000000 Rays @ 786.94(0.000157388 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 1
+	578992d [10'000'000] * vec3f.unit(): 531.662 ms
+	578992d 10000 Rays @ 147.53(0.014753 ms/ray)
+	578992d Using 14 Threads
+	578992d 5000000 Rays @ 781.509(0.000156302 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 2
+	578992d [10'000'000] * vec3f.unit(): 530.874 ms
+	578992d 10000 Rays @ 143.755(0.0143755 ms/ray)
+	578992d Using 14 Threads
+	578992d 5000000 Rays @ 787.351(0.00015747 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 3
+	578992d [10'000'000] * vec3f.unit(): 529.477 ms
+	578992d 10000 Rays @ 145.642(0.0145642 ms/ray)
+	578992d Using 14 Threads
+	578992d 5000000 Rays @ 782.56(0.000156512 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 4
+	578992d [10'000'000] * vec3f.unit(): 533.572 ms
+	578992d 10000 Rays @ 148.815(0.0148815 ms/ray)
+	578992d Using 14 Threads
+	578992d 5000000 Rays @ 862.683(0.000172537 ms/ray)
+	Done Rendering 100x100 Pixel(s)
