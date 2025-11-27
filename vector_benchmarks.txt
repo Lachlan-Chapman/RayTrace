@@ -326,34 +326,67 @@ allowing for n children per node
 	Done Rendering 100x100 Pixel(s)
 
 changed stack to only store have been hit items
-	BVH Build Time: 0.117699 ms
+	BVH Build Time: 0.11817 ms
 	Test 0
-	7c1f91d [10'000'000] * vec3f.unit(): 531.565 ms
-	7c1f91d 10000 Rays @ 102.089(0.0102089 ms/ray)
+	1e1a955 [10'000'000] * vec3f.unit(): 505.507 ms
+	1e1a955 10000 Rays @ 107.668(0.0107668 ms/ray)
 	7c1f91d Using 14 Threads
-	7c1f91d 5000000 Rays @ 597.469(0.000119494 ms/ray)
+	1e1a955 5000000 Rays @ 750.504(0.000150101 ms/ray)
 	Done Rendering 100x100 Pixel(s)
 	Test 1
-	7c1f91d [10'000'000] * vec3f.unit(): 534.425 ms
-	7c1f91d 10000 Rays @ 101.02(0.010102 ms/ray)
+	1e1a955 [10'000'000] * vec3f.unit(): 511.362 ms
+	1e1a955 10000 Rays @ 108.02(0.010802 ms/ray)
 	7c1f91d Using 14 Threads
-	7c1f91d 5000000 Rays @ 601.266(0.000120253 ms/ray)
+	1e1a955 5000000 Rays @ 736.908(0.000147382 ms/ray)
 	Done Rendering 100x100 Pixel(s)
 	Test 2
-	7c1f91d [10'000'000] * vec3f.unit(): 544.273 ms
-	7c1f91d 10000 Rays @ 105.602(0.0105602 ms/ray)
+	1e1a955 [10'000'000] * vec3f.unit(): 509.774 ms
+	1e1a955 10000 Rays @ 106.851(0.0106851 ms/ray)
 	7c1f91d Using 14 Threads
-	7c1f91d 5000000 Rays @ 613.804(0.000122761 ms/ray)
+	1e1a955 5000000 Rays @ 741.047(0.000148209 ms/ray)
 	Done Rendering 100x100 Pixel(s)
 	Test 3
-	7c1f91d [10'000'000] * vec3f.unit(): 561.155 ms
-	7c1f91d 10000 Rays @ 109.306(0.0109306 ms/ray)
+	1e1a955 [10'000'000] * vec3f.unit(): 511.503 ms
+	1e1a955 10000 Rays @ 107.244(0.0107244 ms/ray)
 	7c1f91d Using 14 Threads
-	7c1f91d 5000000 Rays @ 643.514(0.000128703 ms/ray)
+	1e1a955 5000000 Rays @ 739.213(0.000147843 ms/ray)
 	Done Rendering 100x100 Pixel(s)
 	Test 4
-	7c1f91d [10'000'000] * vec3f.unit(): 554.152 ms
-	7c1f91d 10000 Rays @ 103.49(0.010349 ms/ray)
+	1e1a955 [10'000'000] * vec3f.unit(): 511.376 ms
+	1e1a955 10000 Rays @ 107.413(0.0107413 ms/ray)
 	7c1f91d Using 14 Threads
-	7c1f91d 5000000 Rays @ 611.235(0.000122247 ms/ray)
+	1e1a955 5000000 Rays @ 731.849(0.00014637 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+
+using 2 children per node in the BVH tree
+	BVH Build Time: 0.22329 ms
+	Test 0
+	5b85111 [10'000'000] * vec3f.unit(): 528.46 ms
+	5b85111 10000 Rays @ 104.146(0.0104146 ms/ray)
+	7c1f91d Using 14 Threads
+	5b85111 5000000 Rays @ 699.114(0.000139823 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 1
+	5b85111 [10'000'000] * vec3f.unit(): 539.147 ms
+	5b85111 10000 Rays @ 105.132(0.0105132 ms/ray)
+	7c1f91d Using 14 Threads
+	5b85111 5000000 Rays @ 717.196(0.000143439 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 2
+	5b85111 [10'000'000] * vec3f.unit(): 538.193 ms
+	5b85111 10000 Rays @ 107.371(0.0107371 ms/ray)
+	7c1f91d Using 14 Threads
+	5b85111 5000000 Rays @ 695.841(0.000139168 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 3
+	5b85111 [10'000'000] * vec3f.unit(): 539.45 ms
+	5b85111 10000 Rays @ 105.33(0.010533 ms/ray)
+	7c1f91d Using 14 Threads
+	5b85111 5000000 Rays @ 694.304(0.000138861 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 4
+	5b85111 [10'000'000] * vec3f.unit(): 550.98 ms
+	5b85111 10000 Rays @ 104.891(0.0104891 ms/ray)
+	7c1f91d Using 14 Threads
+	5b85111 5000000 Rays @ 736.061(0.000147212 ms/ray)
 	Done Rendering 100x100 Pixel(s)

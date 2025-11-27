@@ -7,7 +7,8 @@
 //read only array of heap allocated scene objects but the p_object local value can be changed.
 BVHMedian::BVHMedian(const sceneObject* const *p_objects, int p_objectCount, int p_nodeChildCount) :
 	BVH(p_objects, p_objectCount),
-	m_nodeChildCount(p_nodeChildCount)
+	m_nodeChildCount(p_nodeChildCount),
+	m_usesBinaryChildren(p_nodeChildCount == 2)
 {}
 
 BVHMedian::~BVHMedian() {
@@ -82,11 +83,14 @@ BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, in
 
 
 bool BVHMedian::intersect(const ray &p_ray, const interval &p_interval, hitRecord &p_record) const {
-	BVHNode* search_stack[64];
+	
+	BVHNode* search_stack[32];
 	int top = 0;
+	
 	hitRecord aabb_record;
-	if(m_root->m_bounds.intersect(p_ray, p_interval, aabb_record)) {search_stack[top++] = m_root;}
-	else {return false;}
+	if(!m_root->m_bounds.intersect(p_ray, p_interval, aabb_record)) {return false;} //!x should tell the compiler heuristic this is a uncomon case | i want the jump instr for return to be on the uncommon case
+	search_stack[top++] = m_root; //since we are able to keep it out of a block, this makes it even easiedr for the compiler to generate machine code to better use branch prediction for the common case
+	
 	
 	interval smallest_interval = p_interval; //ensure we only check for object closer than the current hit
 	bool hit_anything = false;	
@@ -97,33 +101,47 @@ bool BVHMedian::intersect(const ray &p_ray, const interval &p_interval, hitRecor
 		if(node->isLeaf()) {
 			hitRecord current_hit;
 			const sceneObject *renderable = m_objects[node->m_renderableId];
-			if(renderable->intersect(p_ray, smallest_interval, current_hit)) {
-				hit_anything = true;
-				smallest_interval.m_max = current_hit.m_time;
-				p_record = current_hit; //although the given record arg is only assigned data on successfull hit, this is to show that ON HIT do we care the data of p_record
-			}
+			
+			if(!renderable->intersect(p_ray, smallest_interval, current_hit)) { continue; } //guard clause comes first
+			
+			hit_anything = true;
+			smallest_interval.m_max = current_hit.m_time;
+			p_record = current_hit; //although the given record arg is only assigned data on successfull hit, this is to show that ON HIT do we care the data of p_record
+			
 		} else {
-			//get all the child hits
-			nodeRecord child_hits[m_nodeChildCount];
-			int hit_count = 0;
-			for(int child_id = 0; child_id < m_nodeChildCount; child_id++) {
-				BVHNode *_child = node->m_children[child_id];
+			if(m_usesBinaryChildren) { //the use of a const bool member var should compile to optimise out the entire else branch
+				hitRecord left, right; //keep them to this tiny scope so they are likely to remain on the cpu | if we make then global to this function they are likely to spill into memory
+				bool hit_left = node->m_children[0]->m_bounds.intersect(p_ray, smallest_interval, left);
+				bool hit_right = node->m_children[1]->m_bounds.intersect(p_ray, smallest_interval, right);
+				if(hit_left && hit_right) {
+					bool right_further = left.m_time > right.m_time;
+					search_stack[top++] = node->m_children[right_further];
+					search_stack[top++] = node->m_children[!right_further];
+				} else if (hit_left) {
+					search_stack[top++] = node->m_children[0];
+				} else if (hit_right) {
+					search_stack[top++] = node->m_children[1];
+				}
+			} else { //handles n child nodes
+				int hit_count = 0;
+				nodeRecord child_hits[m_nodeChildCount];
 				
-				if(_child && _child->m_bounds.intersect(p_ray, smallest_interval, aabb_record)) { //allowing for the fact children can be left nullptr if not needed
-					child_hits[hit_count++] = nodeRecord{_child, aabb_record.m_time};
+				for(int child_id = 0; child_id < m_nodeChildCount; child_id++) {
+					BVHNode *_child = node->m_children[child_id];
+					if(_child && _child->m_bounds.intersect(p_ray, smallest_interval, aabb_record)) { //allowing for the fact children can be left nullptr if not needed
+						child_hits[hit_count++] = nodeRecord{_child, aabb_record.m_time};
+					}
+				}
+				std::sort(
+					child_hits,
+					child_hits + hit_count,
+					[](const nodeRecord &p_a, const nodeRecord &p_b) { return p_a.m_time > p_b.m_time; }
+				);
+				for(int child_id = 0; child_id < hit_count; child_id++) {
+					search_stack[top++] = child_hits[child_id].m_node;
 				}
 			}
 
-			//sort furthest to closest hit so we search the closest hit off the stack first
-			std::sort(
-				child_hits,
-				child_hits + hit_count,
-				[](const nodeRecord &p_a, const nodeRecord &p_b) { return p_a.m_time > p_b.m_time; }
-			);
-
-			for(int child_id = 0; child_id < hit_count; child_id++) {
-				search_stack[top++] = child_hits[child_id].m_node;
-			}
 		}
 	}
 	return hit_anything; //if this is true, this means that p_record contains information on a sceneRenderable object hit

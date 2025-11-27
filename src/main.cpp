@@ -325,7 +325,7 @@ int main(int argc, char** argv) {
 
 
 
-	world _world(world::MAX_OBJECTS, BVHTechnique::median, 5);
+	world _world(world::MAX_OBJECTS, BVHTechnique::median, 3);
 	generateWorld(_world);
 
 	//testBenchmark(_world);

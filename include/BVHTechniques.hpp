@@ -42,4 +42,5 @@ public:
 private:
 	dimension getSplitAxis(const sceneObject* const *p_objects, int p_startId, int p_endId);
 	int m_nodeChildCount;
+	const bool m_usesBinaryChildren;
 };

@@ -30,7 +30,7 @@ bool BVHBounds::intersect(const ray &p_ray, interval p_interval, hitRecord &p_re
 
 	float enter_distance = axis_t_enter.max();
 	float exit_distance = axis_t_exit.min();
-
+	p_record.m_time = enter_distance;
 	return enter_distance <= exit_distance;
 }
 
