@@ -40,51 +40,64 @@ vec3f rectangularBounds::calculateNormal(const vec3f p_point) const {
 	return vec3f(0.0); //instead of default in the switch, this assures the picky compiler that we will return something in a non existent case
 }
 
-vec2f rectangularBounds::calculateIntersection(const ray &p_ray, int p_dimensionIndex) const { //if the dimension::dim is used, the caller does that, keeping args as int allows for loop usage
-	float t0 = (m_minCorner[p_dimensionIndex] - p_ray.m_origin[p_dimensionIndex]) / p_ray.m_direction[p_dimensionIndex];
-	float t1 = (m_maxCorner[p_dimensionIndex] - p_ray.m_origin[p_dimensionIndex]) / p_ray.m_direction[p_dimensionIndex];
-	return vec2f(
-		std::min(t0, t1), //we need to check because we dont know what plane is closest. if im looking at the back of the rectangle, then the "secondary" plane is closest
-		std::max(t0, t1)
-	);
-}
+// bool rectangularBounds::intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const {
+// 	vec3f t_enter = (m_minCorner - p_ray.m_origin) * p_ray.m_inverseDirection;
+// 	vec3f t_exit = (m_maxCorner - p_ray.m_origin) * p_ray.m_inverseDirection;
+// 	vec3f axis_t_enter(
+// 		std::min(t_enter.x, t_exit.x),
+// 		std::min(t_enter.y, t_exit.y),
+// 		std::min(t_enter.z, t_exit.z)
+// 	);
+
+// 	vec3f axis_t_exit(
+// 		std::max(t_enter.x, t_exit.x),
+// 		std::max(t_enter.y, t_exit.y),
+// 		std::max(t_enter.z, t_exit.z)
+// 	);
+
+// 	float enter_distance = axis_t_enter.max();
+// 	float exit_distance = axis_t_exit.min();
+
+// 	//interval clamp
+// 	if(enter_distance < p_interval.m_min) { enter_distance = p_interval.m_min; }
+// 	if(exit_distance > p_interval.m_max) { exit_distance = p_interval.m_max; }
+
+// 	if(enter_distance > exit_distance) { return false; }
+
+// 	p_record.m_time = enter_distance;
+// 	p_record.m_point = p_ray.at(enter_distance);
+// 	p_record.setDirection(p_ray, calculateNormal(p_record.m_point));
+// 	return true;
+
+// }
 
 bool rectangularBounds::intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const {
-	vec3f origin(p_ray.m_origin);
-	vec3f dir(p_ray.m_direction);
+	float closest_dist = p_interval.m_max;
+	bool hit_anything = false;
+	vec3f hit_normal, hit_point;
+	for(int face_id = 0; face_id < 6; face_id++) {
+		vec3f face_normal = faceNormal(face_id);
+		float plane_distance = facePlanePosition(face_id, m_minCorner, m_maxCorner);
 
-	const vec3f inverse_direction(
-		dir.x == 0 ? std::numeric_limits<float>::infinity() : 1.0f / dir.x,
-		dir.y == 0 ? std::numeric_limits<float>::infinity() : 1.0f / dir.y,
-		dir.z == 0 ? std::numeric_limits<float>::infinity() : 1.0f / dir.z
-	);
+		float current_dist;
+		if(!intersectPlane(p_ray, face_normal, plane_distance, current_dist)) { continue; }
+		if(current_dist <= p_interval.m_min || current_dist >= closest_dist) { continue; }
 
-	vec3f t_enter = (m_minCorner - p_ray.m_origin) * p_ray.m_inverseDirection;
-	vec3f t_exit = (m_maxCorner - p_ray.m_origin) * p_ray.m_inverseDirection;
-	vec3f axis_t_enter(
-		std::min(t_enter.x, t_exit.x),
-		std::min(t_enter.y, t_exit.y),
-		std::min(t_enter.z, t_exit.z)
-	);
+		vec3f point = p_ray.at(current_dist);
+		if(!pointInsideBounds(point, m_minCorner, m_maxCorner)) { continue; }
 
-	vec3f axis_t_exit(
-		std::max(t_enter.x, t_exit.x),
-		std::max(t_enter.y, t_exit.y),
-		std::max(t_enter.z, t_exit.z)
-	);
+		hit_anything = true;
+		closest_dist = current_dist;
+		hit_point = point;
+		hit_normal = face_normal;
+	}
 
-	float enter_distance = axis_t_enter.max();
-	float exit_distance = axis_t_exit.min();
+	if(!hit_anything) { return false; }
 
-	//interval clamp
-	if(enter_distance < p_interval.m_min) { enter_distance = p_interval.m_min; }
-	if(exit_distance > p_interval.m_max) { exit_distance = p_interval.m_max; }
-
-	if(enter_distance > exit_distance) { return false; }
-
-	p_record.m_time = enter_distance;
-	p_record.m_point = p_ray.at(enter_distance);
-	p_record.setDirection(p_ray, calculateNormal(p_record.m_point));
+	p_record.m_time = closest_dist;
+	p_record.m_point = hit_point;
+	p_record.setDirection(p_ray, hit_normal);
 	return true;
+
 
 }

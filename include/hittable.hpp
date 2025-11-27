@@ -64,8 +64,47 @@ public:
 
 	bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const override;
 protected:
-	vec3f calculateNormal(const vec3f p_point) const;
-	vec2f calculateIntersection(const ray &p_ray, int p_dimensionIndex) const;
+	inline vec3f faceNormal(int p_face) const {
+		switch(p_face) {
+			case 0: return vec3f(-1, 0, 0); // minX
+			case 1: return vec3f( 1, 0, 0); // maxX
+			case 2: return vec3f( 0,-1, 0); // minY
+			case 3: return vec3f( 0, 1, 0); // maxY
+			case 4: return vec3f( 0, 0,-1); // minZ
+			case 5: return vec3f( 0, 0, 1); // maxZ
+		}
+		return vec3f(0.0);
+	}
+
+	inline float facePlanePosition(int p_face, const vec3f &p_minCorner, const vec3f &p_maxCorner) const {
+		switch(p_face) {
+			case 0: return p_minCorner.x;
+			case 1: return p_maxCorner.x;
+			case 2: return p_minCorner.y;
+			case 3: return p_maxCorner.y;
+			case 4: return p_minCorner.z;
+			case 5: return p_maxCorner.z;
+		}
+		return 0.0f;
+	}
+
+	inline bool intersectPlane(const ray &p_ray, const vec3f &p_normal, float p_planePosition, float &p_outDist) const {
+		float denominator = p_normal.dot(p_ray.m_direction);
+		if(std::fabs(denominator) < 1e-8f) { return false; } //checking for parralel rays including floating point error
+		p_outDist = (p_planePosition - p_normal.dot(p_ray.m_origin)) / denominator;
+		return true;
+	}
+
+	inline bool pointInsideBounds(const vec3f &p_point, const vec3f &p_minCorner, const vec3f &p_maxCorner) const {
+		const float tolerance = 1e-6f;
+		return (
+			p_point.x >= p_minCorner.x - tolerance && p_point.x <= p_maxCorner.x + tolerance &&
+			p_point.y >= p_minCorner.y - tolerance && p_point.y <= p_maxCorner.y + tolerance &&
+			p_point.z >= p_minCorner.z - tolerance && p_point.z <= p_maxCorner.z + tolerance
+		);
+
+	}
+vec3f calculateNormal(const vec3f p_point) const;
 };
 
 class BVHNode; //forward dec

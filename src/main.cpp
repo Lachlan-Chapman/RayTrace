@@ -43,7 +43,6 @@ void testRender(const char* p_testName, const world &p_world) {
 	int sample = 1;
 	int bounce = 10;
 	_renderer.renderImageMT(sample, bounce, vec2i{4, 1}); //scan lines appear to have an edge perhaps with cache locality
-	//_renderer.renderImage(sample, bounce, vec2i{4, 1}); //scan lines appear to have an edge perhaps with cache locality
 	_renderer.saveImage();
 }
 
@@ -160,20 +159,6 @@ void testRectangle() {
 	));
 	_world.buildBVH();
 	testRender("testRectangle.ppm", _world);
-}
-
-void testBenchmark(world &p_world) {
-	hitRecord _record;
-	p_world.intersect(
-		ray(
-			position(0, 0, 4),
-			vec3f(0, 0, -1),
-			interval::forward
-		),
-		interval::forward,
-		_record
-	);
-	testRender("bvh_mt_test.ppm", p_world);
 }
 
 //benchmark
@@ -311,6 +296,7 @@ void benchmarkRender(const world &p_world) {
 		steadyTimer mt_timer;
 		mt_timer.start();
 		_renderer.renderImageMT(sample, bounce, vec2i{4, 1}, 0); //scan lines appear to have an edge perhaps with cache locality		
+		//_renderer.renderImage(sample, bounce, vec2i{4, 1}); //scan lines appear to have an edge perhaps with cache locality		
 		mt_time = mt_timer.milliseconds();
 	}
 	std::clog << GIT_HASH << " " << ray_count << " Rays @ " << mt_time << "(" << (mt_time/ray_count) << " ms/ray" << ")" << std::endl;
@@ -361,8 +347,8 @@ void compareIntersectionCode(const world &p_world) {
 
 int main(int argc, char** argv) {
 	//testBVH();
-	//testSphere();
-	//testRectangle();
+	testSphere();
+	testRectangle();
 	//return 1;
 
 	world _world(world::MAX_OBJECTS, BVHTechnique::median, 2);
@@ -371,12 +357,12 @@ int main(int argc, char** argv) {
 	//compareIntersectionCode(_world);
 	//return 2;
 
-	//testBenchmark(_world);
-	//for(int test_id = 0; test_id < 5; test_id++) {
-	//	std::clog << "Test " << test_id << std::endl;
-	//	benchmarkVector();
-	//	benchmarkRender(_world);
-	//}
+	
+	for(int test_id = 0; test_id < 5; test_id++) {
+		std::clog << "Test " << test_id << std::endl;
+		benchmarkVector();
+		benchmarkRender(_world);
+	}
 
 
 	return 0;

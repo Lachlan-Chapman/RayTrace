@@ -422,3 +422,32 @@ using float operation aabb intersect only
 	658a586 Using 14 Threads
 	658a586 5000000 Rays @ 200.936(4.01872e-05 ms/ray)
 	Done Rendering 100x100 Pixel(s)
+
+using single threaded tests to get the speed up of multi threaded rendering
+	BVH Build Time: 0.21738 ms
+	Node Count for 128 objects: 255
+	Test 0
+	f7000b0 [10'000'000] * vec3f.unit(): 581.798 ms
+	f7000b0 10000 Rays @ 28.9377(0.00289377 ms/ray)
+	f7000b0 5000000 Rays @ 1966.55(0.00039331 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 1
+	f7000b0 [10'000'000] * vec3f.unit(): 575.506 ms
+	f7000b0 10000 Rays @ 28.2966(0.00282966 ms/ray)
+	f7000b0 5000000 Rays @ 1947.72(0.000389543 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 2
+	f7000b0 [10'000'000] * vec3f.unit(): 570.277 ms
+	f7000b0 10000 Rays @ 28.5131(0.00285131 ms/ray)
+	f7000b0 5000000 Rays @ 1929.04(0.000385809 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 3
+	f7000b0 [10'000'000] * vec3f.unit(): 571.594 ms
+	f7000b0 10000 Rays @ 27.8622(0.00278622 ms/ray)
+	f7000b0 5000000 Rays @ 1927.41(0.000385482 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 4
+	f7000b0 [10'000'000] * vec3f.unit(): 572.771 ms
+	f7000b0 10000 Rays @ 27.9344(0.00279344 ms/ray)
+	f7000b0 5000000 Rays @ 1915.46(0.000383092 ms/ray)
+	Done Rendering 100x100 Pixel(s)
