@@ -1,5 +1,6 @@
 #include "world.hpp"
 #include "BVHTechniques.hpp"
+#include "profiler.hpp"
 
 void world::createBVH(BVHTechnique p_technique, int p_nodeChildCount) {
 	switch(p_technique) {
@@ -55,7 +56,10 @@ bool world::append(sceneObject *p_object) { //have to instantiate outside to mai
 
 void world::buildBVH() {
 	m_bvh->m_built = true;
-	m_bvh->m_root = m_bvh->build(m_objects, 0, m_objectCount); //BVH building is a half inclusive [start, end) so using the exact object count is appropriate
+	{
+		scopeTimer timer("BVH Build Time", std::clog);
+		m_bvh->m_root = m_bvh->build(m_objects, 0, m_objectCount); //BVH building is a half inclusive [start, end) so using the exact object count is appropriate
+	}
 }
 
 bool world::intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const {

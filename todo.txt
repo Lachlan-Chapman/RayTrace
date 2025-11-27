@@ -1,0 +1,3 @@
+. quicker bvh intersection code
+
+. inheritance diagram

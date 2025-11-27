@@ -46,6 +46,7 @@ void testRender(const char* p_testName, const world &p_world) {
 	//_renderer.renderImage(sample, bounce, vec2i{4, 1}); //scan lines appear to have an edge perhaps with cache locality
 	_renderer.saveImage();
 }
+
 void testBVH() {
 	world _world(2, BVHTechnique::median, 2);
 	_world.append(new rectangle(
@@ -120,6 +121,7 @@ void testSphere() {
 	_world.buildBVH();
 	testRender("testSphere.ppm", _world);
 }
+
 void testRectangle() {
 	world _world(4, BVHTechnique::median, 2);
 	_world.append(new rectangle(
@@ -264,6 +266,7 @@ void generateWorld(world &p_world) {
 	);
 	p_world.buildBVH();
 }
+
 void benchmarkVector() {
 	vec3f v(1, 2, 3);
 	std::clog << GIT_HASH;
@@ -274,6 +277,7 @@ void benchmarkVector() {
 		}
 	}
 }
+
 void benchmarkRender(const world &p_world) {
 	PPM _image("image.ppm", vec2i{IMAGE_WIDTH, IMAGE_HEIGHT});
 

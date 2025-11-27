@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <stack>
-
 #include "BVHNode.hpp"
 #include "BVHTechniques.hpp"
 #include "vec.hpp"
@@ -17,7 +16,6 @@ BVHMedian::~BVHMedian() {
 
 BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, int p_endId) const {
 	//handle being a object holding node
-	
 	int span = p_endId - p_startId;
 	if(span == 1) { //leaf
 		int obj_id = m_globalIndex[p_startId];
@@ -66,7 +64,7 @@ BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, in
 			min_corner, 
 			max_corner
 		),
-		m_nodeChildCount,
+		child_count,
 		-1 //no renderable since its not a leaf
 	);
 
@@ -86,19 +84,15 @@ BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, in
 bool BVHMedian::intersect(const ray &p_ray, const interval &p_interval, hitRecord &p_record) const {
 	BVHNode* search_stack[64];
 	int top = 0;
-	search_stack[top++] = m_root;
-
+	hitRecord aabb_record;
+	if(m_root->m_bounds.intersect(p_ray, p_interval, aabb_record)) {search_stack[top++] = m_root;}
+	else {return false;}
+	
 	interval smallest_interval = p_interval; //ensure we only check for object closer than the current hit
-	bool hit_anything = false;
-
-	hitRecord rubbish_record; //need a hit record for the quick bounds check, but i dont want to reconstruct one each loop
-	int loop_count = 0;
-	while(top > 0) {
+	bool hit_anything = false;	
+	
+	while(top > 0) { //anything on the stack is guarenteed to have been hit either the root node or a hit child
 		BVHNode *node = search_stack[--top];
-
-		//simple AABB test to skip quickly
-		
-		if(!node->m_bounds.intersect(p_ray, smallest_interval, rubbish_record)) { continue; }
 		
 		if(node->isLeaf()) {
 			hitRecord current_hit;
@@ -114,7 +108,7 @@ bool BVHMedian::intersect(const ray &p_ray, const interval &p_interval, hitRecor
 			int hit_count = 0;
 			for(int child_id = 0; child_id < m_nodeChildCount; child_id++) {
 				BVHNode *_child = node->m_children[child_id];
-				hitRecord aabb_record;
+				
 				if(_child && _child->m_bounds.intersect(p_ray, smallest_interval, aabb_record)) { //allowing for the fact children can be left nullptr if not needed
 					child_hits[hit_count++] = nodeRecord{_child, aabb_record.m_time};
 				}

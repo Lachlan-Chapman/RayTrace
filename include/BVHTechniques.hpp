@@ -20,6 +20,8 @@ public:
 	virtual bool intersect(const ray &p_ray, const interval &p_interval, hitRecord &p_record) const = 0; //all the collison code to find the scene obj
 	bool m_built;
 	BVHNode *m_root;
+	int m_intersectCallCount;
+	double m_intersectTime;
 protected:
 	int *m_globalIndex; //this stores the indecies of objects in the sceneObject array. using indecies to allow it to traverse any type really
 	const sceneObject* const *m_objects;
