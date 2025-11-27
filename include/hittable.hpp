@@ -75,31 +75,59 @@ public:
 	BVHBounds(); //default
 	BVHBounds(const vec3f &p_minCorner, const vec3f &p_maxCorner); //corner
 	bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const override;
-	inline bool fastIntersect(const ray &p_ray, const interval &p_interval, float &p_time) const { //unique intersection to avoid late binding
-		// compute t_enter and t_exit for each axis
-		vec3f t_enter = (m_minCorner - p_ray.m_origin) * p_ray.m_inverseDirection;
-		vec3f t_exit  = (m_maxCorner - p_ray.m_origin) * p_ray.m_inverseDirection;
+	inline bool fastIntersect(const ray &p_ray, float &p_tMin, float &p_tMax, float &p_time) const { //unique intersection to avoid late binding
+		//extracting for register locality
+		const float o_x = p_ray.m_origin.x;
+		const float o_y = p_ray.m_origin.y;
+		const float o_z = p_ray.m_origin.z;
 
-		// sort per-axis
-		vec3f axis_t_enter(
-			std::min(t_enter.x, t_exit.x),
-			std::min(t_enter.y, t_exit.y),
-			std::min(t_enter.z, t_exit.z)
-		);
+		const float inv_x = p_ray.m_inverseDirection.x;
+		const float inv_y = p_ray.m_inverseDirection.y;
+		const float inv_z = p_ray.m_inverseDirection.z;
 
-		vec3f axis_t_exit(
-			std::max(t_enter.x, t_exit.x),
-			std::max(t_enter.y, t_exit.y),
-			std::max(t_enter.z, t_exit.z)
-		);
+		const float min_x = m_minCorner.x;
+		const float min_y = m_minCorner.y;
+		const float min_z = m_minCorner.z;
 
-		float enter_distance = axis_t_enter.max();
-		float exit_distance = axis_t_exit.min();
+		const float max_x = m_maxCorner.x;
+		const float max_y = m_maxCorner.y;
+		const float max_z = m_maxCorner.z;
 
-		//unqiue clamp allowing for negative enter and exit distances to the interval
-		if(exit_distance < p_interval.m_min || enter_distance > p_interval.m_max) { return false; }
+		//x axis
+		float t_enter_x = (min_x - o_x) * inv_x;
+		float t_exit_x = (max_x - o_x) * inv_x;
 
-		p_time = enter_distance;
+		float t_min_x = t_enter_x < t_exit_x ? t_enter_x : t_exit_x;
+		float t_max_x = t_enter_x > t_exit_x ? t_enter_x : t_exit_x;
+		
+
+		p_tMin = (t_min_x > p_tMin) ? t_min_x : p_tMin; //like std::max
+		p_tMax = (t_max_x < p_tMax) ? t_max_x : p_tMax; //like std::min
+		if(p_tMin > p_tMax) { return false; }
+
+		//y axis
+		float t_enter_y = (min_y - o_y) * inv_y;
+		float t_exit_y = (max_y - o_y) * inv_y;
+
+		float t_min_y = t_enter_y < t_exit_y ? t_enter_y : t_exit_y;
+		float t_max_y = t_enter_y > t_exit_y ? t_enter_y : t_exit_y;
+
+		p_tMin = (t_min_y > p_tMin) ? t_min_y : p_tMin;
+		p_tMax = (t_max_y < p_tMax) ? t_max_y : p_tMax;
+		if(p_tMin > p_tMax) { return false; }
+
+		//z axis
+		float t_enter_z = (min_z - o_z) * inv_z;
+		float t_exit_z = (max_z - o_z) * inv_z;
+
+		float t_min_z = t_enter_z < t_exit_z ? t_enter_z : t_exit_z;
+		float t_max_z = t_enter_z > t_exit_z ? t_enter_z : t_exit_z;
+
+		p_tMin = (t_min_z > p_tMin) ? t_min_z : p_tMin;
+		p_tMax = (t_max_z < p_tMax) ? t_max_z : p_tMax;
+		if(p_tMin > p_tMax) { return false; }
+
+		p_time = p_tMin;
 		return true;
 	}
 };

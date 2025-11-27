@@ -40,7 +40,8 @@ public:
 
 	bool append(sceneObject *p_object);
 	void buildBVH();
-	bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const;
+	bool intersect(const ray &p_ray, const interval &p_interval, hitRecord &p_record) const;
+	bool intersectAll(const ray &p_ray, const interval &p_interval, hitRecord &p_record) const;
 	BVH *m_bvh; //allow for various bvh techniques so we will be late binding
 
 private:

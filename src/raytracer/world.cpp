@@ -54,17 +54,35 @@ bool world::append(sceneObject *p_object) { //have to instantiate outside to mai
 	}
 }
 
+extern int g_nodeCount;
 void world::buildBVH() {
 	m_bvh->m_built = true;
 	{
 		scopeTimer timer("BVH Build Time", std::clog);
 		m_bvh->m_root = m_bvh->build(m_objects, 0, m_objectCount); //BVH building is a half inclusive [start, end) so using the exact object count is appropriate
 	}
+	std::clog << "Node Count for " << m_objectCount << " objects: " << g_nodeCount << std::endl;
 }
 
-bool world::intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const {
+bool world::intersect(const ray &p_ray, const interval &p_interval, hitRecord &p_record) const {
 	if(m_bvh->m_built) {
 		return m_bvh->intersect(p_ray, p_interval, p_record);
 	}
 	return false;
 };
+
+bool world::intersectAll(const ray &p_ray, const interval &p_interval, hitRecord &p_record) const { //brute force loops all scene objects
+	hitRecord temp_record;
+	bool has_intersected = false; //track if we hit anything at all (by defualt consider a intersection with the universe)
+	double closest_distance = p_interval.m_max; 
+
+	for(int i = 0; i < m_objectCount; i++) {
+		if(m_objects[i]->intersect(p_ray, interval(p_interval.m_min, closest_distance), temp_record)) { //update the record
+			has_intersected = true; //alright so now weve hit something
+			closest_distance = temp_record.m_time; //how far along the ray did we intersect | now this sets a new limit so if an object returns intersects, it must have been closer than this object
+			p_record = temp_record;
+		}
+	}
+
+	return has_intersected;
+}

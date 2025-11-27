@@ -15,7 +15,9 @@ BVHMedian::~BVHMedian() {
 	delete m_root; //bvhnodes have ownership over their own childrens ptrs, so it will recursively go through and delete children.
 }
 
+int g_nodeCount = 0;
 BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, int p_endId) const {
+	g_nodeCount++;
 	//handle being a object holding node
 	int span = p_endId - p_startId;
 	if(span == 1) { //leaf
@@ -32,8 +34,8 @@ BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, in
 	}
 
 	//find the axis we are to split along
-	vec3f min_corner(std::numeric_limits<float>::infinity()); //this stores the lowest ever found coordinate FOR EACH AXIS, so the xyz are unrelated
-	vec3f max_corner(-std::numeric_limits<float>::infinity()); //this with the min makes out bounding box
+	vec3f min_corner(std::numeric_limits<float>::infinity());
+	vec3f max_corner(-std::numeric_limits<float>::infinity());
 
 	for(int arr_id = p_startId; arr_id < p_endId; arr_id++) { //search to find the furthest left and right value for each xyz axis
 		int obj_id = this->m_globalIndex[arr_id];
@@ -72,12 +74,13 @@ BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, in
 	for(int child_id = 0; child_id < child_count; child_id++) {
 		int child_start = p_startId + (child_id * split_offset);
 		int child_end = p_startId + ((child_id+1) * split_offset);
-		child_end = (child_id == (m_nodeChildCount - 1)) ? p_endId : child_end; //last child gets the left over children in the case of a imperfect division like 5 objects with 3 children
+		child_end = (child_id == (child_count - 1)) ? p_endId : child_end; //last child gets the left over children in the case of a imperfect division like 5 objects with 3 children
 
 		if(child_end <= child_start) {continue;} //if the start and end id are the same, it will create empty children and leads to a runaway infinite recursion when the child count exceeds the object count
 
 		node->m_children[child_id] = build(p_objects, child_start, child_end);
 	}
+	
 	return node;
 }
 
@@ -111,8 +114,20 @@ bool BVHMedian::intersect(const ray &p_ray, const interval &p_interval, hitRecor
 		} else {
 			if(m_usesBinaryChildren) { //the use of a const bool member var should compile to optimise out the entire else branch
 				float left_dist, right_dist; //keep them to this tiny scope so they are likely to remain on the cpu | if we make then global to this function they are likely to spill into memory
-				bool hit_left = node->m_children[0]->m_bounds.fastIntersect(p_ray, smallest_interval, left_dist);
-				bool hit_right = node->m_children[1]->m_bounds.fastIntersect(p_ray, smallest_interval, right_dist);
+				
+				float left_tMin = p_interval.m_min;
+				float left_tMax = p_interval.m_max;
+				float right_tMin = p_interval.m_min;
+				float right_tMax = p_interval.m_max;
+				bool hit_left = node->m_children[0]->m_bounds.fastIntersect(p_ray, left_tMin, left_tMax, left_dist);
+				bool hit_right = node->m_children[1]->m_bounds.fastIntersect(p_ray, right_tMin, right_tMax, right_dist);
+				
+				//hitRecord left_record, right_record;
+				//bool hit_left = node->m_children[0]->m_bounds.intersect(p_ray, smallest_interval, left_record);
+				//bool hit_right = node->m_children[1]->m_bounds.intersect(p_ray, smallest_interval, right_record);
+				//left_dist = left_record.m_time;
+				//right_dist = right_record.m_time;
+				
 				if(hit_left && hit_right) {
 					bool right_further = left_dist > right_dist;
 					search_stack[top++] = node->m_children[right_further];

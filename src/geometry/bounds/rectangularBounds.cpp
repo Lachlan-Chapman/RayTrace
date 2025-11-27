@@ -59,18 +59,8 @@ bool rectangularBounds::intersect(const ray &p_ray, interval p_interval, hitReco
 		dir.z == 0 ? std::numeric_limits<float>::infinity() : 1.0f / dir.z
 	);
 
-	vec3f t_enter = (m_minCorner - origin) * inverse_direction;
-	vec3f t_exit = (m_maxCorner - origin) * inverse_direction;
-	for(int dim = 0; dim < 3; dim++) {
-		if(dir[dim] == 0.0f) {
-			//basically if your parrallel in direction and not in the box, the chance you never hit the box is high so we discard, if your in the box the chance is 100%. 
-			//to test, put a box in front of you and walk parra to its front face. then inside a room walk in any direction parra or not, you wont get out without hitting a wall
-			if(origin[dim] < m_minCorner[dim] || origin[dim] > m_maxCorner[dim]) { return false; }
-		}
-		t_enter[dim] = -std::numeric_limits<float>::infinity(); //inside slab so remove all intervals
-		t_exit[dim] = std::numeric_limits<float>::infinity(); //inside slab so remove all intervals
-	}
-
+	vec3f t_enter = (m_minCorner - p_ray.m_origin) * p_ray.m_inverseDirection;
+	vec3f t_exit = (m_maxCorner - p_ray.m_origin) * p_ray.m_inverseDirection;
 	vec3f axis_t_enter(
 		std::min(t_enter.x, t_exit.x),
 		std::min(t_enter.y, t_exit.y),

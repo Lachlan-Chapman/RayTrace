@@ -317,16 +317,61 @@ void benchmarkRender(const world &p_world) {
 	_renderer.saveImage();
 }
 
+void compareIntersectionCode(const world &p_world) {
+	vec3f origin(15, 2, 4); //copying a ray from the camera center directly at the target
+	vec3f direction((vec3f(0, 1, 0) - origin).unit());
+	ray common_ray = ray(
+		origin,
+		direction,
+		interval::forward
+	);
+
+	hitRecord temp_record;
+	int run_count = 100000; //remove timer noise and os unpredictability
+	volatile float sink;
+
+	steadyTimer timer;
+	{
+		timer.start();
+		for(int run = 0; run < run_count; run++) {
+			ray _ray(common_ray);
+			interval _interval(common_ray.m_interval);
+			p_world.intersect(_ray, _interval, temp_record);
+			sink += temp_record.m_time;
+		}
+		timer.stop();
+	}
+
+	std::clog << "BVH Time (ms): " << timer.milliseconds() << std::endl;
+	timer.reset();
+	
+	{
+		timer.start();
+		for(int run = 0; run < run_count; run++) {
+			ray _ray(common_ray);
+			interval _interval(common_ray.m_interval);
+			p_world.intersectAll(_ray, _interval, temp_record);
+			sink += temp_record.m_time;
+		}
+		timer.stop();
+	}
+	std::clog << "Loop Time (ms): " << timer.milliseconds() << std::endl;
+	std::clog << "ignore" << sink << std::endl;
+}
+
 int main(int argc, char** argv) {
-	//testBVH();
-	//testSphere();
-	//testRectangle();
+	testBVH();
+	testSphere();
+	testRectangle();
 	//return 1;
 
 
 
-	world _world(world::MAX_OBJECTS, BVHTechnique::median, 3);
+	world _world(world::MAX_OBJECTS, BVHTechnique::median, 2);
 	generateWorld(_world);
+
+	//compareIntersectionCode(_world);
+	//return 2;
 
 	//testBenchmark(_world);
 	for(int test_id = 0; test_id < 5; test_id++) {

@@ -38,7 +38,6 @@ public:
 	~BVHMedian();
 	BVHNode* build(const sceneObject* const *p_objects, int p_startId, int p_endId) const override;
 	bool intersect(const ray &p_ray, const interval &p_interval, hitRecord &p_record) const override;
-	
 private:
 	dimension getSplitAxis(const sceneObject* const *p_objects, int p_startId, int p_endId);
 	int m_nodeChildCount;
