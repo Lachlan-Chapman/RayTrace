@@ -360,12 +360,10 @@ void compareIntersectionCode(const world &p_world) {
 }
 
 int main(int argc, char** argv) {
-	testBVH();
-	testSphere();
-	testRectangle();
+	//testBVH();
+	//testSphere();
+	//testRectangle();
 	//return 1;
-
-
 
 	world _world(world::MAX_OBJECTS, BVHTechnique::median, 2);
 	generateWorld(_world);
@@ -374,11 +372,11 @@ int main(int argc, char** argv) {
 	//return 2;
 
 	//testBenchmark(_world);
-	for(int test_id = 0; test_id < 5; test_id++) {
-		std::clog << "Test " << test_id << std::endl;
-		benchmarkVector();
-		benchmarkRender(_world);
-	}
+	//for(int test_id = 0; test_id < 5; test_id++) {
+	//	std::clog << "Test " << test_id << std::endl;
+	//	benchmarkVector();
+	//	benchmarkRender(_world);
+	//}
 
 
 	return 0;

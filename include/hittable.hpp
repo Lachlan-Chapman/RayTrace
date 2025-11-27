@@ -75,7 +75,7 @@ public:
 	BVHBounds(); //default
 	BVHBounds(const vec3f &p_minCorner, const vec3f &p_maxCorner); //corner
 	bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const override;
-	inline bool fastIntersect(const ray &p_ray, float &p_tMin, float &p_tMax, float &p_time) const { //unique intersection to avoid late binding
+	inline bool fastIntersect(const ray &p_ray, float p_tMin, float p_tMax, float &p_time) const { //unique intersection to avoid late binding
 		//extracting for register locality
 		const float o_x = p_ray.m_origin.x;
 		const float o_y = p_ray.m_origin.y;

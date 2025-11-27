@@ -74,7 +74,7 @@ BVHNode* BVHMedian::build(const sceneObject* const *p_objects, int p_startId, in
 	for(int child_id = 0; child_id < child_count; child_id++) {
 		int child_start = p_startId + (child_id * split_offset);
 		int child_end = p_startId + ((child_id+1) * split_offset);
-		child_end = (child_id == (child_count - 1)) ? p_endId : child_end; //last child gets the left over children in the case of a imperfect division like 5 objects with 3 children
+		child_end = (child_id == (m_nodeChildCount - 1)) ? p_endId : child_end; //last child gets the left over children in the case of a imperfect division like 5 objects with 3 children
 
 		if(child_end <= child_start) {continue;} //if the start and end id are the same, it will create empty children and leads to a runaway infinite recursion when the child count exceeds the object count
 
@@ -102,41 +102,23 @@ bool BVHMedian::intersect(const ray &p_ray, const interval &p_interval, hitRecor
 		BVHNode *node = search_stack[--top];
 		
 		if(node->isLeaf()) {
-			hitRecord current_hit;
 			const sceneObject *renderable = m_objects[node->m_renderableId];
-			
-			if(!renderable->intersect(p_ray, smallest_interval, current_hit)) { continue; } //guard clause comes first
-			
+			if(!renderable->intersect(p_ray, smallest_interval, p_record)) { continue; } //guard clause comes first
 			hit_anything = true;
-			smallest_interval.m_max = current_hit.m_time;
-			p_record = current_hit; //although the given record arg is only assigned data on successfull hit, this is to show that ON HIT do we care the data of p_record
-			
+			smallest_interval.m_max = p_record.m_time;
 		} else {
 			if(m_usesBinaryChildren) { //the use of a const bool member var should compile to optimise out the entire else branch
 				float left_dist, right_dist; //keep them to this tiny scope so they are likely to remain on the cpu | if we make then global to this function they are likely to spill into memory
+				bool hit_left = node->m_children[0]->m_bounds.fastIntersect(p_ray, p_interval.m_min, p_interval.m_max, left_dist);
+				bool hit_right = node->m_children[1]->m_bounds.fastIntersect(p_ray, p_interval.m_min, p_interval.m_max, right_dist);
 				
-				float left_tMin = p_interval.m_min;
-				float left_tMax = p_interval.m_max;
-				float right_tMin = p_interval.m_min;
-				float right_tMax = p_interval.m_max;
-				bool hit_left = node->m_children[0]->m_bounds.fastIntersect(p_ray, left_tMin, left_tMax, left_dist);
-				bool hit_right = node->m_children[1]->m_bounds.fastIntersect(p_ray, right_tMin, right_tMax, right_dist);
-				
-				//hitRecord left_record, right_record;
-				//bool hit_left = node->m_children[0]->m_bounds.intersect(p_ray, smallest_interval, left_record);
-				//bool hit_right = node->m_children[1]->m_bounds.intersect(p_ray, smallest_interval, right_record);
-				//left_dist = left_record.m_time;
-				//right_dist = right_record.m_time;
-				
-				if(hit_left && hit_right) {
+				if(hit_left && hit_right) { //simple binary sort
 					bool right_further = left_dist > right_dist;
 					search_stack[top++] = node->m_children[right_further];
 					search_stack[top++] = node->m_children[!right_further];
-				} else if (hit_left) {
-					search_stack[top++] = node->m_children[0];
-				} else if (hit_right) {
-					search_stack[top++] = node->m_children[1];
-				}
+				} 
+				else if (hit_left) { search_stack[top++] = node->m_children[0]; } //simple assign of if 1 child was hit
+				else if (hit_right) { search_stack[top++] = node->m_children[1]; }
 			} else { //handles n child nodes
 				int hit_count = 0;
 				nodeRecord child_hits[m_nodeChildCount];
@@ -159,5 +141,5 @@ bool BVHMedian::intersect(const ray &p_ray, const interval &p_interval, hitRecor
 
 		}
 	}
-	return hit_anything; //if this is true, this means that p_record contains information on a sceneRenderable object hit
+	return hit_anything;
 }

@@ -390,3 +390,35 @@ using 2 children per node in the BVH tree
 	7c1f91d Using 14 Threads
 	5b85111 5000000 Rays @ 736.061(0.000147212 ms/ray)
 	Done Rendering 100x100 Pixel(s)
+
+using float operation aabb intersect only
+	Test 0
+	658a586 [10'000'000] * vec3f.unit(): 588.315 ms
+	658a586 10000 Rays @ 28.8445(0.00288445 ms/ray)
+	658a586 Using 14 Threads
+	658a586 5000000 Rays @ 217.932(4.35864e-05 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 1
+	658a586 [10'000'000] * vec3f.unit(): 589.968 ms
+	658a586 10000 Rays @ 29.2993(0.00292993 ms/ray)
+	658a586 Using 14 Threads
+	658a586 5000000 Rays @ 200.867(4.01733e-05 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 2
+	658a586 [10'000'000] * vec3f.unit(): 590.376 ms
+	658a586 10000 Rays @ 29.2653(0.00292653 ms/ray)
+	658a586 Using 14 Threads
+	658a586 5000000 Rays @ 201.282(4.02564e-05 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 3
+	658a586 [10'000'000] * vec3f.unit(): 584.342 ms
+	658a586 10000 Rays @ 28.48(0.002848 ms/ray)
+	658a586 Using 14 Threads
+	658a586 5000000 Rays @ 198.622(3.97244e-05 ms/ray)
+	Done Rendering 100x100 Pixel(s)
+	Test 4
+	658a586 [10'000'000] * vec3f.unit(): 587.264 ms
+	658a586 10000 Rays @ 28.6717(0.00286717 ms/ray)
+	658a586 Using 14 Threads
+	658a586 5000000 Rays @ 200.936(4.01872e-05 ms/ray)
+	Done Rendering 100x100 Pixel(s)
