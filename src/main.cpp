@@ -345,10 +345,41 @@ void compareIntersectionCode(const world &p_world) {
 	std::clog << "ignore" << sink << std::endl;
 }
 
+void fullRender(const world &p_world) {
+	cameraConfig _config;
+	_config.d_position = vec3f{15.0, 2.0, 4.0};
+	_config.d_target = vec3f{0.0, 1.0, 0.0};
+	_config.d_upVector = vec3f{0.0, 1.0, 0.0};
+	_config.d_focusDistance = 10.0;
+	_config.d_defocusAngle = constant::PI / 18;
+	_config.d_fov = FOV * 0.0174532925199;
+	
+	vec2i resolution(3840, 2160);
+	int samples = 40;
+	int bounces = 12;
+
+	PPM _image("4K_Render.ppm", resolution);
+	renderer _renderer(&_image, &p_world, _config);
+	int ray_count = resolution.x * resolution.y * samples * bounces;
+
+	std::clog << "Rendering In 4K" << std::endl;
+
+	steadyTimer timer;
+	timer.start();
+	{
+		scopeTimer timer("4K Render", std::clog);
+		_renderer.renderImageMT(samples, bounces, vec2i{4, 1}, 0);
+	}
+	timer.stop();
+	float mt_time = timer.milliseconds();
+	std::clog << GIT_HASH << " " << ray_count << " Rays @ " << mt_time << "(" << (mt_time/ray_count) << " ms/ray" << ")" << std::endl;
+	_renderer.saveImage();
+}
+
 int main(int argc, char** argv) {
 	//testBVH();
-	testSphere();
-	testRectangle();
+	//testSphere();
+	//testRectangle();
 	//return 1;
 
 	world _world(world::MAX_OBJECTS, BVHTechnique::median, 2);
@@ -358,11 +389,13 @@ int main(int argc, char** argv) {
 	//return 2;
 
 	
-	for(int test_id = 0; test_id < 5; test_id++) {
-		std::clog << "Test " << test_id << std::endl;
-		benchmarkVector();
-		benchmarkRender(_world);
-	}
+	// for(int test_id = 0; test_id < 5; test_id++) {
+	// 	std::clog << "Test " << test_id << std::endl;
+	// 	benchmarkVector();
+	// 	benchmarkRender(_world);
+	// }
+
+	fullRender(_world);
 
 
 	return 0;
