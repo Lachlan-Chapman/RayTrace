@@ -282,7 +282,7 @@ void benchmarkRender(const world &p_world) {
 	PPM _image("image.ppm", vec2i{IMAGE_WIDTH, IMAGE_HEIGHT});
 
 	cameraConfig _config;
-	_config.d_position = vec3f{25.0, 5.0, 4.0};
+	_config.d_position = vec3f{15.0, 2.0, 4.0};
 	_config.d_target = vec3f{0.0, 1.0, 0.0};
 	_config.d_upVector = vec3f{0.0, 1.0, 0.0};
 	_config.d_focusDistance = 10.0;
