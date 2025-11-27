@@ -110,11 +110,11 @@ bool BVHMedian::intersect(const ray &p_ray, const interval &p_interval, hitRecor
 			
 		} else {
 			if(m_usesBinaryChildren) { //the use of a const bool member var should compile to optimise out the entire else branch
-				hitRecord left, right; //keep them to this tiny scope so they are likely to remain on the cpu | if we make then global to this function they are likely to spill into memory
-				bool hit_left = node->m_children[0]->m_bounds.intersect(p_ray, smallest_interval, left);
-				bool hit_right = node->m_children[1]->m_bounds.intersect(p_ray, smallest_interval, right);
+				float left_dist, right_dist; //keep them to this tiny scope so they are likely to remain on the cpu | if we make then global to this function they are likely to spill into memory
+				bool hit_left = node->m_children[0]->m_bounds.fastIntersect(p_ray, smallest_interval, left_dist);
+				bool hit_right = node->m_children[1]->m_bounds.fastIntersect(p_ray, smallest_interval, right_dist);
 				if(hit_left && hit_right) {
-					bool right_further = left.m_time > right.m_time;
+					bool right_further = left_dist > right_dist;
 					search_stack[top++] = node->m_children[right_further];
 					search_stack[top++] = node->m_children[!right_further];
 				} else if (hit_left) {

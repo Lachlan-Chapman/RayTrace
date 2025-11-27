@@ -33,13 +33,3 @@ bool BVHBounds::intersect(const ray &p_ray, interval p_interval, hitRecord &p_re
 	p_record.m_time = enter_distance;
 	return enter_distance <= exit_distance;
 }
-
-
-
-//add inverse dir to ray - DONE
-//add signs to ray - DONE
-
-//do the intersect code - DONE
-
-//chagne bvh node to use bvhbounds - DONE
-//change bvh traversal to use bvh bounds not rect bounds

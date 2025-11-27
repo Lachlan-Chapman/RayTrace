@@ -75,4 +75,31 @@ public:
 	BVHBounds(); //default
 	BVHBounds(const vec3f &p_minCorner, const vec3f &p_maxCorner); //corner
 	bool intersect(const ray &p_ray, interval p_interval, hitRecord &p_record) const override;
+	inline bool fastIntersect(const ray &p_ray, const interval &p_interval, float &p_time) const { //unique intersection to avoid late binding
+		// compute t_enter and t_exit for each axis
+		vec3f t_enter = (m_minCorner - p_ray.m_origin) * p_ray.m_inverseDirection;
+		vec3f t_exit  = (m_maxCorner - p_ray.m_origin) * p_ray.m_inverseDirection;
+
+		// sort per-axis
+		vec3f axis_t_enter(
+			std::min(t_enter.x, t_exit.x),
+			std::min(t_enter.y, t_exit.y),
+			std::min(t_enter.z, t_exit.z)
+		);
+
+		vec3f axis_t_exit(
+			std::max(t_enter.x, t_exit.x),
+			std::max(t_enter.y, t_exit.y),
+			std::max(t_enter.z, t_exit.z)
+		);
+
+		float enter_distance = axis_t_enter.max();
+		float exit_distance = axis_t_exit.min();
+
+		//unqiue clamp allowing for negative enter and exit distances to the interval
+		if(exit_distance < p_interval.m_min || enter_distance > p_interval.m_max) { return false; }
+
+		p_time = enter_distance;
+		return true;
+	}
 };
