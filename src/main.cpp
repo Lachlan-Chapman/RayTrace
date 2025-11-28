@@ -29,7 +29,7 @@
 #endif
 
 //tracer validation
-void testRender(const char* p_testName, const world &p_world) {	
+void testRender(const char* p_testName, const world &p_world) {
 	cameraConfig _config;
 	_config.d_position = vec3f{6.0, 0.0, 4.0};
 	_config.d_target = vec3f{0.0, 0.0, 0.0};
@@ -263,6 +263,96 @@ void benchmarkVector() {
 	}
 }
 
+void generateBenchmarkWorld(world &p_world) {
+	for(int i = 0; i < world::MAX_OBJECTS-5; i++) {
+		material *_mat;
+		double mat_selection = rng::decimal();
+		
+		color _col = (rng::vector() + color(0.2)).unit(); //brighten it slightly
+		vec3f _pos = vec3f{rng::decimal(-25.0, 14.0), 0.0, rng::decimal(-13, 7)} * rng::vector();
+		
+		double _rad = 0.2;
+		_pos[1] = _rad;
+
+		if(mat_selection < 0.5) {
+			_mat = new metal( //mistake, should be lambertian but the benchmarking settings are now set so. also metal uses the lambertian material so speed ups to it would affect metals also
+				_col,
+				reflectance(1.0),
+				roughness(0.0)
+			);
+		} else if(mat_selection < 0.75) {
+			_mat = new dielectric(
+				_col,
+				reflectance(1.0),
+				ior(1.5)
+			);
+		} else {
+			_mat = new metal(
+				_col,
+				reflectance(1.0),
+				roughness(rng::decimal(0.7, 1.0))
+			);
+		}
+		
+		p_world.append(new sphere(
+			_pos,
+			_rad,
+			_mat
+		));
+	}
+	
+	
+	p_world.append(new sphere( //ground
+			position{0.0, -1000.0, 0.0},
+			size(1000.0),
+			new lambertian(
+				color(0.5),
+				reflectance(1.0)
+			)
+		)
+	);
+	p_world.append(new sphere( //simple diffuse
+			position{-4.0, 1.0, 0.0},
+			size(1.0),
+			new lambertian(
+				color{0.4, 0.5, 0.9},
+				reflectance(1.0)
+			)
+		)
+	);
+	p_world.append(new sphere(
+			position{0.0, 1.0, 0.0},
+			size(1.0),
+			new dielectric(
+				color(1.0),
+				reflectance(1.0),
+				ior(1.5)
+			)
+		)
+	);
+	p_world.append(new sphere(
+			position{0.0, 1.0, 0.0},
+			size(0.5),
+			new dielectric(
+				color(1.0),
+				reflectance(1.0),
+				ior(1.5)
+			)
+		)
+	);
+	p_world.append(new sphere(
+			position{4.0, 1.0, 0.0},
+			size(1.0),
+			new metal(
+				color{0.9, 0.6, 0.5},
+				reflectance(1.0),
+				roughness(0.0)
+			)
+		)
+	);
+	p_world.buildBVH();
+}
+
 void benchmarkRender(const world &p_world) {
 	PPM _image("image.ppm", vec2i{IMAGE_WIDTH, IMAGE_HEIGHT});
 
@@ -382,20 +472,21 @@ int main(int argc, char** argv) {
 	//testRectangle();
 	//return 1;
 
-	world _world(world::MAX_OBJECTS, BVHTechnique::median, 2);
-	generateWorld(_world);
-
+	
 	//compareIntersectionCode(_world);
 	//return 2;
-
 	
-	// for(int test_id = 0; test_id < 5; test_id++) {
-	// 	std::clog << "Test " << test_id << std::endl;
-	// 	benchmarkVector();
-	// 	benchmarkRender(_world);
-	// }
-
-	fullRender(_world);
+	world benchy_world(128, BVHTechnique::median, 2);
+	generateBenchmarkWorld(benchy_world);
+	for(int test_id = 0; test_id < 5; test_id++) {
+		std::clog << "Test " << test_id << std::endl;
+		benchmarkVector();
+		benchmarkRender(benchy_world);
+	}
+	
+	//world _world(world::MAX_OBJECTS, BVHTechnique::median, 2);
+	//generateWorld(_world);
+	//fullRender(_world);
 
 
 	return 0;
