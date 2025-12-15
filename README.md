@@ -1,8 +1,25 @@
-Using the Ray Tracing in One Weekend, i made a simple cpu ray tracer. It was developed on a linux vm then eventually i made my computer a dual boot system. so it was able to use all of my cpu.
-The code structure and style used in the RT In a weekend is not really how i like to do things. It was usefull for sphere intersection maths.
-I used my vec template which makes all the maths far easier.
-the python builder allows for multi threaded file compilation. Then single threaded linking
-i dont like how make is such a black box and i like the ability to run whatever custom structure i want. Its neat that it only compiles changed cpp files and looks for changed in hpp files etc.
-Added AABBs (Cube Intersection).
-Added fast AABB intersection code for the Bounding Volume Heirachy to change an O(n) intersection check for each scene object to O(log n)
-Made it multi threaded. Beware this can be configured to be what is essentially a power virus since it will scale to use all available system threads.
+## Overview
+
+This project started as a simple CPU ray tracer based on *Ray Tracing in One Weekend*, used primarily as a reference for basic ray–object intersection maths. From there, it evolved into a personal sandbox for experimenting with structure, performance, and parallel execution. Supports basic diffuse, metal and transparent materials.
+
+## Notes and Extensions
+
+- Originally developed on a Linux virtual machine, later moved to a dual-boot setup to allow full use of system CPU resources.
+
+- The overall structure and coding style from *Ray Tracing in One Weekend* was not kept. It was mainly useful as a baseline for sphere intersection maths.
+
+- Replaced the original math utilities with a custom `vec` template to simplify vector operations and improve code clarity.
+
+- Uses a custom Python build script instead of `make`:
+  - Supports multi-threaded compilation of `.cpp` files
+  - Performs single-threaded linking
+  - Rebuilds only changed source and header dependencies
+  - Chosen to avoid treating the build system as a black box and to allow full control over build structure
+  - I have better control over a build failure
+  - I always find codium (vscode) is nicer to compile with using a python program over the built in tools. Having F5 simply launch a python program over creating a build task with the .json files.
+
+- Added axis-aligned bounding boxes (AABBs), including cube intersection support.
+
+- Implemented fast AABB intersection logic as part of a Bounding Volume Hierarchy (BVH), reducing per-ray scene intersection checks from O(n) to approximately O(log n) in typical cases.
+
+- Added multi-threaded rendering. Thread count scales with available system cores and can be configured. Note that unrestricted settings can fully saturate the CPU, not as much as a CPU burner test or anything.
