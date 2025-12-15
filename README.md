@@ -1,4 +1,4 @@
-Using the Ray Tracing in One Weekend, i made a simple cpu ray tracer.
+Using the Ray Tracing in One Weekend, i made a simple cpu ray tracer. It was developed on a linux vm then eventually i made my computer a dual boot system. so it was able to use all of my cpu.
 The code structure and style used in the RT In a weekend is not really how i like to do things. It was usefull for sphere intersection maths.
 I used my vec template which makes all the maths far easier.
 the python builder allows for multi threaded file compilation. Then single threaded linking
